@@ -82,6 +82,9 @@ export default class PeopleController {
         })
       }
 
+      //Gerar a referência - codigo
+      //Para o caso de utente sem BI gerar  PM-Referência
+
       //Utente inserido com sucesso
       return response.status(201).send({
         message: 'Utente registrado com sucesso!',
