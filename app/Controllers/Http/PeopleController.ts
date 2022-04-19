@@ -56,8 +56,8 @@ export default class PeopleController {
 
         const exists = await Person.query()
           .where('nome', personData.name)
-          .where('NomePai', personData.fatherName)
-          .where('NomeMae', personData.motherName)
+          .where('NomePai', personData.fatherName as string)
+          .where('NomeMae', personData.motherName as string)
           .where('dtNascimento', personData.birthday)
           .limit(1)
 
