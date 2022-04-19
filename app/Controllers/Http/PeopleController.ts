@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Person from 'App/Models/Person'
 import PersonValidator from 'App/Validators/PersonValidator'
+import generateCode from 'Contracts/functions/generate_code'
 
 export default class PeopleController {
   public async index({ response }: HttpContextContract) {
@@ -42,7 +43,7 @@ export default class PeopleController {
         const exists = await Person.query().where('docNum', personData.docNumber).limit(1)
 
         if (exists.length > 0) {
-          return response.status(500).send({
+          return response.status(200).send({
             message: 'Já existe um utente registrado com esse número de documento!',
             code: '200',
             data: [],
@@ -54,7 +55,6 @@ export default class PeopleController {
         //nome do pai , mãe e data de nascimento enviada
 
         const exists = await Person.query()
-
           .where('nome', personData.name)
           .where('NomePai', personData.fatherName)
           .where('NomeMae', personData.motherName)
@@ -62,7 +62,7 @@ export default class PeopleController {
           .limit(1)
 
         if (exists.length > 0) {
-          return response.status(500).send({
+          return response.status(200).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
             code: '200',
@@ -84,6 +84,16 @@ export default class PeopleController {
 
       //Gerar a referência - codigo
       //Para o caso de utente sem BI gerar  PM-Referência
+
+      console.log(generateCode(person.id.toString()))
+
+      const code = generateCode(person.id.toString())
+
+      if (hasDocNumber) {
+        person.merge({ code: code }).save()
+      } else {
+        person.merge({ code: code, docNumber: 'PM' + code }).save()
+      }
 
       //Utente inserido com sucesso
       return response.status(201).send({
