@@ -1,44 +1,65 @@
-import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { column, beforeSave, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import VaccinationPost from './VaccinationPost'
 
 export default class User extends BaseModel {
-  @column({ isPrimary: true })
+  public static table = 'vac_userPostoVacinacao'
+
+  @column({ isPrimary: true, columnName: 'Id_userPostoVacinacao' })
   public id: number
-  @column()
+
+  @column({ columnName: 'Utilizador' })
   public username: string
-  @column()
-  public firstName: string
-  @column()
-  public lastName: string
-  @column()
+
+  @column({ columnName: 'Senha', serializeAs: null })
+  public password: string
+
+  @column({ columnName: 'Nome' })
+  public name: string
+
+  @column({ columnName: 'Id_postoVacinacao' })
+  public vaccinationPostId: number
+
+  @column({ columnName: 'BI' })
+  public bi: string
+
+  @column({ columnName: 'Telefone' })
   public phone: string
-  @column()
-  public altPhone: string
-  @column()
+
+  @column({ columnName: 'Email' })
   public email: string
 
-  @column({ serializeAs: null })
-  public password: string
+  @column({ columnName: 'Id_provincia' })
+  public provinceId: number
+
+  @column({ columnName: 'Id_Municipio' })
+  public municipalityId: number
+
+  @column({ columnName: 'Endereco' })
+  public address: string
+
+  @column({ columnName: 'IBAN' })
+  public iban: string
+
+  @column({ columnName: 'Id_tipoFuncPostoVac' })
+  public postWorkerTypeId: string
+
+  @column({ columnName: 'Status' })
+  public status: string
+
+  @column({ columnName: 'DataCad' })
+  public createdAt: string
+
+  @column({ columnName: 'Padrao' })
+  public pattern: string
+  @column({ columnName: 'Flag' })
+  public flag: string
+
+  @belongsTo(() => VaccinationPost)
+  public vaccinationPost: BelongsTo<typeof VaccinationPost>
 
   @column()
   public rememberMeToken?: string
-
-  @column()
-  public role: string
-
-  @column()
-  public isActive: number
-  @column()
-  public isDeleted: number
-  @column()
-  public institutionId: number
-
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
 
   @beforeSave()
   public static async hashPassword(user: User) {
