@@ -61,21 +61,20 @@ export default class AuthController {
       await auth.use('api').revoke()
 
       if (auth.use('api').isLoggedOut) {
-        return response.status(HttpStatusCode.ACCEPTED).send({
-          code: Code.SUCCESS,
-          details: {},
+        return response.status(202).send({
+          code: 202,
           message: 'Logout efectuado',
+          data: [],
         })
       } else {
-        return response.status(HttpStatusCode.NOT_ACCEPTABLE).send({
-          code: Code.ER_LOGOUT,
-          details: {},
+        return response.status(406).send({
+          code: 406,
           message: 'Não foi possível efectuar logout',
         })
       }
     } catch (error) {
       console.log(error)
-      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+      return response.status(500).send({
         code: error.code,
         details: error,
         message: 'Erro ao efectuar logout',
