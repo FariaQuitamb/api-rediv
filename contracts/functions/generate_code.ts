@@ -8,7 +8,7 @@ const generateCode = (value: string) => {
     value += random
   }
 
-  console.log(value)
+  //console.log(value)
 
   return value
 }
