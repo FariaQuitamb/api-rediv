@@ -42,7 +42,7 @@ export default class PersonValidator {
     provinceId: schema.number(),
     municipalityId: schema.number(),
     categoryId: schema.number(),
-    code: schema.string(),
+    //code: schema.string(),
     status: schema.string({ escape: true, trim: true }, [rules.minLength(1), rules.maxLength(1)]),
     flagRegSimp: schema.enum.optional(['S', 'N'] as const),
     sectorId: schema.number(),
