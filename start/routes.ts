@@ -20,9 +20,16 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import User from 'App/Models/User'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  const data = await User.query().preload('vaccinationPost', (queryPost) => {
+    queryPost.preload('province')
+  })
+
+  return data
+
+  //return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('health', async ({ response }) => {
@@ -31,7 +38,7 @@ Route.get('health', async ({ response }) => {
 })
 
 //Auth Login
-Route.post('api/auth/login', 'AuthController.login')
+Route.post('auth/login', 'AuthController.login')
 
 Route.get('preload', 'PreloadsController.index')
 Route.resource('people', 'PeopleController')
