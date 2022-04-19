@@ -2,18 +2,17 @@
 
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import Code from 'Contracts/enums/code'
+
 import AuthValidator from 'App/Validators/AuthValidator'
-import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
-import { base64, safeEqual } from '@ioc:Adonis/Core/Helpers'
+
+import { base64, safeEqual, string } from '@ioc:Adonis/Core/Helpers'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
     try {
-      const user = await User.query()
-        .where('Utilizador', data.username)
-        .whereNot('Flag', 'X')
-        .first()
+      const username = string.escapeHTML(data.username)
+
+      const user = await User.query().where('Utilizador', username).whereNot('Flag', 'X').first()
 
       if (!user) {
         console.log('Login incorrecto')
@@ -34,8 +33,6 @@ export default class AuthController {
           data: {},
         })
       }
-
-      console.log(user.username)
 
       const token = await auth.use('api').generate(user, {
         expiresIn: '10days',

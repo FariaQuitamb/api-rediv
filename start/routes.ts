@@ -20,16 +20,9 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import User from 'App/Models/User'
 
 Route.get('/', async () => {
-  const data = await User.query().preload('vaccinationPost', (queryPost) => {
-    queryPost.preload('province')
-  })
-
-  return data
-
-  //return { hello: 'world', title: 'It Works!' }
+  return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('health', async ({ response }) => {
