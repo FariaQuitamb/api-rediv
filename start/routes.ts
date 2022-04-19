@@ -46,6 +46,4 @@ Route.resource('people', 'PeopleController')
 Route.group(() => {
   Route.get('auth/logout', 'AuthController.logout')
   Route.get('auth/logged', 'AuthController.show')
-})
-  .prefix('api')
-  .middleware('auth:api')
+}).middleware('auth:api')
