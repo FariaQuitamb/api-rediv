@@ -19,7 +19,7 @@ export default class PeopleController {
 
         //Verifica se foi enviado o nome do pai
         if (personData.fatherName === undefined || personData.fatherName === '') {
-          return response.status(500).send({
+          return response.status(200).send({
             message: 'Utente sem documento , digite o nome do pai!',
             code: '200',
             data: [],
@@ -27,7 +27,7 @@ export default class PeopleController {
         }
         //Verifica se foi enviado o nome da mãe
         if (personData.motherName === undefined || personData.motherName === '') {
-          return response.status(500).send({
+          return response.status(200).send({
             message: 'Utente sem documento , digite o nome da mãe!',
             code: '200',
             data: [],
