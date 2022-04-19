@@ -84,11 +84,10 @@ export default class PeopleController {
 
       //Gerar a referência - codigo
       //Para o caso de utente sem BI gerar  PM-Referência
-
-      console.log(generateCode(person.id.toString()))
-
       const code = generateCode(person.id.toString())
 
+      //Verifica se possui documento , caso tenha actualiza apenas o codigo ,
+      // caso não tenha actualiza o codigo e o docNum
       if (hasDocNumber) {
         person.merge({ code: code }).save()
       } else {
