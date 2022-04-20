@@ -39,7 +39,8 @@ Route.post('auth/login', 'AuthController.login')
 
 Route.get('preload', 'PreloadsController.index')
 Route.resource('people', 'PeopleController')
-Route.post('vaccination', 'VaccinationsController.store')
+Route.post('vaccination/first', 'VaccinationsController.store')
+Route.post('vaccination/secondorbooster', 'VaccinationsController.secondOrBooster')
 
 Route.group(() => {
   Route.get('auth/logout', 'AuthController.logout')
