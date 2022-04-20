@@ -7,7 +7,7 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 export default class VaccinationsController {
   // public async index({ response }: HttpContextContract) {}
 
-  public async store({ response, request }: HttpContextContract) {
+  public async secondOrBooster({ response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
@@ -184,7 +184,7 @@ export default class VaccinationsController {
     }
   }
 
-  public async secondOrBooster({ response, request }: HttpContextContract) {
+  public async store({ response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
@@ -212,9 +212,14 @@ export default class VaccinationsController {
         })
       }
 
+      //
+      //
+      //
       //Verifica se a vacina existe
       //E se a dose selecionada pertence a vacina pré-selecionada
-
+      //
+      //
+      //
       const vaccineDose = await Vaccine.query()
         .preload('doses', (queryDose) => {
           queryDose.where('Id_DoseVacina', vaccinationData.doseId)
@@ -241,14 +246,33 @@ export default class VaccinationsController {
           data: [],
         })
       }
+
+      //
+      //
+      //
       /* Dose existe e pertence a vacina selecionada */
+      //
+      //
+      //
 
       const selectedDose = vaccineDose.doses[0]
 
-      //Caso não esteja realizando dose de reforço
+      //
+      //
+      //
+      //Caso não esteja realizando dose de reforço  - 1ª ou 2ª dose
+      //
+      //
+      //
       if (vaccinationData.status !== 'R') {
         //
+        //
+        //Verificação caso seja a primeira dose ou dose única
+        //
         //Se for primeira dose ou dose única , não deve ter outra vacina feita
+        //
+        //
+        //
         if (selectedDose.name === '1ª Dose' || selectedDose.name === 'Dose Única') {
           const personVaccinations = await Vaccination.query()
             .preload('person')
@@ -266,7 +290,13 @@ export default class VaccinationsController {
           }
         }
 
+        //
+        //
+        //Verificação caso seja a segunda dose
         //Caso esteja registrando a segunda dose
+        //
+        //
+        //
         if (selectedDose.name === '2ª Dose') {
           const PersonfirstDose = await Vaccination.query()
             .preload('person')
@@ -277,6 +307,7 @@ export default class VaccinationsController {
             .where('Id_regIndividual', person.id)
 
           //Não permite que se tenha outro registro além de apenas 1 que deve ser da 1ª dose
+
           if (PersonfirstDose.length > 1) {
             console.log(
               'O utente possuí mais de 1 registro de vacina! - Se esperava apenas 1 registro de vacina'
@@ -289,7 +320,7 @@ export default class VaccinationsController {
             })
           }
 
-          //Verifica se existe alguma vacina do utente
+          /*Verifica se existe alguma vacina do utente*/
           if (PersonfirstDose.length > 0) {
             //Verifica se a vacina do utente tem a primeira dose
             if (!PersonfirstDose[0].dose) {
@@ -310,11 +341,25 @@ export default class VaccinationsController {
               data: [],
             })
           }
+        } else {
+          //Mensagem para verificar os dados enviados
+          //Caso não seja reforço e não seja vacinação pela primeira vez e nem pela segunda
+          console.log('Dose escolhida  está fora das doses usadas como padrão!')
+          return response.status(200).send({
+            message: 'Dose escolhida  está fora das doses usadas como padrão!',
+            code: '200',
+            data: [],
+          })
         }
-
-        //Mensagem para verificar os dados enviados
-        //Caso não seja reforço e não seja vacinação pela primeira vez e nem pela segunda
       }
+
+      //
+      //
+      //
+      //Verificação para o caso de dose de reforço
+      //
+      //
+      //
 
       if (vaccinationData.status === 'R') {
         //Verificar se tem o ciclo de vacinação completo segunda dose | dose única
