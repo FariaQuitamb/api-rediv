@@ -1,4 +1,5 @@
 import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import Dose from './Dose'
 import Person from './Person'
 import User from './User'
 import Vaccine from './Vaccine'
@@ -54,4 +55,7 @@ export default class Vaccination extends BaseModel {
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
+
+  @belongsTo(() => Dose)
+  public dose: BelongsTo<typeof Dose>
 }
