@@ -1,0 +1,405 @@
+    ''' <summary>
+    ''' Registo da Vacinação
+    ''' </summary>
+    Protected Sub regVac(ByVal idCad As Integer, ByVal ddlVacina As Integer)
+        Dim _Sexo As String = funcSigis.retornaDadoSQL("[Genero]", "[dbo].[vac_regIndividual]", "Where [Id_regIndividual] = " & hf_regIndividual.Value)
+        Dim _idBd As Integer = 0
+        Dim _vacDose As Integer = 0
+        lt_Modal.Text = String.Empty
+        hf_html.Value = String.Empty
+        lt_Html.Text = String.Empty
+        _strSQl = String.Empty
+        If idCad <> 0 Then
+            _strSQl = "Select Top(1) [Id_regVacinacao]"
+            _strSQl += ",[Id_Dose]"
+            _strSQl += ",[NumDias]"
+            _strSQl += ",[PrxDose]"
+            _strSQl += ",[Id_Vacina]"
+            _strSQl += ",CONVERT(VARCHAR, DATEADD(day, [NumDias], [DataCad]), 23) AS [DtProxDose]"
+            _strSQl += ",CONVERT(VARCHAR, [DataCad], 23) As [DataCad]"
+            _strSQl += ",DATEDIFF(day, DATEADD(day, [NumDias], [DataCad]),  getdate()) AS [NumDiasRestante]"
+            _strSQl += ",DATEDIFF(day, getdate(), DATEADD(day, [NumDias], [DataCad])) AS [NumDias2]"
+            _strSQl += ",CONVERT(VARCHAR, GETDATE(), 23) AS [dtHoje] "
+            _strSQl += "From ("
+            _strSQl += "SELECT ROW_NUMBER() OVER(PARTITION BY rv.[Id_Dose] ORDER BY rv.[DataCad] DESC) AS [NumLinha]"
+            _strSQl += ",rv.[Id_regVacinacao]"
+            _strSQl += ",rv.[Id_Vacina]"
+            _strSQl += ",rv.[Id_Dose]"
+            _strSQl += ",[NumDias] = (Isnull((Select [NumDias] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (dv.[NumOrdem] + 1)), 0))"
+            _strSQl += ",[PrxDose] = (Isnull((Select [Id_DoseVacina] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (dv.[NumOrdem] + 1)), 0))"
+            _strSQl += ",rv.[DataCad] "
+            _strSQl += "FROM [dbo].[vac_regVacinacao] rv "
+            _strSQl += "Inner Join [vac_DoseVacina] dv On dv.[Id_DoseVacina] = rv.[Id_Dose] "
+            _strSQl += "Where rv.[Status] <> 'R' And rv.[Id_regIndividual] = " & hf_regIndividual.Value
+            _strSQl += ") As Tbl "
+            _strSQl += "Order By [DataCad] Desc"
+            comando.Connection = conn.aberturaConexao
+            comando.CommandText = _strSQl
+            ObjRS = comando.ExecuteReader
+            If ObjRS.HasRows Then
+
+
+                If ObjRS.Read() Then
+                    '=== Verifico se existe outra dose para receber ===
+                    If func.valorNumerico(ObjRS("PrxDose")) <> 0 Then
+                        '=== Verifico se a data do Registo foi realizado no corrente dia, evitar que o Registo seja feito duas vezes ===
+                        If ObjRS("DataCad") <> ObjRS("dtHoje") Then
+                            '=== Verifico se a Data de Registo para receber a Segunda Dose ===
+                            If ObjRS("NumDiasRestante") >= 0 Then
+                                '=== Recebendo a Vacina Correcta ===
+                                If ddl_Vacina.SelectedValue = ObjRS("Id_Vacina") Then
+                                    '========================================
+                                    '=== Gravando a Dose na Data Correcta ===
+                                    '========================================
+                                    '=== Gravar Dados ===
+                                    _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(ObjRS("PrxDose")) & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ")", "SELECT Scope_Identity()")
+                                    '=== Log de Atividade ===
+                                    log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                    '=== Mensagem ===
+                                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                    txb_Codigo.Text = String.Empty
+                                    txb_Codigo.Focus()
+                                    '=== Atualizo ===
+                                    listFeature(hf_regPostoVac.Value)
+                                Else
+                                    '=== Pego a Segunda Dose da vacina ERRADA ===
+                                    '=== este procedimento é por causa que no Reg. Vacinação era colocado a vacina errada, contudo, colocava o Id_Dose da vacina que deveria receber ===
+                                    '=== e neste contexto coloca a vacina errada com o Id_Dose correspondente a vacina ===
+                                    '=== esta solicitação é por causa dos Gráficos do Fábio, não alterei o nº do Lote pois o Fábio disse que nos gráficos não utiliza esta informação ===
+                                    '=============================================================================
+                                    '=== [Id_DoseVacina], [Id_LoteVacina] da Vacina que esta selecionada no Login do Utilizador ===
+                                    Dim _doseVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & " Order By [NumOrdem] Desc"))
+                                    Dim _loteVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_LoteVacina]", "[vac_LoteVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & ""))
+                                    '=== Verifico ===
+                                    If doseVac <> 0 And loteVac <> 0 Then
+                                        '=====================================================================
+                                        '=== Gravando a Dose na Data Correcta mas com uma Vacina Diferente ===
+                                        '=====================================================================
+                                        '=== [Status] = V, quer dizer que recebeu uma Vacina Diferente ===
+                                        '=== Gravar Dados (Alterado) ===
+                                        _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(_doseVac) & ", " & func.valorNumerico(_loteVac) & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'V')", "SELECT Scope_Identity()")
+                                        '=== Log de Atividade ===
+                                        log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                        '=== Mensagem ===
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                        txb_Codigo.Text = String.Empty
+                                        txb_Codigo.Focus()
+                                        '=== Atualizo ===
+                                        listFeature(hf_regPostoVac.Value)
+                                    Else
+                                        lt_Modal.Text = modal.modalAlerta("alerta", "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Alerta", "<strong>ERRO</strong>, informe ao Administrador do Sistema, que não esta configurada nenhuma Dose ou Lote de Vacina!")
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "ma", "$('#alerta').modal('show');", True)
+                                    End If
+                                End If
+                            Else
+                                '=== Até 15 dias se é Registado ===
+                                If Math.Abs(func.valorNumerico(ObjRS("NumDias")) - func.valorNumerico(ObjRS("NumDias2"))) > 15 Then
+                                    '=== Recebendo a Vacina Correcta ===
+                                    If ddl_Vacina.SelectedValue = ObjRS("Id_Vacina") Then
+                                        '=========================================
+                                        '=== Gravando a Dose na Data Incorreta ===
+                                        '=========================================
+                                        '=== [Status] = D, quer dizer que recebeu a Dose antes do tempo estipulado ===
+                                        '=== Gravar Dados ===
+                                        _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(ObjRS("PrxDose")) & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'D')", "SELECT Scope_Identity()")
+                                        '=== Log de Atividade ===
+                                        log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                        '=== Mensagem ===
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                        txb_Codigo.Text = String.Empty
+                                        txb_Codigo.Focus()
+                                        '=== Atualizo ===
+                                        listFeature(hf_regPostoVac.Value)
+                                    Else
+                                        '=== Pego a Segunda Dose da vacina ERRADA ===
+                                        '=== este procedimento é por causa que no Reg. Vacinação era colocado a vacina errada, contudo, colocava o Id_Dose da vacina que deveria receber ===
+                                        '=== e neste contexto coloca a vacina errada com o Id_Dose correspondente a vacina ===
+                                        '=== esta solicitação é por causa dos Gráficos do Fábio, não alterei o nº do Lote pois o Fábio disse que nos gráficos não utiliza esta informação ===
+                                        '=============================================================================
+                                        '=== [Id_DoseVacina], [Id_LoteVacina] da Vacina que esta selecionada no Login do Utilizador ===
+                                        Dim _doseVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & " Order By [NumOrdem] Desc"))
+                                        Dim _loteVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_LoteVacina]", "[vac_LoteVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & ""))
+                                        '=== Verifico ===
+                                        If doseVac <> 0 And loteVac <> 0 Then
+                                            '=====================================================================
+                                            '=== Gravando a Dose na Data Correcta mas com uma Vacina Diferente ===
+                                            '=====================================================================
+                                            '=== [Status] = V, quer dizer que recebeu uma Vacina Diferente ===
+                                            '=== Gravar Dados (Alterado) ===
+                                            _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(_doseVac) & ", " & func.valorNumerico(_loteVac) & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'V')", "SELECT Scope_Identity()")
+                                            '=== Log de Atividade ===
+                                            log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                            '=== Mensagem ===
+                                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                            txb_Codigo.Text = String.Empty
+                                            txb_Codigo.Focus()
+                                            '=== Atualizo ===
+                                            listFeature(hf_regPostoVac.Value)
+                                        Else
+                                            lt_Modal.Text = modal.modalAlerta("alerta", "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Alerta", "<strong>ERRO</strong>, informe ao Administrador do Sistema, que não esta configurada nenhuma Dose ou Lote de Vacina!")
+                                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "ma", "$('#alerta').modal('show');", True)
+                                        End If
+                                    End If
+                                Else
+                                    '=== Atualizo ===
+                                    listFeature(hf_regPostoVac.Value)
+                                    '=== Mensagem ===
+                                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                                    txb_Codigo.Text = String.Empty
+                                    txb_Codigo.Focus()
+                                    txb_NomeReg.Text = String.Empty
+                                    txb_IdentifReg.Text = String.Empty
+                                    txb_UnidadeSanReg.Text = String.Empty
+                                End If
+                            End If
+                        Else
+                            '=== Atualizo ===
+                            listFeature(hf_regPostoVac.Value)
+                            '=== Mensagem ===
+                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                            txb_Codigo.Text = String.Empty
+                            txb_Codigo.Focus()
+                            txb_NomeReg.Text = String.Empty
+                            txb_IdentifReg.Text = String.Empty
+                            txb_UnidadeSanReg.Text = String.Empty
+                        End If
+                    Else
+                        '=== Atualizo ===
+                        listFeature(hf_regPostoVac.Value)
+                        '=== Mensagem ===
+                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                        txb_Codigo.Text = String.Empty
+                        txb_Codigo.Focus()
+                        txb_NomeReg.Text = String.Empty
+                        txb_IdentifReg.Text = String.Empty
+                        txb_UnidadeSanReg.Text = String.Empty
+                    End If
+                End If
+            End If
+            comando.Dispose()
+            ObjRS.Close()
+            conn.fecharConexao()
+        Else
+            '====================================================================
+            '=== AQUI É SOMENTE QDO O UTENTE AINDA NÃO RECEBEU NENHUMA VACINA ===
+            '====================================================================
+            '=== Pego a 1º Dose da Vacina ===
+            _vacDose = func.valorNumerico(funcSigis.retornaDadoSQL("TOP(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & hf_vacina.Value & " Order By [NumOrdem]"))
+            '=== Verifico se Existe Dose Disponível ===
+            If _vacDose <> 0 Then
+
+                '=== Gravar Dados ===
+                idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & vacDose & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ")", "SELECT Scope_Identity()")
+
+
+
+        End If
+    End Sub
+
+
+
+''' <summary>
+    ''' Registo da Vacinação
+    ''' </summary>
+    Protected Sub regVac(ByVal idCad As Integer, ByVal ddlVacina As Integer)
+        Dim _Sexo As String = funcSigis.retornaDadoSQL("[Genero]", "[dbo].[vac_regIndividual]", "Where [Id_regIndividual] = " & hf_regIndividual.Value)
+        Dim _idBd As Integer = 0
+        Dim _vacDose As Integer = 0
+        lt_Modal.Text = String.Empty
+        hf_html.Value = String.Empty
+        lt_Html.Text = String.Empty
+        _strSQl = String.Empty
+        If idCad <> 0 Then
+            _strSQl = "Select Top(1) [Id_regVacinacao]"
+            _strSQl += ",[Id_Dose]"
+            _strSQl += ",[NumDias]"
+            _strSQl += ",[PrxDose]"
+            _strSQl += ",[Id_Vacina]"
+            _strSQl += ",CONVERT(VARCHAR, DATEADD(day, [NumDias], [DataCad]), 23) AS [DtProxDose]"
+            _strSQl += ",CONVERT(VARCHAR, [DataCad], 23) As [DataCad]"
+            _strSQl += ",DATEDIFF(day, DATEADD(day, [NumDias], [DataCad]),  getdate()) AS [NumDiasRestante]"
+            _strSQl += ",DATEDIFF(day, getdate(), DATEADD(day, [NumDias], [DataCad])) AS [NumDias2]"
+            _strSQl += ",CONVERT(VARCHAR, GETDATE(), 23) AS [dtHoje] "
+            _strSQl += "From ("
+            _strSQl += "SELECT ROW_NUMBER() OVER(PARTITION BY rv.[Id_Dose] ORDER BY rv.[DataCad] DESC) AS [NumLinha]"
+            _strSQl += ",rv.[Id_regVacinacao]"
+            _strSQl += ",rv.[Id_Vacina]"
+            _strSQl += ",rv.[Id_Dose]"
+            _strSQl += ",[NumDias] = (Isnull((Select [NumDias] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (dv.[NumOrdem] + 1)), 0))"
+            _strSQl += ",[PrxDose] = (Isnull((Select [Id_DoseVacina] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (dv.[NumOrdem] + 1)), 0))"
+            _strSQl += ",rv.[DataCad] "
+            _strSQl += "FROM [dbo].[vac_regVacinacao] rv "
+            _strSQl += "Inner Join [vac_DoseVacina] dv On dv.[Id_DoseVacina] = rv.[Id_Dose] "
+            _strSQl += "Where rv.[Status] <> 'R' And rv.[Id_regIndividual] = " & hf_regIndividual.Value
+            _strSQl += ") As Tbl "
+            _strSQl += "Order By [DataCad] Desc"
+
+
+            comando.Connection = conn.aberturaConexao
+            comando.CommandText = _strSQl
+            ObjRS = comando.ExecuteReader
+            If ObjRS.HasRows Then
+                If ObjRS.Read() Then
+                    '=== Verifico se existe outra dose para receber ===
+                    If func.valorNumerico(ObjRS("PrxDose")) <> 0 Then
+                        '=== Verifico se a data do Registo foi realizado no corrente dia, evitar que o Registo seja feito duas vezes ===
+                        If ObjRS("DataCad") <> ObjRS("dtHoje") Then
+                            '=== Verifico se a Data de Registo para receber a Segunda Dose ===
+                            If ObjRS("NumDiasRestante") >= 0 Then
+                                '=== Recebendo a Vacina Correcta ===
+                                If ddl_Vacina.SelectedValue = ObjRS("Id_Vacina") Then
+                                    '========================================
+                                    '=== Gravando a Dose na Data Correcta ===
+                                    '========================================
+                                    '=== Gravar Dados ===
+                                    _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(ObjRS("PrxDose")) & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ")", "SELECT Scope_Identity()")
+                                    '=== Log de Atividade ===
+                                    log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                    '=== Mensagem ===
+                                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                    txb_Codigo.Text = String.Empty
+                                    txb_Codigo.Focus()
+                                    '=== Atualizo ===
+                                    listFeature(hf_regPostoVac.Value)
+                                Else
+                                    '=== Pego a Segunda Dose da vacina ERRADA ===
+                                    '=== este procedimento é por causa que no Reg. Vacinação era colocado a vacina errada, contudo, colocava o Id_Dose da vacina que deveria receber ===
+                                    '=== e neste contexto coloca a vacina errada com o Id_Dose correspondente a vacina ===
+                                    '=== esta solicitação é por causa dos Gráficos do Fábio, não alterei o nº do Lote pois o Fábio disse que nos gráficos não utiliza esta informação ===
+                                    '=============================================================================
+                                    '=== [Id_DoseVacina], [Id_LoteVacina] da Vacina que esta selecionada no Login do Utilizador ===
+                                    Dim _doseVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & " Order By [NumOrdem] Desc"))
+                                    Dim _loteVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_LoteVacina]", "[vac_LoteVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & ""))
+                                    '=== Verifico ===
+                                    If doseVac <> 0 And loteVac <> 0 Then
+                                        '=====================================================================
+                                        '=== Gravando a Dose na Data Correcta mas com uma Vacina Diferente ===
+                                        '=====================================================================
+                                        '=== [Status] = V, quer dizer que recebeu uma Vacina Diferente ===
+                                        '=== Gravar Dados (Alterado) ===
+                                        _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(_doseVac) & ", " & func.valorNumerico(_loteVac) & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'V')", "SELECT Scope_Identity()")
+                                        '=== Log de Atividade ===
+                                        log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                        '=== Mensagem ===
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                        txb_Codigo.Text = String.Empty
+                                        txb_Codigo.Focus()
+                                        '=== Atualizo ===
+                                        listFeature(hf_regPostoVac.Value)
+                                    Else
+                                        lt_Modal.Text = modal.modalAlerta("alerta", "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Alerta", "<strong>ERRO</strong>, informe ao Administrador do Sistema, que não esta configurada nenhuma Dose ou Lote de Vacina!")
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "ma", "$('#alerta').modal('show');", True)
+                                    End If
+                                End If
+                            Else
+                                '=== Até 15 dias se é Registado ===
+                                If Math.Abs(func.valorNumerico(ObjRS("NumDias")) - func.valorNumerico(ObjRS("NumDias2"))) > 15 Then
+                                    '=== Recebendo a Vacina Correcta ===
+                                    If ddl_Vacina.SelectedValue = ObjRS("Id_Vacina") Then
+                                        '=========================================
+                                        '=== Gravando a Dose na Data Incorreta ===
+                                        '=========================================
+                                        '=== [Status] = D, quer dizer que recebeu a Dose antes do tempo estipulado ===
+                                        '=== Gravar Dados ===
+                                        _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(ObjRS("PrxDose")) & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'D')", "SELECT Scope_Identity()")
+                                        '=== Log de Atividade ===
+                                        log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                        '=== Mensagem ===
+                                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                        txb_Codigo.Text = String.Empty
+                                        txb_Codigo.Focus()
+                                        '=== Atualizo ===
+                                        listFeature(hf_regPostoVac.Value)
+                                    Else
+                                        '=== Pego a Segunda Dose da vacina ERRADA ===
+                                        '=== este procedimento é por causa que no Reg. Vacinação era colocado a vacina errada, contudo, colocava o Id_Dose da vacina que deveria receber ===
+                                        '=== e neste contexto coloca a vacina errada com o Id_Dose correspondente a vacina ===
+                                        '=== esta solicitação é por causa dos Gráficos do Fábio, não alterei o nº do Lote pois o Fábio disse que nos gráficos não utiliza esta informação ===
+                                        '=============================================================================
+                                        '=== [Id_DoseVacina], [Id_LoteVacina] da Vacina que esta selecionada no Login do Utilizador ===
+                                        Dim _doseVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & " Order By [NumOrdem] Desc"))
+                                        Dim _loteVac As Integer = func.valorNumerico(funcSigis.retornaDadoSQL("Top(1) [Id_LoteVacina]", "[vac_LoteVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & ddl_Vacina.SelectedValue & ""))
+                                        '=== Verifico ===
+                                        If doseVac <> 0 And loteVac <> 0 Then
+                                            '=====================================================================
+                                            '=== Gravando a Dose na Data Correcta mas com uma Vacina Diferente ===
+                                            '=====================================================================
+                                            '=== [Status] = V, quer dizer que recebeu uma Vacina Diferente ===
+                                            '=== Gravar Dados (Alterado) ===
+                                            _idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia],[Status]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & func.valorNumerico(_doseVac) & ", " & func.valorNumerico(_loteVac) & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ", 'V')", "SELECT Scope_Identity()")
+                                            '=== Log de Atividade ===
+                                            log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                                            '=== Mensagem ===
+                                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                                            txb_Codigo.Text = String.Empty
+                                            txb_Codigo.Focus()
+                                            '=== Atualizo ===
+                                            listFeature(hf_regPostoVac.Value)
+                                        Else
+                                            lt_Modal.Text = modal.modalAlerta("alerta", "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Alerta", "<strong>ERRO</strong>, informe ao Administrador do Sistema, que não esta configurada nenhuma Dose ou Lote de Vacina!")
+                                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "ma", "$('#alerta').modal('show');", True)
+                                        End If
+                                    End If
+                                Else
+                                    '=== Atualizo ===
+                                    listFeature(hf_regPostoVac.Value)
+                                    '=== Mensagem ===
+                                    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                                    txb_Codigo.Text = String.Empty
+                                    txb_Codigo.Focus()
+                                    txb_NomeReg.Text = String.Empty
+                                    txb_IdentifReg.Text = String.Empty
+                                    txb_UnidadeSanReg.Text = String.Empty
+                                End If
+                            End If
+                        Else
+                            '=== Atualizo ===
+                            listFeature(hf_regPostoVac.Value)
+                            '=== Mensagem ===
+                            ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                            txb_Codigo.Text = String.Empty
+                            txb_Codigo.Focus()
+                            txb_NomeReg.Text = String.Empty
+                            txb_IdentifReg.Text = String.Empty
+                            txb_UnidadeSanReg.Text = String.Empty
+                        End If
+                    Else
+                        '=== Atualizo ===
+                        listFeature(hf_regPostoVac.Value)
+                        '=== Mensagem ===
+                        ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg1", "msg1('<br /><strong>Já recebeu Vacina</strong>');", True)
+                        txb_Codigo.Text = String.Empty
+                        txb_Codigo.Focus()
+                        txb_NomeReg.Text = String.Empty
+                        txb_IdentifReg.Text = String.Empty
+                        txb_UnidadeSanReg.Text = String.Empty
+                    End If
+                End If
+            End If
+            comando.Dispose()
+            ObjRS.Close()
+            conn.fecharConexao()
+        Else
+            '====================================================================
+            '=== AQUI É SOMENTE QDO O UTENTE AINDA NÃO RECEBEU NENHUMA VACINA ===
+            '====================================================================
+            '=== Pego a 1º Dose da Vacina ===
+            _vacDose = func.valorNumerico(funcSigis.retornaDadoSQL("TOP(1) [Id_DoseVacina]", "[vac_DoseVacina]", "Where [Visualizar] = 'S' And [Id_Vacina] = " & hf_vacina.Value & " Order By [NumOrdem]"))
+            '=== Verifico se Existe Dose Disponível ===
+            If _vacDose <> 0 Then
+                '=== Gravar Dados ===
+                idBd = funcSigis.insertDadosSQL("[dbo].[vac_regVacinacao]", "([Id_regInstituicao],[Id_regIndividual],[Id_Vacina],[Id_Dose],[Id_LoteVacina],[Id_userPostoVacinacao],[Id_postoVacinacao],[Id_Provincia]) Values (" & hf_regInstituicao.Value & ", " & hf_regIndividual.Value & ", " & ddl_Vacina.SelectedValue & ", " & vacDose & ", " & ddl_Lote.SelectedValue & ", " & hf_idUser.Value & ", " & hf_Posto.Value & ", " & hf_Prov.Value & ")", "SELECT Scope_Identity()")
+                '=== Log de Atividade ===
+                log.logVAC(func.valorNumerico(Session("idUser")), "pgWEB", "Cadastrar", "mainrecvacexpress.aspx", "[vac_regVacinacao]", _idBd, "Vacinar Express")
+                '=== Mensagem ===
+                ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "msg2", "msg2('<br /><strong>Registo gravado</strong>');", True)
+                txb_Codigo.Text = String.Empty
+                txb_Codigo.Focus()
+                '=== Atualizo ===
+                listFeature(hf_regPostoVac.Value)
+            Else
+                lt_Modal.Text = modal.modalAlerta("alerta", "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Alerta", "<strong>ERRO</strong>, informe ao Administrador do Sistema, que não esta configurada nenhuma Dose da Vacina")
+                ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "ma", "$('#alerta').modal('show');", True)
+            End If
+        End If
+    End Sub
