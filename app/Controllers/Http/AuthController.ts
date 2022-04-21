@@ -6,6 +6,7 @@ import User from 'App/Models/User'
 import AuthValidator from 'App/Validators/AuthValidator'
 
 import { base64, safeEqual, string } from '@ioc:Adonis/Core/Helpers'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
@@ -16,8 +17,8 @@ export default class AuthController {
 
       if (!user) {
         console.log('Login incorrecto')
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Login incorrecto',
           data: {},
         })
@@ -27,8 +28,8 @@ export default class AuthController {
 
       if (!safeEqual(b64, user.password)) {
         console.log('Login incorrecto')
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Login incorrecto',
           data: {},
         })
@@ -40,13 +41,15 @@ export default class AuthController {
       })
 
       await user?.load('vaccinationPost')
-      return response
-        .status(202)
-        .send({ code: 202, message: 'Login efectuado com sucesso!', data: { user, token } })
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        code: HttpStatusCode.ACCEPTED,
+        message: 'Login efectuado com sucesso!',
+        data: { user, token },
+      })
     } catch (error) {
       console.log(error)
-      return response.status(500).send({
-        code: 500,
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         message: 'Ocorreu um erro ao efectuar o login',
         data: [],
       })
@@ -58,21 +61,21 @@ export default class AuthController {
       await auth.use('api').revoke()
 
       if (auth.use('api').isLoggedOut) {
-        return response.status(202).send({
-          code: 202,
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          code: HttpStatusCode.ACCEPTED,
           message: 'Logout efectuado',
           data: [],
         })
       } else {
-        return response.status(406).send({
-          code: 406,
+        return response.status(HttpStatusCode.NOT_ACCEPTABLE).send({
+          code: HttpStatusCode.NOT_ACCEPTABLE,
           message: 'Não foi possível efectuar logout',
         })
       }
     } catch (error) {
       console.log(error)
-      return response.status(500).send({
-        code: error.code,
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
         message: 'Erro ao efectuar logout',
       })

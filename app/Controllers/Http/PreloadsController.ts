@@ -3,6 +3,7 @@ import DocType from 'App/Models/DocType'
 import Nationality from 'App/Models/Nationality'
 import Province from 'App/Models/Province'
 import Vaccine from 'App/Models/Vaccine'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 
 export default class PreloadsController {
   public async index({ response }: HttpContextContract) {
@@ -16,32 +17,32 @@ export default class PreloadsController {
       const vaccines = await Vaccine.query().preload('lots').preload('doses')
 
       if (!provinces) {
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Não foi possível obter os dados das províncias',
           data: [],
         })
       }
 
       if (!nationalities) {
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Não foi possível obter os dados das nacionalidades',
           data: [],
         })
       }
 
       if (!docTypes) {
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Não foi possível obter os tipos de documento',
           data: [],
         })
       }
 
       if (!vaccines) {
-        return response.status(200).send({
-          code: 200,
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
           message: 'Não foi possível obter os dados das vacinas',
           data: [],
         })
@@ -50,8 +51,8 @@ export default class PreloadsController {
       return response.send({ provinces, nationalities, docTypes, vaccines })
     } catch (error) {
       console.log(error)
-      return response.status(200).send({
-        code: 200,
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         message: 'Ocorreu um erro ao  obter os dados de pré-carregamento',
         data: [],
       })

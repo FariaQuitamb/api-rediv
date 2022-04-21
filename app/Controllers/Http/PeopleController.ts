@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Person from 'App/Models/Person'
 import PersonValidator from 'App/Validators/PersonValidator'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import generateCode from 'Contracts/functions/generate_code'
 
 export default class PeopleController {
@@ -19,17 +20,17 @@ export default class PeopleController {
 
         //Verifica se foi enviado o nome do pai
         if (personData.fatherName === undefined || personData.fatherName === '') {
-          return response.status(200).send({
+          return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite o nome do pai!',
-            code: '200',
+            code: HttpStatusCode.OK,
             data: [],
           })
         }
         //Verifica se foi enviado o nome da mãe
         if (personData.motherName === undefined || personData.motherName === '') {
-          return response.status(200).send({
+          return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite o nome da mãe!',
-            code: '200',
+            code: HttpStatusCode.OK,
             data: [],
           })
         }
@@ -43,9 +44,9 @@ export default class PeopleController {
         const exists = await Person.query().where('docNum', personData.docNumber).limit(1)
 
         if (exists.length > 0) {
-          return response.status(200).send({
+          return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse número de documento!',
-            code: '200',
+            code: HttpStatusCode.OK,
             data: [],
           })
         }
@@ -62,10 +63,10 @@ export default class PeopleController {
           .limit(1)
 
         if (exists.length > 0) {
-          return response.status(200).send({
+          return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
-            code: '200',
+            code: HttpStatusCode.OK,
             data: [],
           })
         }
@@ -75,9 +76,9 @@ export default class PeopleController {
 
       //Caso não tenha inserido o utente
       if (!person) {
-        return response.status(200).send({
+        return response.status(HttpStatusCode.OK).send({
           message: 'Não foi possível registrar o utente!',
-          code: 200,
+          code: HttpStatusCode.OK,
           data: [],
         })
       }
@@ -95,16 +96,16 @@ export default class PeopleController {
       }
 
       //Utente inserido com sucesso
-      return response.status(201).send({
+      return response.status(HttpStatusCode.CREATED).send({
         message: 'Utente registrado com sucesso!',
-        code: 201,
+        code: HttpStatusCode.CREATED,
         data: { utente: person },
       })
     } catch (error) {
       console.log(error)
-      return response.status(500).send({
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
-        code: '500',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
     }
