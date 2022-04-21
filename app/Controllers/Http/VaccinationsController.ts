@@ -1,8 +1,10 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
 import Person from 'App/Models/Person'
 import Vaccination from 'App/Models/Vaccination'
 import Vaccine from 'App/Models/Vaccine'
 import VaccinationValidator from 'App/Validators/VaccinationValidator'
+import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 
 export default class VaccinationsController {
@@ -10,241 +12,51 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
-      const person = await Person.find(vaccinationData.personId)
-
-      /*const v = await Vaccination.create(vaccinationData)
-      return v */
-
-      //RN [001]
-      if (!person) {
-        return response.status(HttpStatusCode.OK).send({
-          message: 'Registro individual não encontrado!',
-          code: HttpStatusCode.OK,
-          data: [],
-        })
-      }
-
-      //RN [001]
-      if (person.status !== 'C') {
-        console.log('O status do registro individual é diferente de C')
-        return response.status(HttpStatusCode.OK).send({
-          message: 'O registro individual não reune condições para vacinação!',
-          code: HttpStatusCode.OK,
-          data: [],
-        })
-      }
-
-      //
-      //
       //
       //Verifica se a vacina existe
       //E se a dose selecionada pertence a vacina pré-selecionada
       //
-      //
-      //
       const vaccineDose = await Vaccine.query()
         .preload('doses', (queryDose) => {
-          queryDose.where('Id_DoseVacina', vaccinationData.doseId)
+          queryDose.where('Id_DoseVacina', vaccinationData.doseId).where('Visualizar', 'S')
         })
         .where('Id_Vacina', vaccinationData.vaccineId)
+        .where('Visualizar', 'S')
         .first()
 
       //Verifica se a vacina selecionada existe
       if (vaccineDose) {
         //Verifica se a dose selecionada pertence a vacina pré-selecionada
         if (vaccineDose.doses.length === 0) {
-          console.log('A dose selecionada não pertence a essa vacina!')
+          console.log(
+            'A dose selecionada não pertence a essa vacina ou dose não habilitada - visualizar != S !'
+          )
           return response.status(HttpStatusCode.OK).send({
-            message: 'A dose selecionada não pertence a essa vacina!',
+            message: 'A dose selecionada não pertence a essa vacina ou dose fora de uso!',
             code: HttpStatusCode.OK,
             data: [],
           })
         }
       } else {
-        console.log('A vacina selecionada não existe!')
+        console.log('A vacina selecionada não existe ou não está habilitada! - visualizar != S')
         return response.status(HttpStatusCode.OK).send({
-          message: 'A vacina selecionada não existe!',
+          message: 'A vacina selecionada não existe ou  fora de uso!',
           code: HttpStatusCode.OK,
           data: [],
         })
       }
 
-      //
-      //
-      //
-      /* Dose existe e pertence a vacina selecionada */
-      //
-      //
-      //
+      //Busca a informação da vacina do utente e se tem segunda dose para tomar
+      const takenDoses = await Database.rawQuery(constants.sqlFirstSecondDose, [
+        vaccinationData.personId,
+      ])
 
-      const selectedDose = vaccineDose.doses[0]
-
-      //
-      //
-      //
-      //Caso não esteja realizando dose de reforço  - 1ª ou 2ª dose
-      //
-      //
-      //
-      if (vaccinationData.status !== 'R') {
-        //
-        //
-        //Verificação caso seja a primeira dose ou dose única
-        //
-        //Se for primeira dose ou dose única , não deve ter outra vacina feita
-        //
-        //
-        //
-        if (selectedDose.name === '1ª Dose' || selectedDose.name === 'Dose Única') {
-          const personVaccinations = await Vaccination.query()
-            .preload('person')
-            //.preload('vaccine')
-            .where('Id_regIndividual', person.id)
-            .limit(1)
-          //Verifica se já possuí vacina
-          if (personVaccinations.length > 0) {
-            console.log(`O utente já possuí vacina não pode adicionar a ${selectedDose.name}!`)
-            return response.status(HttpStatusCode.OK).send({
-              message: `O utente já possuí vacina não pode adicionar a ${selectedDose.name}!`,
-              code: HttpStatusCode.OK,
-              data: [],
-            })
-          }
-        }
-
-        //
-        //
-        //Verificação caso seja a segunda dose
-        //Caso esteja registrando a segunda dose
-        //
-        //
-        //
-        if (selectedDose.name === '2ª Dose') {
-          const PersonfirstDose = await Vaccination.query()
-            .preload('person')
-            //.preload('vaccine')
-            .preload('dose', (queryDose) => {
-              queryDose.where('Nome', '1ª Dose')
-            })
-            .where('Id_regIndividual', person.id)
-
-          //Não permite que se tenha outro registro além de apenas 1 que deve ser da 1ª dose
-
-          if (PersonfirstDose.length > 1) {
-            console.log(
-              'O utente possuí mais de 1 registro de vacina! - Se esperava apenas 1 registro de vacina'
-            )
-            return response.status(HttpStatusCode.OK).send({
-              message:
-                'O utente possuí mais de 1 registro de vacina, se esperava apenas 1 registro de vacina referente a 1ª dose !',
-              code: HttpStatusCode.OK,
-              data: [],
-            })
-          }
-
-          /*Verifica se existe alguma vacina do utente*/
-          if (PersonfirstDose.length > 0) {
-            //Verifica se a vacina do utente tem a primeira dose
-            if (!PersonfirstDose[0].dose) {
-              console.log(
-                'O utente ainda não fez a primeira dose! - O registro de vacina não possuí a 1ª Dose'
-              )
-              return response.status(HttpStatusCode.OK).send({
-                message: 'O utente ainda não fez a primeira dose!',
-                code: HttpStatusCode.OK,
-                data: [],
-              })
-            }
-          } else {
-            console.log('O utente ainda não fez a primeira dose! - Sem registro de vacina')
-            return response.status(HttpStatusCode.OK).send({
-              message: 'O utente ainda não fez a primeira dose!',
-              code: HttpStatusCode.OK,
-              data: [],
-            })
-          }
-        } else {
-          //Mensagem para verificar os dados enviados
-          //Caso não seja reforço e não seja vacinação pela primeira vez e nem pela segunda
-          console.log('Dose escolhida  está fora das doses usadas como padrão!')
-          return response.status(HttpStatusCode.OK).send({
-            message: 'Dose escolhida  está fora das doses usadas como padrão!',
-            code: HttpStatusCode.OK,
-            data: [],
-          })
-        }
+      //Caso não tenha feito nenhuma vacina até o momento
+      if (takenDoses.length === 0) {
+        //Buscar primeira dose da vacina selecionada
       }
-
-      //
-      //
-      //
-      //Verificação para o caso de dose de reforço
-      //
-      //
-      //
-
-      if (vaccinationData.status === 'R') {
-        //Verificar se tem o ciclo de vacinação completo segunda dose | dose única
-        const personVaccinations = await Vaccination.query()
-          .preload('person')
-          .preload('dose', (queryDose) => {
-            queryDose.where('Nome', '2ª Dose').orWhere('Nome', 'Dose Única')
-          })
-          .where('Id_regIndividual', person.id)
-          .limit(10)
-
-        var personDoses = personVaccinations.filter(function (vaccination) {
-          return vaccination.dose?.name === 'Dose Única' || vaccination.dose?.name === '2ª Dose'
-        })
-
-        if (personDoses.length === 0) {
-          console.log('O utente ainda não completou o ciclo de vacinação!')
-          return response.status(HttpStatusCode.OK).send({
-            message: 'O utente ainda não completou o ciclo de vacinação!',
-            code: HttpStatusCode.OK,
-            data: [],
-          })
-        }
-      }
-
-      //
-      //
-      //
-      //Passou as condições  e está apto para registrar
-      //
-      //
-      //
-
-      const vaccination = await Vaccination.create(vaccinationData)
-
-      await vaccination.load('person')
-      await vaccination.load('vaccine')
-      await vaccination.load('dose')
-
-      return response.status(HttpStatusCode.CREATED).send({
-        message: 'Utente vacinado com sucesso!',
-        code: HttpStatusCode.CREATED,
-        data: { vaccination: vaccination },
-      })
     } catch (error) {
       console.log(error)
-      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        data: [],
-      })
     }
-  }
-
-  public async booster({ response, request }: HttpContextContract) {}
-
-  public async getVaccinated({ response, request }: HttpContextContract) {
-    try {
-      return response.status(HttpStatusCode.OK).send({
-        message: 'Works!',
-        code: HttpStatusCode.OK,
-        data: {},
-      })
-    } catch (error) {}
   }
 }
