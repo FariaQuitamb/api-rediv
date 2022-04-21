@@ -41,7 +41,7 @@ Route.resource('people', 'PeopleController')
 
 //Vaccination
 Route.post('vaccination/first', 'VaccinationsController.store')
-Route.post('booster', 'VaccinationsController.booster')
+Route.post('vaccination/booster', 'VaccinationsController.booster')
 Route.post('getVaccinated', 'VaccinationsController.getVaccinated')
 
 Route.group(() => {
