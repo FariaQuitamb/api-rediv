@@ -26,7 +26,19 @@ sql += "Where rv.[Status] <> 'R' And rv.[Id_regIndividual] = ?"
 sql += ') As Tbl '
 sql += 'Order By [DataCad] Desc'
 
+const getFirstDose =
+  "SELECT TOP(1) [Nome] , [Id_DoseVacina] , [Id_Vacina] FROM [dbo].[vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] =  ?  Order By [NumOrdem] "
+
+const getVaccineSecondDose =
+  "SELECT TOP(1) [Nome] , [Id_DoseVacina] , [Id_Vacina] FROM [dbo].[vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] =  ?  Order By [NumOrdem] Desc "
+
+const getLoteVaccine =
+  "SELECT Top(1) [Id_LoteVacina],[Id_Vacina], [NumLote] FROM [SIGIS].[dbo].[vac_LoteVacina] Where [Visualizar] = 'S' And [Id_Vacina] = ? "
+
 const constants = {
   sqlFirstSecondDose: sql,
+  getFirstDose,
+  getVaccineSecondDose,
+  getLoteVaccine,
 }
 export default constants
