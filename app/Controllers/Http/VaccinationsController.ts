@@ -163,7 +163,6 @@ export default class VaccinationsController {
               //Recebendo vacina errada
               //
               //
-
               //Busca a segunda dose da vacina errada selecionada
               const wrongVaccineSecondDose = await Database.rawQuery(
                 constants.getVaccineSecondDose,
@@ -208,9 +207,92 @@ export default class VaccinationsController {
             }
           } else {
             //Vacinando no intervalo de vacinação incorrecto
-          }
 
-          return doseInfo
+            // === Até 15 dias se é Registado ===
+            // Reminder false for Day 7 to Day 22 When NumDays = 21
+            // Verifica se o número de dias passados é maior que 15 dias
+            if (Math.abs(doseInfo.NumDias - doseInfo.NumDias2) > 15) {
+              console.log('O intervalo entre as vacinas não permite adicionar uma nova!')
+              return response.status(HttpStatusCode.OK).send({
+                message: 'Já recebeu vacina!',
+                code: HttpStatusCode.OK,
+                data: {},
+              })
+            }
+
+            //Verifica se está recebendo a vacina correcta
+            if (vaccinationData.vaccineId === doseInfo.Id_Vacina) {
+              //
+              //
+              //Recebendo vacina correcta antes do tempo estipulado
+              //
+              //
+
+              vaccinationData.doseId = doseInfo.PrxDose
+              vaccinationData.status = 'D'
+
+              const vaccination = await Vaccination.create(vaccinationData)
+
+              await vaccination.load('person')
+              await vaccination.load('vaccine')
+              await vaccination.load('dose')
+
+              return response.status(HttpStatusCode.CREATED).send({
+                message: 'Utente vacinado com sucesso!',
+                code: HttpStatusCode.CREATED,
+                data: { vaccination: vaccination },
+              })
+            } else {
+              //Recebendo vacina errada antes do tempo previsto
+
+              //
+              //
+              //Recebendo vacina errada
+              //
+              //
+              //Busca a segunda dose da vacina errada selecionada
+              const wrongVaccineSecondDose = await Database.rawQuery(
+                constants.getVaccineSecondDose,
+                [vaccinationData.vaccineId]
+              )
+              // Buscar lote da vacina errada
+              const wrongVaccineLote = await Database.rawQuery(constants.getLoteVaccine, [
+                vaccinationData.vaccineId,
+              ])
+
+              //Verifica se está disponível uma segunda dose da vacina errada  e se possui lote disponível
+              if (wrongVaccineSecondDose.length === 0 || wrongVaccineLote.length === 0) {
+                return response.status(HttpStatusCode.OK).send({
+                  message:
+                    'Informe ao Administrador do Sistema, que não está configurada nenhuma Dose ou Lote da Vacina!',
+                  code: HttpStatusCode.OK,
+                  data: {},
+                })
+              }
+
+              //Mudar a dose e lote
+              vaccinationData.doseId = wrongVaccineSecondDose[0].Id_DoseVacina
+              vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
+              vaccinationData.numLot = wrongVaccineLote[0].NumLote
+
+              //Mudar status para V - vacina errada
+              vaccinationData.status = 'V'
+
+              const vaccination = await Vaccination.create(vaccinationData)
+
+              await vaccination.load('person')
+              await vaccination.load('vaccine')
+              await vaccination.load('dose')
+
+              console.log('Utente está recebendo vacina diferente  antes do tempo previsto')
+
+              return response.status(HttpStatusCode.CREATED).send({
+                message: 'Utente vacinado com sucesso!',
+                code: HttpStatusCode.CREATED,
+                data: { vaccination: vaccination },
+              })
+            }
+          }
         } else {
           return response.status(HttpStatusCode.OK).send({
             message: 'Já recebeu Vacina!',
