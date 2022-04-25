@@ -210,8 +210,8 @@ export default class VaccinationsController {
 
             // === Até 15 dias se é Registado ===
             // Reminder false for Day 7 to Day 22 When NumDays = 21
-            // Verifica se o número de dias passados é maior que 15 dias
-            if (Math.abs(doseInfo.NumDias - doseInfo.NumDias2) > 15) {
+            // Verifica se o número de dias passados é inferior a 15 dias
+            if (Math.abs(doseInfo.NumDias - doseInfo.NumDias2) < 15) {
               console.log('O intervalo entre as vacinas não permite adicionar uma nova!')
               return response.status(HttpStatusCode.OK).send({
                 message: 'Já recebeu vacina!',
@@ -304,6 +304,350 @@ export default class VaccinationsController {
         return response.status(HttpStatusCode.CREATED).send({
           message: 'O utente não tem próxima dose a tomar!',
           code: HttpStatusCode.CREATED,
+          data: {},
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor ao vacinar utente!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: {},
+      })
+    }
+  }
+
+  public async booster({ response, request }: HttpContextContract) {
+    const vaccinationData = await request.validate(VaccinationValidator)
+
+    try {
+      //Verificar o status enviado
+
+      if (vaccinationData.status !== 'R') {
+        console.log('O status deve ser R para vacina de reforço')
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Verifique o status da vacinação enviado, deve ser R para reforço!',
+          code: HttpStatusCode.OK,
+          data: {},
+        })
+      }
+
+      const person = await Person.find(vaccinationData.personId)
+      //
+      //Verificar se o registro individual está habilitado a receber a vacina
+      //
+      //RN [001]
+      if (!person) {
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Registro individual não encontrado!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      //RN [001]
+      if (person.status !== 'C') {
+        console.log('O status do registro individual é diferente de C')
+        return response.status(HttpStatusCode.OK).send({
+          message: 'O registro individual não reúne condições para vacinação!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      //
+      //Verificações da vacina e dose da vacina
+      //
+      const vaccineDose = await Vaccine.query()
+        .preload('doses', (queryDose) => {
+          queryDose.where('Id_DoseVacina', vaccinationData.doseId).where('Visualizar', 'S')
+        })
+        .where('Id_Vacina', vaccinationData.vaccineId)
+        .where('Visualizar', 'S')
+        .first()
+
+      //Verifica se a vacina selecionada existe
+      if (!vaccineDose) {
+        console.log('A vacina selecionada não existe ou não está habilitada! - visualizar != S')
+        return response.status(HttpStatusCode.OK).send({
+          message: 'A vacina selecionada não existe ou está fora de uso!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      //Inicio
+      //Verificação do ciclo de vacinação
+      //Busca quantas doses a vacina do utente requer para completar
+      //o ciclo de vacinação e busca quantas doses o utente já tomou .
+
+      //Na verificação do ciclo e vacinação , não são contabilizadas vacinas de reforço (Status R) e vacina diferente  (Status V)
+      const numDose = await Database.rawQuery(constants.getNumDoses, [vaccinationData.personId])
+
+      if (numDose.length === 0) {
+        console.log(
+          'Houve um erro no registro de vacinação , não foi possível retornar o número de doses da vacina e quantas o utente já tomou!'
+        )
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Não é possível adicionar dose de reforço neste utente !',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      const doses = numDose[0]
+
+      if (doses.NumDoseVac !== doses.NumVac) {
+        console.log('O utente ainda não tem o ciclo de vacinação completo!')
+        return response.status(HttpStatusCode.OK).send({
+          message: 'O utente ainda não tem o ciclo de vacinação completo!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      const getBoosterDoses = await Database.rawQuery(constants.sqlBooster, [
+        vaccinationData.personId,
+      ])
+
+      // Verifica se o utente já realizou alguma vacina de reforço
+
+      if (getBoosterDoses.length === 0) {
+        //Não possui vacina de reforço , nunca realizou reforço
+
+        const numDays = await Database.rawQuery(constants.getNumDiasBooster, [
+          vaccinationData.personId,
+        ])
+
+        //Verifica se foi retornada alguma informação
+        if (numDays.length === 0) {
+          console.log('Erro ao obter o número de dias entre as vacinações!')
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Ocorreu um erro inesperado!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
+
+        //Verifica se o número de dias entre as vacinas é superior a 15 dias
+        if (numDays[0].Dado > 15) {
+          //Retorna a primeira dose da vacina
+          const firstDose = await Database.rawQuery(constants.getFirstDose, [
+            vaccinationData.vaccineId,
+          ])
+
+          //Verifica se existe dose disponível
+          if (firstDose.length === 0) {
+            console.log('Erro não existe dose disponível da vacina!')
+            return response.status(HttpStatusCode.OK).send({
+              message:
+                'Informe ao Administrador do Sistema, que não esta configurada nenhuma Dose da Vacina!',
+              code: HttpStatusCode.OK,
+              data: [],
+            })
+          }
+
+          //Inserindo vacina de reforço
+          const vaccination = await Vaccination.create(vaccinationData)
+
+          await vaccination.load('person')
+          await vaccination.load('vaccine')
+          await vaccination.load('dose')
+
+          //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+
+          return response.status(HttpStatusCode.CREATED).send({
+            message: 'Utente vacinado com sucesso!',
+            code: HttpStatusCode.CREATED,
+            data: { vaccination: vaccination },
+          })
+        } else {
+          console.log(
+            'Tempo necessário para receber a Vacina de Reforço é de 15 dias depois do registo de vacinação'
+          )
+          return response.status(HttpStatusCode.OK).send({
+            message:
+              'Tempo necessário para receber a Vacina de Reforço é de 15 dias depois do registo de vacinação!',
+            code: HttpStatusCode.OK,
+            data: {},
+          })
+        }
+      }
+
+      //Já tem alguma vacina de reforço
+
+      const boosterInfo = getBoosterDoses[0] as DoseInfo
+
+      if (boosterInfo.PrxDose !== 0) {
+        //Verifica se o registro de reforço existente foi feito na data actual
+        if (boosterInfo.DataCad === boosterInfo.dtHoje) {
+          console.log('Já recebeu vacina , realizou vacina de reforço no corrente dia')
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Já recebeu vacina!',
+            code: HttpStatusCode.OK,
+            data: {},
+          })
+        }
+
+        //Verifica o número de dias restantes ...
+        if (boosterInfo.NumDiasRestante >= 0) {
+          //Verificar se é a vacina correcta
+
+          if (boosterInfo.Id_Vacina === vaccinationData.vaccineId) {
+            //Inserindo vacina de reforço correcta
+
+            //Modifica a dose a ser tomada
+            vaccinationData.doseId = boosterInfo.PrxDose
+            const vaccination = await Vaccination.create(vaccinationData)
+
+            await vaccination.load('person')
+            await vaccination.load('vaccine')
+            await vaccination.load('dose')
+
+            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+
+            return response.status(HttpStatusCode.CREATED).send({
+              message: 'Utente vacinado com sucesso!',
+              code: HttpStatusCode.CREATED,
+              data: { vaccination: vaccination },
+            })
+          } else {
+            //Inserindo vacina de reforço incorrecta
+
+            //1 - Pegar a segunda dose da vacina
+            //2 - Pegar um lote aleatório da vacina
+
+            //Busca a segunda dose da vacina errada selecionada
+            const wrongVaccineSecondDose = await Database.rawQuery(constants.getVaccineSecondDose, [
+              vaccinationData.vaccineId,
+            ])
+            // Buscar lote da vacina errada
+            const wrongVaccineLote = await Database.rawQuery(constants.getLoteVaccine, [
+              vaccinationData.vaccineId,
+            ])
+
+            //Verifica se está disponível uma segunda dose da vacina errada  e se possui lote disponível
+            if (wrongVaccineSecondDose.length === 0 || wrongVaccineLote.length === 0) {
+              return response.status(HttpStatusCode.OK).send({
+                message:
+                  'Informe ao Administrador do Sistema, que não está configurada nenhuma Dose ou Lote da Vacina!',
+                code: HttpStatusCode.OK,
+                data: {},
+              })
+            }
+            //Mudar a dose e lote
+            vaccinationData.doseId = wrongVaccineSecondDose[0].Id_DoseVacina
+            vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
+            vaccinationData.numLot = wrongVaccineLote[0].NumLote
+
+            console.log('Recebendo dose de reforço da vacina errada')
+
+            //Não se atribui um status especifico para vacina de reforço incorrecta
+
+            //Inserindo vacina de reforço
+            const vaccination = await Vaccination.create(vaccinationData)
+
+            await vaccination.load('person')
+            await vaccination.load('vaccine')
+            await vaccination.load('dose')
+
+            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+
+            return response.status(HttpStatusCode.CREATED).send({
+              message: 'Utente vacinado com sucesso!',
+              code: HttpStatusCode.CREATED,
+              data: { vaccination: vaccination },
+            })
+          }
+        } else {
+          // === Até 15 dias se é Registado ===
+          // Verifica se o número de dias passados é inferior a 15 dias
+
+          if (Math.abs(boosterInfo.NumDias - boosterInfo.NumDias2) < 15) {
+            console.log('O intervalo entre as vacinas não permite adicionar uma nova!')
+            return response.status(HttpStatusCode.OK).send({
+              message: 'Já recebeu vacina!',
+              code: HttpStatusCode.OK,
+              data: {},
+            })
+          }
+
+          //Verifica se é a vacina correcta
+          if (boosterInfo.Id_Vacina === vaccinationData.vaccineId) {
+            //Inserindo vacina de reforço correcta
+
+            //Modifica a dose a ser tomada
+            vaccinationData.doseId = boosterInfo.PrxDose
+            const vaccination = await Vaccination.create(vaccinationData)
+
+            await vaccination.load('person')
+            await vaccination.load('vaccine')
+            await vaccination.load('dose')
+
+            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+
+            console.log('Vacinando utente fora do tempo estimado com vacina correcta')
+            return response.status(HttpStatusCode.CREATED).send({
+              message: 'Utente vacinado com sucesso!',
+              code: HttpStatusCode.CREATED,
+              data: { vaccination: vaccination },
+            })
+          } else {
+            //Inserindo vacina de reforço incorrecta
+
+            //1 - Pegar a segunda dose da vacina
+            //2 - Pegar um lote aleatório da vacina
+
+            //Busca a segunda dose da vacina errada selecionada
+            const wrongVaccineSecondDose = await Database.rawQuery(constants.getVaccineSecondDose, [
+              vaccinationData.vaccineId,
+            ])
+            // Buscar lote da vacina errada
+            const wrongVaccineLote = await Database.rawQuery(constants.getLoteVaccine, [
+              vaccinationData.vaccineId,
+            ])
+
+            //Verifica se está disponível uma segunda dose da vacina errada  e se possui lote disponível
+            if (wrongVaccineSecondDose.length === 0 || wrongVaccineLote.length === 0) {
+              return response.status(HttpStatusCode.OK).send({
+                message:
+                  'Informe ao Administrador do Sistema, que não está configurada nenhuma Dose ou Lote da Vacina!',
+                code: HttpStatusCode.OK,
+                data: {},
+              })
+            }
+            //Mudar a dose e lote
+            vaccinationData.doseId = wrongVaccineSecondDose[0].Id_DoseVacina
+            vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
+            vaccinationData.numLot = wrongVaccineLote[0].NumLote
+
+            console.log('Recebendo dose de reforço da vacina errada')
+
+            //Não se atribui um status especifico para vacina de reforço incorrecta
+
+            //Inserindo vacina de reforço
+            const vaccination = await Vaccination.create(vaccinationData)
+
+            await vaccination.load('person')
+            await vaccination.load('vaccine')
+            await vaccination.load('dose')
+
+            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+            console.log('Vacinando utente fora do tempo estimado com vacina errada')
+            return response.status(HttpStatusCode.CREATED).send({
+              message: 'Utente vacinado com sucesso!',
+              code: HttpStatusCode.CREATED,
+              data: { vaccination: vaccination },
+            })
+          }
+        }
+
+        //unreached
+      } else {
+        console.log('Já recebeu vacina , não tem próxima dose')
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Já recebeu vacina!',
+          code: HttpStatusCode.OK,
           data: {},
         })
       }
