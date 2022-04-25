@@ -40,7 +40,7 @@ Route.get('preload', 'PreloadsController.index')
 Route.resource('people', 'PeopleController')
 
 //Vaccination
-Route.post('vaccination/first', 'VaccinationsController.store')
+Route.post('vaccination/', 'VaccinationsController.store')
 Route.post('vaccination/booster', 'VaccinationsController.booster')
 Route.post('getVaccinated', 'VaccinationsController.getVaccinated')
 
