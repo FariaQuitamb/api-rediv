@@ -71,6 +71,9 @@ sqlBooster += 'Order By [DataCad] Desc'
 const getNumDiasBooster =
   "Select Top(1) DATEDIFF(day, DATEADD(day, [NumDias], [DataCad]), getdate()) AS [Dado] From (SELECT CASE WHEN dv.[NumOrdem] = 2 THEN (Isnull((Select [NumDias] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (1)), 0)) ELSE (Isnull((Select [NumDias] From [vac_DoseVacina] Where [Visualizar] = 'S' And [Id_Vacina] = rv.[Id_Vacina] And [NumOrdem] = (dv.[NumOrdem] + 1)), 0)) END AS [NumDias],rv.[DataCad] FROM [dbo].[vac_regVacinacao] rv Inner Join [vac_DoseVacina] dv On dv.[Id_DoseVacina] = rv.[Id_Dose] Where rv.[Status] <> 'R' And rv.[Id_regIndividual] = ? ) As Tbl Order By [DataCad] Desc"
 
+const getPeopleQuery =
+  'SELECT TOP (1000) [Id_regIndividual] ,[Nome] ,[Codigo],[Documento],[Telefone],[docNum],[dtNascimento],[DataCad],[Id_Municipio],[recVac],[TotVac] FROM [SIGIS].[dbo].[vw_ListaVacinados_MB]'
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -79,5 +82,6 @@ const constants = {
   getNumDoses,
   sqlBooster,
   getNumDiasBooster,
+  getPeopleQuery,
 }
 export default constants
