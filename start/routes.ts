@@ -25,26 +25,21 @@ Route.get('/', async () => {
   return { hello: 'world', title: 'It Works!' }
 })
 
-Route.get('health', async ({ response }) => {
-  const report = await HealthCheck.getReport()
-  return report.healthy ? response.ok(report) : response.badRequest(report)
-})
-
 //Auth Login
 Route.post('auth/login', 'AuthController.login')
 
-//Preload Route
-Route.get('preload', 'PreloadsController.index')
-
-//Person
-Route.post('people', 'PeopleController.store')
-Route.post('people/search', 'PeopleController.list')
-
-//Vaccination
-Route.post('vaccination/', 'VaccinationsController.store')
-Route.post('vaccination/booster', 'VaccinationsController.booster')
-Route.post('getVaccinated', 'VaccinationsController.getVaccinated')
-
 Route.group(() => {
+  Route.get('health', async ({ response }) => {
+    const report = await HealthCheck.getReport()
+    return report.healthy ? response.ok(report) : response.badRequest(report)
+  })
   Route.get('auth/logout', 'AuthController.logout')
+  //Preload Route
+  Route.get('preload', 'PreloadsController.index')
+  //Person
+  Route.post('people', 'PeopleController.store')
+  Route.post('people/search', 'PeopleController.list')
+  //Vaccination
+  Route.post('vaccination/', 'VaccinationsController.store')
+  Route.post('vaccination/booster', 'VaccinationsController.booster')
 }).middleware('auth:api')
