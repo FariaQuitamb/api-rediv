@@ -1,6 +1,8 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database'
 import Person from 'App/Models/Person'
 import PersonValidator from 'App/Validators/PersonValidator'
+import SearchValidator from 'App/Validators/SearchValidator'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import generateCode from 'Contracts/functions/generate_code'
 
@@ -100,6 +102,89 @@ export default class PeopleController {
         message: 'Utente registrado com sucesso!',
         code: HttpStatusCode.CREATED,
         data: { utente: person },
+      })
+    } catch (error) {
+      console.log(error)
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async list({ response, request }: HttpContextContract) {
+    const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
+    const searchData = await request.validate(SearchValidator)
+
+    //Expressões regulares
+    const regexLetterAccent = /^[a-záàâãéèêíïóôõöúçñ ]+$/i
+    const regexNumberOnly = /^\d+$/
+
+    const regexAlphaNumeric = /^[a-zA-Z0-9\.]*$/
+
+    const hasLetter = /[a-zA-Z]/
+    const hasNumber = /[0-9]/
+
+    try {
+      const search = searchData.search
+
+      //Pesquisa pelo - Nome
+      if (search.match(regexLetterAccent)) {
+        //Wildcard para pesquisa
+        const wildCard = `%${search}%`
+        const data = await Database.from(searchView)
+          .where('Nome', 'LIKE', wildCard)
+          .paginate(searchData.page, searchData.limit)
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por nome!',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo número de telefone
+      if (search.match(regexNumberOnly) && search.length === 9) {
+        const data = await Database.from(searchView)
+          .where('Telefone', search)
+          .paginate(searchData.page, searchData.limit)
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por número de telefone!',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo número de telefone - Mudar para 13
+      if (search.match(regexNumberOnly) && search.length === 10) {
+        const data = await Database.from(searchView)
+          .where('CodigoNum', search)
+          .paginate(searchData.page, searchData.limit)
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por codigoNum!',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
+      if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
+        const data = await Database.from(searchView)
+          .where('docNum', search)
+          .paginate(searchData.page, searchData.limit)
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por docNum!',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Nenhum resultado encontrado!',
+        code: HttpStatusCode.OK,
+        data: {},
       })
     } catch (error) {
       console.log(error)
