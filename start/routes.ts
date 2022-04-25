@@ -37,7 +37,8 @@ Route.post('auth/login', 'AuthController.login')
 Route.get('preload', 'PreloadsController.index')
 
 //Person
-Route.resource('people', 'PeopleController')
+Route.post('people', 'PeopleController.store')
+Route.post('people/search', 'PeopleController.list')
 
 //Vaccination
 Route.post('vaccination/', 'VaccinationsController.store')
