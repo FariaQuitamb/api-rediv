@@ -4,9 +4,10 @@ import Nationality from 'App/Models/Nationality'
 import Province from 'App/Models/Province'
 import Vaccine from 'App/Models/Vaccine'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import logRegister from 'Contracts/functions/log_register'
 
 export default class PreloadsController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ auth, response }: HttpContextContract) {
     try {
       const provinces = await Province.query().preload('municipalities')
 
@@ -48,7 +49,24 @@ export default class PreloadsController {
         })
       }
 
-      return response.send({ provinces, nationalities, docTypes, vaccines })
+      //Log de actividade
+
+      await logRegister({
+        id: auth.user?.id ?? 0,
+        system: 'API_MB',
+        screen: 'PreloadController/index',
+        table: 'Provincia/Municipio/Tipo documentos/Vacinas',
+        job: 'Consulta',
+        tableId: 0,
+        action: 'Pré-carregamento',
+        actionId: '',
+      })
+
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: 'Dados de pré-carregamento!',
+        code: HttpStatusCode.ACCEPTED,
+        data: { provinces, nationalities, docTypes, vaccines },
+      })
     } catch (error) {
       console.log(error)
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({

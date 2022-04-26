@@ -20,25 +20,24 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import logRegister from 'Contracts/functions/log_register'
+import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 Route.get('/', async () => {
-  //const log = await LogVaccine.query().limit(10)
-
-  const log = await logRegister({
-    id: 1,
+  /*
+  const log = await vaccinationLog({
+    userId: 1,
+    vaccinationId: 23,
     system: 'API_MB',
-    screen: 'regIndividual',
-    table: 'regIndividual',
     job: 'Cadastrar',
-    tableId: 23,
-    action: 'Registro Simplificado',
-    actionId: '23',
+    screen: 'VaccinationController/store',
+    action: 'Cadastrar Vacina',
+    observation: '',
+    userPostoVaccination: 1,
   })
 
   return log
-
-  //return { hello: 'world', title: 'It Works!' }
+*/
+  return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('health', async ({ response }) => {

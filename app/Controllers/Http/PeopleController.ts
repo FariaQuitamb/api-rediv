@@ -109,7 +109,7 @@ export default class PeopleController {
         table: 'regIndividual',
         job: 'Cadastrar',
         tableId: person.id,
-        action: 'Registro Simplificado',
+        action: 'Registro de Utente',
         actionId: person.id.toString(),
       })
 

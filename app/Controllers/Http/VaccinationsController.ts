@@ -130,10 +130,8 @@ export default class VaccinationsController {
 
       if (doseInfo.PrxDose !== 0) {
         //
-        //
-        //
-
         //Verifica se já realizou uma vacina no corrente dia
+        //
         if (doseInfo.DataCad !== doseInfo.dtHoje) {
           //Verifica se está inserindo a vacina no intervalo de vacinação correcto
 
