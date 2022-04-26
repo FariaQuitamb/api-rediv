@@ -1,5 +1,4 @@
-import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import VaccinationPost from './VaccinationPost'
 
 export default class User extends BaseModel {
@@ -60,11 +59,4 @@ export default class User extends BaseModel {
 
   @column()
   public rememberMeToken?: string
-
-  @beforeSave()
-  public static async hashPassword(user: User) {
-    if (user.$dirty.password) {
-      user.password = await Hash.make(user.password)
-    }
-  }
 }

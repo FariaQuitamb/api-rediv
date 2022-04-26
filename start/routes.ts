@@ -20,9 +20,25 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import logRegister from 'Contracts/functions/log_register'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  //const log = await LogVaccine.query().limit(10)
+
+  const log = await logRegister({
+    id: 1,
+    system: 'API_MB',
+    screen: 'regIndividual',
+    table: 'regIndividual',
+    job: 'Cadastrar',
+    tableId: 23,
+    action: 'Registro Simplificado',
+    actionId: '23',
+  })
+
+  return log
+
+  //return { hello: 'world', title: 'It Works!' }
 })
 
 //Auth Login

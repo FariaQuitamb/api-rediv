@@ -5,6 +5,7 @@ import PersonValidator from 'App/Validators/PersonValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import generateCode from 'Contracts/functions/generate_code'
+import logRegister from 'Contracts/functions/log_register'
 
 export default class PeopleController {
   public async index({ response }: HttpContextContract) {
@@ -12,7 +13,7 @@ export default class PeopleController {
     return response.send(data)
   }
 
-  public async store({ response, request }: HttpContextContract) {
+  public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
     try {
       let hasDocNumber = true
@@ -98,6 +99,19 @@ export default class PeopleController {
         //Caso não tenha documento de identificação
         person.merge({ code: code, docNumber: 'PM' + code }).save()
       }
+
+      //Log de actividade
+
+      await logRegister({
+        id: auth.user?.id ?? 0,
+        system: 'API_MB',
+        screen: 'PeopleController/store',
+        table: 'regIndividual',
+        job: 'Cadastrar',
+        tableId: person.id,
+        action: 'Registro Simplificado',
+        actionId: person.id.toString(),
+      })
 
       //Utente inserido com sucesso
       return response.status(HttpStatusCode.CREATED).send({
