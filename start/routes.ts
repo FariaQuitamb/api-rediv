@@ -41,14 +41,15 @@ Route.get('/', async () => {
   //return { hello: 'world', title: 'It Works!' }
 })
 
+Route.get('health', async ({ response }) => {
+  const report = await HealthCheck.getReport()
+  return report.healthy ? response.ok(report) : response.badRequest(report)
+})
+
 //Auth Login
 Route.post('auth/login', 'AuthController.login')
 
 Route.group(() => {
-  Route.get('health', async ({ response }) => {
-    const report = await HealthCheck.getReport()
-    return report.healthy ? response.ok(report) : response.badRequest(report)
-  })
   Route.get('auth/logout', 'AuthController.logout')
   //Preload Route
   Route.get('preload', 'PreloadsController.index')
