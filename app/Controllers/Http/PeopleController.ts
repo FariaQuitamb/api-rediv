@@ -17,6 +17,7 @@ export default class PeopleController {
     try {
       let hasDocNumber = true
 
+      //Verifica se o utente tem número de documento
       if (personData.docNumber === undefined || personData.docNumber === '') {
         hasDocNumber = false
 
@@ -54,7 +55,7 @@ export default class PeopleController {
         }
       } else {
         //  Caso não tenha documento
-        //Verifica se existe um utente com o nome ,
+        //Verifica se existe um utente com esse nome ,
         //nome do pai , mãe e data de nascimento enviada
 
         const exists = await Person.query()
@@ -69,7 +70,7 @@ export default class PeopleController {
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
             code: HttpStatusCode.OK,
-            data: [],
+            data: exists,
           })
         }
       }
@@ -94,6 +95,7 @@ export default class PeopleController {
       if (hasDocNumber) {
         person.merge({ code: code }).save()
       } else {
+        //Caso não tenha documento de identificação
         person.merge({ code: code, docNumber: 'PM' + code }).save()
       }
 
@@ -120,8 +122,6 @@ export default class PeopleController {
     //Expressões regulares
     const regexLetterAccent = /^[a-záàâãéèêíïóôõöúçñ ]+$/i
     const regexNumberOnly = /^\d+$/
-
-    const regexAlphaNumeric = /^[a-zA-Z0-9\.]*$/
 
     const hasLetter = /[a-zA-Z]/
     const hasNumber = /[0-9]/

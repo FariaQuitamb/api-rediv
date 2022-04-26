@@ -81,10 +81,10 @@ export default class VaccinationsController {
       if (takenDoses.length === 0) {
         //Verificar o status enviado
 
-        if (vaccinationData.status !== 'N') {
-          console.log('O status da primeira vacina não pode ser diferente de N')
+        if (vaccinationData.status === 'R') {
+          console.log('O status da primeira vacina não pode ser R - reforço')
           return response.status(HttpStatusCode.OK).send({
-            message: 'Verifique o status da vacinação enviado!',
+            message: 'Verifique o status enviado, não pode ser R-reforço!',
             code: HttpStatusCode.OK,
             data: {},
           })

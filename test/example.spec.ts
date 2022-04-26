@@ -14,36 +14,11 @@ test.group('Welcome', (group) => {
     await Database.rollbackGlobalTransaction()
   })
 
-  test.group('Example', () => {
-    test('assert sum', (assert) => {
-      assert.equal(2 + 2, 4)
-    })
-  })
-  test('ensure home page works', async (assert) => {
+  test('ensure  returned', async (assert) => {
     const { text } = await supertest(BASE_URL).get('/').expect(200)
 
     const { title } = JSON.parse(text)
     assert.exists(title)
     assert.equal(title, 'It Works!')
   })
-
-  test('ensure user password gets hashed during save', async (assert) => {
-    const user = new User()
-    user.email = 'virk@adonisjs.com'
-    user.password = 'secret'
-    await user.save()
-
-    assert.notEqual(user.password, 'secret')
-  })
-
-  //Single test execution
-  /*
-  test.only('ensure user password gets hashed during save', async (assert) => {
-    const user = new User()
-    user.email = 'virk@adonisjs.com'
-    user.password = 'secret'
-    await user.save()
-
-    assert.notEqual(user.password, 'secret')
-  })*/
 })
