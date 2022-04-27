@@ -1,5 +1,6 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+import Env from '@ioc:Adonis/Core/Env'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 
@@ -36,7 +37,7 @@ export default class AuthController {
       }
 
       const token = await auth.use('api').generate(user, {
-        expiresIn: '10days',
+        expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
       })
 

@@ -104,7 +104,7 @@ export default class PeopleController {
 
       await logRegister({
         id: auth.user?.id ?? 0,
-        system: 'API_MB',
+        system: 'MB',
         screen: 'PeopleController/store',
         table: 'regIndividual',
         job: 'Cadastrar',

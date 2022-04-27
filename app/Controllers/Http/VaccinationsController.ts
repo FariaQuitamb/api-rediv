@@ -6,6 +6,7 @@ import Vaccine from 'App/Models/Vaccine'
 import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -20,7 +21,7 @@ interface DoseInfo {
   dtHoje: string
 }
 export default class VaccinationsController {
-  public async store({ response, request }: HttpContextContract) {
+  public async store({ auth, response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
@@ -114,6 +115,18 @@ export default class VaccinationsController {
         await vaccination.load('vaccine')
         await vaccination.load('dose')
 
+        //Log de actividade - vacina primeira dose
+        await vaccinationLog({
+          userId: auth.user?.id as number,
+          vaccinationId: vaccination.id,
+          system: 'MB',
+          job: 'Cadastrar',
+          screen: 'VaccinationController/store',
+          action: 'Cadastrar Vacina',
+          observation: '1ª Dose',
+          userPostoVaccination: vaccinationData.vaccinationPostId,
+        })
+
         return response.status(HttpStatusCode.CREATED).send({
           message: 'Utente vacinado com sucesso!',
           code: HttpStatusCode.CREATED,
@@ -149,6 +162,18 @@ export default class VaccinationsController {
               await vaccination.load('person')
               await vaccination.load('vaccine')
               await vaccination.load('dose')
+
+              //Log de actividade - vacina segunda dose
+              await vaccinationLog({
+                userId: auth.user?.id as number,
+                vaccinationId: vaccination.id,
+                system: 'MB',
+                job: 'Cadastrar',
+                screen: 'VaccinationController/store',
+                action: 'Cadastrar Vacina',
+                observation: '2ª Dose',
+                userPostoVaccination: vaccinationData.vaccinationPostId,
+              })
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -195,7 +220,18 @@ export default class VaccinationsController {
               await vaccination.load('vaccine')
               await vaccination.load('dose')
 
-              console.log('Utente está recebendo vacina errada')
+              // console.log('Utente está recebendo vacina errada')
+              //Log de actividade - vacina segunda dose errada
+              await vaccinationLog({
+                userId: auth.user?.id as number,
+                vaccinationId: vaccination.id,
+                system: 'MB',
+                job: 'Cadastrar',
+                screen: 'VaccinationController/store',
+                action: 'Cadastrar Vacina',
+                observation: '2ª Dose Vacina Errada',
+                userPostoVaccination: vaccinationData.vaccinationPostId,
+              })
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -234,6 +270,17 @@ export default class VaccinationsController {
               await vaccination.load('person')
               await vaccination.load('vaccine')
               await vaccination.load('dose')
+              //Log de actividade - vacina segunda dose antecipada
+              await vaccinationLog({
+                userId: auth.user?.id as number,
+                vaccinationId: vaccination.id,
+                system: 'MB',
+                job: 'Cadastrar',
+                screen: 'VaccinationController/store',
+                action: 'Cadastrar Vacina',
+                observation: '2ª Dose Antecipada',
+                userPostoVaccination: vaccinationData.vaccinationPostId,
+              })
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -282,8 +329,19 @@ export default class VaccinationsController {
               await vaccination.load('vaccine')
               await vaccination.load('dose')
 
-              console.log('Utente está recebendo vacina diferente  antes do tempo previsto')
+              //console.log('Utente está recebendo vacina diferente  antes do tempo previsto')
 
+              //Log de actividade - vacina segunda dose errada e antecipada
+              await vaccinationLog({
+                userId: auth.user?.id as number,
+                vaccinationId: vaccination.id,
+                system: 'MB',
+                job: 'Cadastrar',
+                screen: 'VaccinationController/store',
+                action: 'Cadastrar Vacina',
+                observation: '2ª Dose Vacina Errada-Antecipada',
+                userPostoVaccination: vaccinationData.vaccinationPostId,
+              })
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
                 code: HttpStatusCode.CREATED,
@@ -315,7 +373,7 @@ export default class VaccinationsController {
     }
   }
 
-  public async booster({ response, request }: HttpContextContract) {
+  public async booster({ auth, response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
@@ -452,7 +510,17 @@ export default class VaccinationsController {
           await vaccination.load('vaccine')
           await vaccination.load('dose')
 
-          //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+          //Log de actividade - vacina de reforço
+          await vaccinationLog({
+            userId: auth.user?.id as number,
+            vaccinationId: vaccination.id,
+            system: 'MB',
+            job: 'Cadastrar',
+            screen: 'VaccinationController/booster',
+            action: 'Cadastrar Vacina',
+            observation: 'Vacina de reforço',
+            userPostoVaccination: vaccinationData.vaccinationPostId,
+          })
 
           return response.status(HttpStatusCode.CREATED).send({
             message: 'Utente vacinado com sucesso!',
@@ -502,7 +570,17 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
-            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+            //Log de actividade - vacina de reforço
+            await vaccinationLog({
+              userId: auth.user?.id as number,
+              vaccinationId: vaccination.id,
+              system: 'MB',
+              job: 'Cadastrar',
+              screen: 'VaccinationController/booster',
+              action: 'Cadastrar Vacina',
+              observation: 'Adição de mais uma vacina de reforço do utente',
+              userPostoVaccination: vaccinationData.vaccinationPostId,
+            })
 
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
@@ -549,7 +627,17 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
-            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+            //Log de actividade - vacina de reforço errada
+            await vaccinationLog({
+              userId: auth.user?.id as number,
+              vaccinationId: vaccination.id,
+              system: 'MB',
+              job: 'Cadastrar',
+              screen: 'VaccinationController/booster',
+              action: 'Cadastrar Vacina',
+              observation: 'Recebeu vacina de reforço errada',
+              userPostoVaccination: vaccinationData.vaccinationPostId,
+            })
 
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
@@ -582,7 +670,17 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
-            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+            //Log de actividade - vacina de reforço antes do tempo , mas dentro de 15 dias
+            await vaccinationLog({
+              userId: auth.user?.id as number,
+              vaccinationId: vaccination.id,
+              system: 'MB',
+              job: 'Cadastrar',
+              screen: 'VaccinationController/booster',
+              action: 'Cadastrar Vacina',
+              observation: 'Vacina de reforço antes do tempo mas,  dentro de 15 dias',
+              userPostoVaccination: vaccinationData.vaccinationPostId,
+            })
 
             console.log('Vacinando utente fora do tempo estimado com vacina correcta')
             return response.status(HttpStatusCode.CREATED).send({
@@ -619,7 +717,7 @@ export default class VaccinationsController {
             vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
             vaccinationData.numLot = wrongVaccineLote[0].NumLote
 
-            console.log('Recebendo dose de reforço da vacina errada')
+            console.log('Recebendo dose de reforço da vacina errada antes do tempo estipulado')
 
             //Não se atribui um status especifico para vacina de reforço incorrecta
 
@@ -630,7 +728,18 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
-            //Actualizar status para F em vac_listRegVacPVRef onde tem o Id_Individual, ask ...
+            //Log de actividade - Vacina de reforço errada antes do tempo mas,  dentro de 15 dias
+            await vaccinationLog({
+              userId: auth.user?.id as number,
+              vaccinationId: vaccination.id,
+              system: 'MB',
+              job: 'Cadastrar',
+              screen: 'VaccinationController/booster',
+              action: 'Cadastrar Vacina',
+              observation: 'Vacina de reforço errada antes do tempo mas,  dentro de 15 dias',
+              userPostoVaccination: vaccinationData.vaccinationPostId,
+            })
+
             console.log('Vacinando utente fora do tempo estimado com vacina errada')
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
