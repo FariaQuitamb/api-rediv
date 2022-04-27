@@ -148,6 +148,26 @@ export default class PeopleController {
 
     try {
       const search = searchData.search
+      const municipalityId = searchData.municipalityId
+
+      //Pesquisa pelo número de telefone
+      if (search === '' || search === undefined) {
+        if (municipalityId === undefined) {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Pesquisa geral requer envio do id do município!',
+            code: HttpStatusCode.ACCEPTED,
+            data: {},
+          })
+        }
+        const data = await Database.from(searchView)
+          .where('Id_Municipio', searchData.municipalityId as number)
+          .limit(searchData.limit)
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta geral',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
 
       //Pesquisa pelo - Nome
       if (search.match(regexLetterAccent)) {

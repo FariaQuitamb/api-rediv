@@ -27,6 +27,7 @@ export default class SearchValidator {
     page: schema.number(),
     limit: schema.number(),
     search: schema.string({ escape: true, trim: true }),
+    municipalityId: schema.number.optional(),
   })
 
   /**
