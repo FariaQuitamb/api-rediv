@@ -44,6 +44,10 @@ export default class AuthController {
       })
 
       await user?.load('vaccinationPost')
+      await user?.load('postWorkerType')
+      //await user.load('province')
+      //await user.load('municipality')
+
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,
         message: 'Login efectuado com sucesso!',
