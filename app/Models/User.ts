@@ -1,4 +1,7 @@
 import { column, BaseModel, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import Municipality from './Municipality'
+import PostWorkerType from './PostWorkerType'
+import Province from './Province'
 import VaccinationPost from './VaccinationPost'
 
 export default class User extends BaseModel {
@@ -56,6 +59,15 @@ export default class User extends BaseModel {
 
   @belongsTo(() => VaccinationPost)
   public vaccinationPost: BelongsTo<typeof VaccinationPost>
+
+  @belongsTo(() => Province)
+  public province: BelongsTo<typeof Province>
+
+  @belongsTo(() => Municipality)
+  public municipality: BelongsTo<typeof Municipality>
+
+  @belongsTo(() => PostWorkerType)
+  public postWorkerType: BelongsTo<typeof PostWorkerType>
 
   @column()
   public rememberMeToken?: string
