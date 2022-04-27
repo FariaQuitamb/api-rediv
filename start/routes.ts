@@ -20,23 +20,8 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 Route.get('/', async () => {
-  /*
-  const log = await vaccinationLog({
-    userId: 1,
-    vaccinationId: 23,
-    system: 'API_MB',
-    job: 'Cadastrar',
-    screen: 'VaccinationController/store',
-    action: 'Cadastrar Vacina',
-    observation: '',
-    userPostoVaccination: 1,
-  })
-
-  return log
-*/
   return { hello: 'world', title: 'It Works!' }
 })
 
