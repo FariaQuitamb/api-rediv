@@ -217,4 +217,79 @@ export default class PeopleController {
       })
     }
   }
+
+  public async checkPerson({ auth, response, request }: HttpContextContract) {
+    const personData = await request.validate(PersonValidator)
+    try {
+      let hasDocNumber = true
+
+      //Verifica se o utente tem número de documento
+      if (personData.docNumber === undefined || personData.docNumber === '') {
+        hasDocNumber = false
+
+        //Verifica se foi enviado o nome do pai
+        if (personData.fatherName === undefined || personData.fatherName === '') {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Utente sem documento , digite o nome do pai!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
+        //Verifica se foi enviado o nome da mãe
+        if (personData.motherName === undefined || personData.motherName === '') {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Utente sem documento , digite o nome da mãe!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
+      }
+
+      //Verifica se possui documento
+
+      if (hasDocNumber) {
+        //Caso tenha documento
+        //Verifica se existe um utente com o número de documento enviado
+        const exists = await Person.query().where('docNum', personData.docNumber).limit(1)
+
+        if (exists.length > 0) {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Já existe um utente registrado com esse número de documento!',
+            code: HttpStatusCode.OK,
+            data: exists,
+          })
+        }
+      } else {
+        //  Caso não tenha documento
+        //Verifica se existe um utente com esse nome ,
+        //nome do pai , mãe e data de nascimento enviada
+
+        const exists = await Person.query()
+          .where('nome', personData.name)
+          .where('NomePai', personData.fatherName as string)
+          .where('NomeMae', personData.motherName as string)
+          .where('dtNascimento', personData.birthday)
+          .limit(1)
+
+        if (exists.length > 0) {
+          return response.status(HttpStatusCode.OK).send({
+            message:
+              'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
+            code: HttpStatusCode.OK,
+            data: exists,
+          })
+        }
+      }
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({ type: 'MB', page: 'PeopleController/checkPerson', error: errorInfo })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
 }
