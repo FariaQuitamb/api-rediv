@@ -6,6 +6,8 @@ import Vaccine from 'App/Models/Vaccine'
 import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatError from 'Contracts/functions/format_error'
+import logError from 'Contracts/functions/log_error'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 interface DoseInfo {
@@ -365,6 +367,9 @@ export default class VaccinationsController {
       }
     } catch (error) {
       console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({ type: 'MB', page: 'VaccinationController/store', error: errorInfo })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -760,6 +765,9 @@ export default class VaccinationsController {
       }
     } catch (error) {
       console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({ type: 'MB', page: 'VaccinationController/booster', error: errorInfo })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

@@ -4,7 +4,9 @@ import Person from 'App/Models/Person'
 import PersonValidator from 'App/Validators/PersonValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatError from 'Contracts/functions/format_error'
 import generateCode from 'Contracts/functions/generate_code'
+import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 
 export default class PeopleController {
@@ -121,6 +123,9 @@ export default class PeopleController {
       })
     } catch (error) {
       console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({ type: 'MB', page: 'PeopleController/store', error: errorInfo })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -202,6 +207,9 @@ export default class PeopleController {
       })
     } catch (error) {
       console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({ type: 'MB', page: 'PeopleController/list', error: errorInfo })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
