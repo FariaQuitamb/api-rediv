@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Person from 'App/Models/Person'
+import CheckPersonValidator from 'App/Validators/CheckPersonValidator'
 import PersonValidator from 'App/Validators/PersonValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
@@ -218,8 +219,8 @@ export default class PeopleController {
     }
   }
 
-  public async checkPerson({ auth, response, request }: HttpContextContract) {
-    const personData = await request.validate(PersonValidator)
+  public async checkPerson({ response, request }: HttpContextContract) {
+    const personData = await request.validate(CheckPersonValidator)
     try {
       let hasDocNumber = true
 
@@ -280,6 +281,12 @@ export default class PeopleController {
           })
         }
       }
+
+      return response.status(HttpStatusCode.NOT_FOUND).send({
+        message: 'Registro de utente não encontrado!',
+        code: HttpStatusCode.NOT_FOUND,
+        data: {},
+      })
     } catch (error) {
       console.log(error)
       //Log de erro
