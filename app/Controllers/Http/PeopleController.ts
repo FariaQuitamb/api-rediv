@@ -163,7 +163,7 @@ export default class PeopleController {
           .where('Id_Municipio', searchData.municipalityId as number)
           .limit(searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta geral FILL_OFFLINE_DB',
+          message: 'Resultados da consulta geral',
           code: HttpStatusCode.ACCEPTED,
           data,
         })
@@ -171,10 +171,33 @@ export default class PeopleController {
 
       //Pesquisa pelo - Nome
       if (search.match(regexLetterAccent)) {
+        if (searchData.limit > 100) {
+          return response.status(HttpStatusCode.ACCEPTED).send({
+            message: 'A consulta por nome aceita retornar apenas 100 registros no máximo!',
+            code: HttpStatusCode.ACCEPTED,
+            data: {},
+          })
+        }
+
         //Wildcard para pesquisa
-        const wildCard = `%${search}%`
+        const wildCard = `'%${search}%'`
         const data = await Database.from(searchView)
-          .where('Nome', 'LIKE', wildCard)
+          .select(
+            'Id_regIndividual',
+            'Nome',
+            'Codigo',
+            'Documento',
+            'Telefone',
+            'docNum',
+            'dtNascimento',
+            'DataCad',
+            'Id_Municipio',
+            'recVac',
+            'TotVac',
+            'CodigoNum'
+          )
+          .whereRaw(`Nome COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ${wildCard}`)
+
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por nome!',
@@ -186,6 +209,20 @@ export default class PeopleController {
       //Pesquisa pelo número de telefone
       if (search.match(regexNumberOnly) && search.length === 9) {
         const data = await Database.from(searchView)
+          .select(
+            'Id_regIndividual',
+            'Nome',
+            'Codigo',
+            'Documento',
+            'Telefone',
+            'docNum',
+            'dtNascimento',
+            'DataCad',
+            'Id_Municipio',
+            'recVac',
+            'TotVac',
+            'CodigoNum'
+          )
           .where('Telefone', search)
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
@@ -198,6 +235,20 @@ export default class PeopleController {
       //Pesquisa pelo número de telefone - Mudar para 13
       if (search.match(regexNumberOnly) && search.length === 10) {
         const data = await Database.from(searchView)
+          .select(
+            'Id_regIndividual',
+            'Nome',
+            'Codigo',
+            'Documento',
+            'Telefone',
+            'docNum',
+            'dtNascimento',
+            'DataCad',
+            'Id_Municipio',
+            'recVac',
+            'TotVac',
+            'CodigoNum'
+          )
           .where('CodigoNum', search)
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
@@ -210,6 +261,20 @@ export default class PeopleController {
       //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
       if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
         const data = await Database.from(searchView)
+          .select(
+            'Id_regIndividual',
+            'Nome',
+            'Codigo',
+            'Documento',
+            'Telefone',
+            'docNum',
+            'dtNascimento',
+            'DataCad',
+            'Id_Municipio',
+            'recVac',
+            'TotVac',
+            'CodigoNum'
+          )
           .where('docNum', search)
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
