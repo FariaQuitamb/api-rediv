@@ -11,13 +11,19 @@ import logRegister from 'Contracts/functions/log_register'
 export default class PreloadsController {
   public async index({ auth, response }: HttpContextContract) {
     try {
-      const provinces = await Province.query().preload('municipalities')
+      const provinces = await Province.query()
+        .preload('municipalities', (query) => query.orderBy('Nome'))
+        .orderBy('Nome')
 
-      const nationalities = await Nationality.all()
+      const nationalities = await Nationality.query().orderBy('Nome')
 
-      const docTypes = await DocType.all()
+      const docTypes = await DocType.query().orderBy('Id_tipoDocumento')
 
-      const vaccines = await Vaccine.query().preload('lots').preload('doses')
+      const vaccines = await Vaccine.query()
+        .preload('lots', (query) => query.where('Visualizar', 'S').orderBy('NumLote'))
+        .preload('doses', (query) => query.where('Visualizar', 'S').orderBy('Nome'))
+        .where('Visualizar', 'S')
+        .orderBy('Nome')
 
       if (!provinces) {
         return response.status(HttpStatusCode.OK).send({
