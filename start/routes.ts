@@ -26,7 +26,7 @@ import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
 import formatHeaders from 'Contracts/functions/format_log'
 
 Route.get('/', async ({ request }) => {
-  const headers = request.headers()
+  /*const headers = request.headers()
   const fields = formatHeaders(1, '996848384', headers)
 
   const data = await regVaccinationLog(fields)
@@ -37,7 +37,8 @@ Route.get('/', async ({ request }) => {
 
   const name = request.header('X-Aplication-Name')
 
-  console.log({ contentType, name })
+  console.log({ contentType, name })*/
+
   return { hello: 'world', title: 'It Works!' }
 })
 
