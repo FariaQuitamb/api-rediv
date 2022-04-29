@@ -7,7 +7,9 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaders from 'Contracts/functions/format_log'
 import logError from 'Contracts/functions/log_error'
+import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 interface DoseInfo {
@@ -382,6 +384,8 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      const headers = request.headers()
+
       //Verificar o status enviado
 
       if (vaccinationData.status !== 'R') {
@@ -526,6 +530,9 @@ export default class VaccinationsController {
             observation: 'Vacina de reforço',
             userPostoVaccination: vaccinationData.vaccinationPostId,
           })
+          // const fields = formatHeaders(vaccination.id, '999999999', headers)
+
+          // await regVaccinationLog(fields)
 
           return response.status(HttpStatusCode.CREATED).send({
             message: 'Utente vacinado com sucesso!',
