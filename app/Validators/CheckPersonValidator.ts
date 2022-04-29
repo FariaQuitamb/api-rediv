@@ -25,16 +25,24 @@ export default class CheckPersonValidator {
    */
 
   public schema = schema.create({
-    name: schema.string({ escape: true, trim: true }, [
+    code: schema.string.optional({ escape: true, trim: true }, [rules.minLength(1)]),
+    docNumber: schema.string.optional({ escape: true, trim: true }),
+    name: schema.string.optional({ escape: true, trim: true }, [
       rules.minLength(1),
       rules.maxLength(80),
       rules.regex(/^[a-záàâãéèêíïóôõöúçñ ]+$/i),
+      rules.requiredIfNotExistsAll(['code', 'docNumber']),
     ]),
-    birthday: schema.string(),
-    docNumber: schema.string({ escape: true, trim: true }),
-    fatherName: schema.string.optional({ escape: true, trim: true }, [rules.minLength(1)]),
-    motherName: schema.string.optional({ escape: true, trim: true }, [rules.minLength(1)]),
-    //certification: schema.enum.optional(['S', 'N'] as const),
+
+    birthday: schema.string.optional({}, [rules.requiredIfNotExistsAll(['code', 'docNumber'])]),
+    fatherName: schema.string.optional({ escape: true, trim: true }, [
+      rules.minLength(1),
+      rules.requiredIfNotExistsAll(['code', 'docNumber']),
+    ]),
+    motherName: schema.string.optional({ escape: true, trim: true }, [
+      rules.minLength(1),
+      rules.requiredIfNotExistsAll(['code', 'docNumber']),
+    ]),
   })
 
   /**

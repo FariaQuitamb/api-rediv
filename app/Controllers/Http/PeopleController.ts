@@ -307,11 +307,46 @@ export default class PeopleController {
   public async checkPerson({ response, request }: HttpContextContract) {
     const personData = await request.validate(CheckPersonValidator)
     try {
+      //Verifica se a pesquisa é por código
+
+      if (personData.code !== undefined && personData.code !== '') {
+        const exists = await Person.query()
+          .where('Codigo', personData.code as string)
+          .limit(1)
+
+        if (exists.length > 0) {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Já existe um utente registrado com esse código!',
+            code: HttpStatusCode.OK,
+            data: exists,
+          })
+        }
+      }
+
+      ///PESQUISA POR BI E POR NOME , NOME PAI , NOME MÃE E DATA NASCIMENTO
       let hasDocNumber = true
 
-      //Verifica se o utente tem número de documento
+      //Verifica se  tem número de documento
       if (personData.docNumber === undefined || personData.docNumber === '') {
         hasDocNumber = false
+
+        //Verifica se foi enviado o nome
+        if (personData.name === undefined || personData.name === '') {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Utente sem documento , digite o nome do utente!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
+
+        //Verifica se foi enviada a data de nascimento
+        if (personData.name === undefined || personData.name === '') {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Utente sem documento , digite a data de nascimento do utente!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
 
         //Verifica se foi enviado o nome do pai
         if (personData.fatherName === undefined || personData.fatherName === '') {
@@ -336,7 +371,9 @@ export default class PeopleController {
       if (hasDocNumber) {
         //Caso tenha documento
         //Verifica se existe um utente com o número de documento enviado
-        const exists = await Person.query().where('docNum', personData.docNumber).limit(1)
+        const exists = await Person.query()
+          .where('docNum', personData.docNumber as string)
+          .limit(1)
 
         if (exists.length > 0) {
           return response.status(HttpStatusCode.OK).send({
@@ -351,10 +388,10 @@ export default class PeopleController {
         //nome do pai , mãe e data de nascimento enviada
 
         const exists = await Person.query()
-          .where('nome', personData.name)
+          .where('nome', personData.name as string)
           .where('NomePai', personData.fatherName as string)
           .where('NomeMae', personData.motherName as string)
-          .where('dtNascimento', personData.birthday)
+          .where('dtNascimento', personData.birthday as string)
           .limit(1)
 
         if (exists.length > 0) {
