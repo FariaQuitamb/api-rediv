@@ -4,6 +4,7 @@ import Person from 'App/Models/Person'
 import CheckPersonValidator from 'App/Validators/CheckPersonValidator'
 import PersonValidator from 'App/Validators/PersonValidator'
 import SearchValidator from 'App/Validators/SearchValidator'
+import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import generateCode from 'Contracts/functions/generate_code'
@@ -310,15 +311,26 @@ export default class PeopleController {
       //Verifica se a pesquisa é por código
 
       if (personData.code !== undefined && personData.code !== '') {
-        const exists = await Person.query()
+        const person = await Person.query()
           .where('Codigo', personData.code as string)
-          .limit(1)
+          .first()
 
-        if (exists.length > 0) {
+        if (person) {
+          const numDose = await Database.rawQuery(constants.getNumDoses, [person.id])
+
+          let vacinationCicle = 'N'
+
+          if (numDose.length !== 0) {
+            const doses = numDose[0]
+
+            if (doses.NumDoseVac === doses.NumVac) {
+              vacinationCicle = 'S'
+            }
+          }
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse código!',
             code: HttpStatusCode.OK,
-            data: exists,
+            data: { person, vacinationCicle },
           })
         }
       }
@@ -387,19 +399,19 @@ export default class PeopleController {
         //Verifica se existe um utente com esse nome ,
         //nome do pai , mãe e data de nascimento enviada
 
-        const exists = await Person.query()
+        const person = await Person.query()
           .where('nome', personData.name as string)
           .where('NomePai', personData.fatherName as string)
           .where('NomeMae', personData.motherName as string)
           .where('dtNascimento', personData.birthday as string)
-          .limit(1)
+          .first()
 
-        if (exists.length > 0) {
+        if (person) {
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
             code: HttpStatusCode.OK,
-            data: exists,
+            data: person,
           })
         }
       }

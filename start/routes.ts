@@ -20,8 +20,24 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import VaccinationLog from 'App/Models/VaccinationLog'
+import RegVaccinationLog from 'App/Models/RegVaccinationLog'
+import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
+import formatHeaders from 'Contracts/functions/format_log'
 
-Route.get('/', async () => {
+Route.get('/', async ({ request }) => {
+  const headers = request.headers()
+  const fields = formatHeaders(1, '996848384', headers)
+
+  const data = await regVaccinationLog(fields)
+
+  return { data, fields }
+
+  const contentType = request.header('content-type')
+
+  const name = request.header('X-Aplication-Name')
+
+  console.log({ contentType, name })
   return { hello: 'world', title: 'It Works!' }
 })
 
