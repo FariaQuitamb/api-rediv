@@ -383,15 +383,15 @@ export default class PeopleController {
       if (hasDocNumber) {
         //Caso tenha documento
         //Verifica se existe um utente com o número de documento enviado
-        const exists = await Person.query()
+        const person = await Person.query()
           .where('docNum', personData.docNumber as string)
-          .limit(1)
+          .first()
 
-        if (exists.length > 0) {
+        if (person) {
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse número de documento!',
             code: HttpStatusCode.OK,
-            data: exists,
+            data: person,
           })
         }
       } else {
