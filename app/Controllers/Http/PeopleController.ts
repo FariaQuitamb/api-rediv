@@ -23,7 +23,7 @@ export default class PeopleController {
       let hasDocNumber = true
 
       //Verifica se o utente tem número de documento
-      if (personData.docNumber === undefined || personData.docNumber === '') {
+      if (personData.docNumber === undefined || personData.docNumber === ' ') {
         hasDocNumber = false
 
         //Verifica se foi enviado o nome do pai
@@ -49,7 +49,9 @@ export default class PeopleController {
       if (hasDocNumber) {
         //Caso tenha documento
         //Verifica se existe um utente com o número de documento enviado
-        const exists = await Person.query().where('docNum', personData.docNumber).limit(1)
+        const exists = await Person.query()
+          .where('docNum', personData.docNumber as string)
+          .limit(1)
 
         if (exists.length > 0) {
           return response.status(HttpStatusCode.OK).send({

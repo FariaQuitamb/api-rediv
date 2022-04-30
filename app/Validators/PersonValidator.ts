@@ -25,36 +25,32 @@ export default class PersonValidator {
    */
 
   public schema = schema.create({
-    name: schema.string({ escape: true, trim: true }, [
-      rules.minLength(1),
-      rules.maxLength(80),
-      rules.regex(/^[a-záàâãéèêíïóôõöúçñ ]+$/i),
-    ]),
-    phone: schema.string({ trim: true }, [rules.minLength(9), rules.maxLength(9)]),
-    email: schema.string.optional({ escape: true, trim: true }, [rules.email()]),
-    genre: schema.enum(['Masculino', 'Femenino'] as const),
+    name: schema.string(),
+    phone: schema.string({}, [rules.minLength(9), rules.maxLength(9)]),
+    email: schema.string.optional(),
+    genre: schema.string(),
 
     birthday: schema.string(),
 
     doctypeId: schema.number(),
-    docNumber: schema.string({ escape: true, trim: true }),
+    docNumber: schema.string.optional(),
     nationalityId: schema.number(),
     provinceId: schema.number(),
     municipalityId: schema.number(),
     categoryId: schema.number(),
     //code: schema.string(),
-    status: schema.string({ escape: true, trim: true }, [rules.minLength(1), rules.maxLength(1)]),
-    flagRegSimp: schema.enum.optional(['S', 'N'] as const),
+    status: schema.string(),
+    flagRegSimp: schema.string(),
     sectorId: schema.number(),
-    coMorbidity: schema.string.optional({ escape: true, trim: true }, [rules.maxLength(3)]),
-    observation: schema.string.optional({ escape: true, trim: true }, [rules.maxLength(200)]),
+    coMorbidity: schema.string.optional(),
+    observation: schema.string.optional(),
     //webAlt: schema.enum(['S', 'N'] as const),
-    fatherName: schema.string.optional({ escape: true, trim: true }, [rules.minLength(1)]),
-    motherName: schema.string.optional({ escape: true, trim: true }, [rules.minLength(1)]),
+    fatherName: schema.string.optional(),
+    motherName: schema.string.optional(),
     //certification: schema.enum.optional(['S', 'N'] as const),
     codeNumber: schema.string.optional(),
     institutionId: schema.number(),
-    dataCad: schema.string({ escape: true, trim: true }),
+    dataCad: schema.string(),
   })
 
   /**
