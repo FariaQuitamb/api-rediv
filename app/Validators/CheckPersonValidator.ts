@@ -30,7 +30,6 @@ export default class CheckPersonValidator {
     name: schema.string.optional({ escape: true, trim: true }, [
       rules.minLength(1),
       rules.maxLength(80),
-      rules.regex(/^[a-záàâãéèêíïóôõöúçñ ]+$/i),
       rules.requiredIfNotExistsAll(['code', 'docNumber']),
     ]),
 
