@@ -20,10 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import VaccinationLog from 'App/Models/VaccinationLog'
-import RegVaccinationLog from 'App/Models/RegVaccinationLog'
-import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
-import formatHeaders from 'Contracts/functions/format_log'
 
 Route.get('/', async ({ request }) => {
   /*const headers = request.headers()
@@ -51,7 +47,9 @@ Route.get('health', async ({ response }) => {
 Route.post('auth/login', 'AuthController.login')
 
 Route.group(() => {
+  //Auth
   Route.get('auth/logout', 'AuthController.logout')
+  Route.get('auth/logged', 'AuthController.loggedUsers')
   //Preload Route
   Route.get('preload', 'PreloadsController.index')
   //Person
