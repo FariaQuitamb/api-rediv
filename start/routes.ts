@@ -59,4 +59,12 @@ Route.group(() => {
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
+  //Logs
+
+  Route.post('logs/error', 'LogsController.errorGeneral')
+  Route.post('logs/bydate', 'LogsController.errorByDate')
+  Route.post('logs/activity', 'LogsController.vaccineGeneral')
+  Route.post('logs/activity/bydate', 'LogsController.vaccineByDate')
+
+  Route.post('logs/activity/filterDateAction', 'LogsController.vaccineFilterDateAction')
 }).middleware('auth:api')
