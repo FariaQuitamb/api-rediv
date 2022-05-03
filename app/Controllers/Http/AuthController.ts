@@ -2,12 +2,11 @@
 
 import Env from '@ioc:Adonis/Core/Env'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
 
 import { Md5 } from 'ts-md5'
 import AuthValidator from 'App/Validators/AuthValidator'
 
-import { base64, string } from '@ioc:Adonis/Core/Helpers'
+import { string } from '@ioc:Adonis/Core/Helpers'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
