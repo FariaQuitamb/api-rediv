@@ -4,6 +4,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 
+import { Md5 } from 'ts-md5'
 import AuthValidator from 'App/Validators/AuthValidator'
 
 import { base64, string } from '@ioc:Adonis/Core/Helpers'
@@ -13,19 +14,24 @@ import logError from 'Contracts/functions/log_error'
 
 import LoggedUser from 'App/Models/LoggedUser'
 import logRegister from 'Contracts/functions/log_register'
+import Database from '@ioc:Adonis/Lucid/Database'
+import constants from 'Contracts/constants/constants'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
     try {
       const username = string.escapeHTML(data.username)
 
-      const b64 = base64.encode(data.password)
+      const userView = '[SIGIS].[dbo].[vw_AcsPostoVac_MB]'
+      const md5 = Md5.hashStr(data.password)
 
-      const user = await User.query()
+      const user = await Database.from(userView)
+        .select(constants.loginFields)
         .where('Utilizador', username)
-        .where('Senha', b64)
-        .whereNot('Flag', 'X')
+        .where('Senha', md5)
         .first()
+
+      //const md5 = new Md5.()
 
       if (!user) {
         await logRegister({
@@ -36,7 +42,7 @@ export default class AuthController {
           job: 'Consulta',
           tableId: 0,
           action: 'LoginAttempt',
-          actionId: `U:${username}-B:${b64} - P:${data.password}`,
+          actionId: `U:${username}-P:${data.password}`,
         })
 
         console.log('Login incorrecto')
@@ -51,11 +57,6 @@ export default class AuthController {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
       })
-
-      await user?.load('vaccinationPost')
-      await user?.load('postWorkerType')
-      //await user.load('province')
-      //await user.load('municipality')
 
       const id = auth.user?.id ?? 0
       //Log de actividade

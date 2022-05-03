@@ -74,6 +74,26 @@ const getNumDiasBooster =
 const getPeopleQuery =
   'SELECT TOP (1000) [Id_regIndividual] ,[Nome] ,[Codigo],[Documento],[Telefone],[docNum],[dtNascimento],[DataCad],[Id_Municipio],[recVac],[TotVac] FROM [SIGIS].[dbo].[vw_ListaVacinados_MB]'
 
+const loginFields = [
+  '[Id_userPostoVacinacao] as id',
+  '[Posto] as post_name',
+  '[Id_postoVacinacao] as vaccination_post_id',
+  '[ProvPosto] as post_province',
+  '[MunicPosto] as post_municipality',
+  '[Id_provPosto] as post_province_id ',
+  '[Id_MunicPosto] as post_municipality_id',
+  '[Nome] as name',
+  '[BI] as doc_number',
+  '[Telefone] as phone',
+  '[Email] as email',
+  '[Endereco] as address',
+  '[Id_tipoFuncPostoVac] as user_type_id',
+  '[Funcao] as user_role',
+  '[Status]  as status',
+  '[Flag] as flag',
+  '[Utilizador] as username',
+]
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -83,5 +103,6 @@ const constants = {
   sqlBooster,
   getNumDiasBooster,
   getPeopleQuery,
+  loginFields,
 }
 export default constants
