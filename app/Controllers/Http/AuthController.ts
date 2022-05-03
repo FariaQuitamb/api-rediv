@@ -30,8 +30,6 @@ export default class AuthController {
         .where('Senha', md5)
         .first()
 
-      //const md5 = new Md5.()
-
       if (!user) {
         await logRegister({
           id: 0,
