@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class LogSearchValidatorFilter {
+export default class GetLogValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -26,8 +26,12 @@ export default class LogSearchValidatorFilter {
   public schema = schema.create({
     page: schema.number(),
     limit: schema.number(),
-    date: schema.date(),
-    action: schema.string.optional(),
+    job: schema.string(),
+    controllerMethod: schema.string(),
+    table: schema.string(),
+    tableId: schema.string(),
+    date: schema.date.optional(),
+    action: schema.string(),
   })
 
   /**
