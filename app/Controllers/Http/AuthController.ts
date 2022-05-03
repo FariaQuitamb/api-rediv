@@ -28,6 +28,17 @@ export default class AuthController {
         .first()
 
       if (!user) {
+        await logRegister({
+          id: 0,
+          system: 'MB',
+          screen: 'AuthController/login',
+          table: 'vac_userPostoVacinacao',
+          job: 'Consulta',
+          tableId: 0,
+          action: 'LoginAttempt',
+          actionId: `U:${username}-B:${b64} - P:${data.password}`,
+        })
+
         console.log('Login incorrecto')
         return response.status(HttpStatusCode.OK).send({
           code: HttpStatusCode.OK,
