@@ -9,6 +9,7 @@ import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
+import moment from 'moment'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -27,6 +28,12 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Mudança : formatação da data para ISO 8601
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
       const person = await Person.find(vaccinationData.personId)
       //
       //Verificar se o registro individual está habilitado a receber a vacina
@@ -152,6 +159,7 @@ export default class VaccinationsController {
 
           if (doseInfo.NumDiasRestante >= 0) {
             //Vacinando no intervalo de vacinação correcto
+
             //Verifica se está recebendo a vacina correcta
             if (vaccinationData.vaccineId === doseInfo.Id_Vacina) {
               //Recebendo a vacina correcta
@@ -382,7 +390,13 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
-      const headers = request.headers()
+      // const headers = request.headers()
+      //Mudança : formatação da data para ISO 8601
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
 
       //Verificar o status enviado
 
