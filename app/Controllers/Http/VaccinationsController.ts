@@ -7,9 +7,7 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
-import formatHeaders from 'Contracts/functions/format_log'
 import logError from 'Contracts/functions/log_error'
-import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
 
 interface DoseInfo {
