@@ -92,6 +92,7 @@ const loginFields = [
   '[Status]  as status',
   '[Flag] as flag',
   '[Utilizador] as username',
+  '[Id_regInstituicaoPUS] as reg_institution_pus_id',
 ]
 
 const constants = {

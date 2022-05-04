@@ -95,6 +95,7 @@ export default class AuthController {
 
       if (auth.use('api').isLoggedOut) {
         //Log de actividade
+
         await logRegister({
           id: id,
           system: 'MB',
@@ -135,6 +136,8 @@ export default class AuthController {
       const loggedUsers = await LoggedUser.query()
 
       //Log de actividade
+
+      /*
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
@@ -144,7 +147,7 @@ export default class AuthController {
         tableId: 0,
         action: 'loggedUsers',
         actionId: '',
-      })
+      })*/
 
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,
