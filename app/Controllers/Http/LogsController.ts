@@ -3,72 +3,16 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import LogError from 'App/Models/LogError'
 import LogVaccine from 'App/Models/LogVaccine'
+import VaccinationLog from 'App/Models/VaccinationLog'
+import GetErrorLogValidator from 'App/Validators/getErrorLogValidator'
 import GetLogValidator from 'App/Validators/getLogValidator'
-import LogSearchValidator from 'App/Validators/LogSearchValidator'
-import LogSearchValidatorFilter from 'App/Validators/LogSearchValidatorFilter'
-import LogSearchValidatorFilterElem from 'App/Validators/LogSearchValidatorFilterElem'
+import GetVaccineLogValidator from 'App/Validators/getVaccineLogValidator'
 
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
-import { DateTime } from 'luxon'
 
 export default class LogsController {
-  public async errorGeneral({ response, request }: HttpContextContract) {
-    const logData = await request.validate(LogSearchValidator)
-    try {
-      const logs = await LogError.query()
-        .where('Tipo', 'MB')
-        .orderBy('DataCad', 'desc')
-        .paginate(logData.page, logData.limit)
-
-      return response.status(HttpStatusCode.OK).send({
-        message: 'Logs de erro da API geral! ',
-        code: HttpStatusCode.OK,
-        data: logs,
-      })
-    } catch (error) {
-      console.log(error)
-      //Log de erro
-      const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'LogsController/errorGeneral', error: errorInfo })
-      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        data: [],
-      })
-    }
-  }
-
-  public async errorByDate({ response, request }: HttpContextContract) {
-    const logData = await request.validate(LogSearchValidatorFilter)
-    try {
-      const logs = await LogError.query()
-        .where('Tipo', 'MB')
-        .whereRaw(`CONVERT(date,[DataCad]) = '${logData.date}'`)
-        .orderBy('DataCad', 'desc')
-        .paginate(logData.page, logData.limit)
-
-      return response.status(HttpStatusCode.OK).send({
-        message: 'Logs de erro da API por data! ',
-        code: HttpStatusCode.OK,
-        data: logs,
-      })
-    } catch (error) {
-      console.log(error)
-      //Log de erro
-      const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'LogsController/errorByDate', error: errorInfo })
-      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        data: [],
-      })
-    }
-  }
-
-  ///////////////////////////////////////////////////////
-
   //Logs de actividades
 
   public async getLogs({ response, request }: HttpContextContract) {
@@ -108,9 +52,6 @@ export default class LogsController {
 
       let query = ''
 
-      if (filters.length === 0) {
-      }
-
       if (filters.length === 1) {
         query += `${filters[0].field} = '${filters[0].value}'`
       } else {
@@ -124,9 +65,9 @@ export default class LogsController {
 
           if (index === 0) {
             query += filterQuery
+          } else {
+            query += ` and ${filterQuery}`
           }
-
-          query += ` and ${filterQuery}`
         })
       }
 
@@ -158,7 +99,71 @@ export default class LogsController {
   }
 
   public async getErrorLogs({ response, request }: HttpContextContract) {
-    const logData = await request.validate(GetLogValidator)
+    const logData = await request.validate(GetErrorLogValidator)
+    try {
+      const filters: Array<{ field: string; value: any }> = []
+
+      if (logData.controllerMethod !== undefined && logData.controllerMethod !== ' ') {
+        const value = { field: 'Pagina', value: logData.controllerMethod }
+        filters.push(value)
+      }
+
+      if (logData.date !== undefined) {
+        const value = { field: 'DataCad', value: logData.date }
+        filters.push(value)
+      }
+
+      let query = ''
+
+      if (filters.length === 1) {
+        query += `${filters[0].field} = '${filters[0].value}'`
+      } else {
+        let filterQuery: string
+        filters.map((elem, index) => {
+          if (elem.field === 'DataCad') {
+            filterQuery = ` CONVERT(date,[DataCad]) =  CONVERT(date,'${elem.value}')`
+          } else {
+            filterQuery = ` ${elem.field} = '${elem.value}'`
+          }
+
+          if (index === 0) {
+            query += filterQuery
+          } else {
+            query += ` and ${filterQuery}`
+          }
+        })
+      }
+
+      const logs = await LogError.query()
+        .where('Tipo', 'MB')
+        .whereRaw(query)
+        .orderBy('DataCad', 'desc')
+        .paginate(logData.page, logData.limit)
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Logs de erro da API : ' + query,
+        code: HttpStatusCode.OK,
+        data: logs,
+      })
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'LogsController/getErrorLogs',
+        error: errorInfo,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  //Pendente
+  public async getVaccineLogs({ response, request }: HttpContextContract) {
+    const logData = await request.validate(GetVaccineLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
 
@@ -172,8 +177,8 @@ export default class LogsController {
         filters.push(value)
       }
 
-      if (logData.table !== undefined && logData.table !== ' ') {
-        const value = { field: 'Tabela', value: logData.table }
+      if (logData.job !== undefined && logData.job !== ' ') {
+        const value = { field: 'Tabela', value: logData.job }
         filters.push(value)
       }
 
@@ -192,10 +197,12 @@ export default class LogsController {
         filters.push(value)
       }
 
-      let query = ''
-
-      if (filters.length === 0) {
+      if (logData.actionId !== undefined && logData.actionId !== ' ') {
+        const value = { field: 'AcaoId', value: logData.actionId }
+        filters.push(value)
       }
+
+      let query = ''
 
       if (filters.length === 1) {
         query += `${filters[0].field} = '${filters[0].value}'`
@@ -210,13 +217,13 @@ export default class LogsController {
 
           if (index === 0) {
             query += filterQuery
+          } else {
+            query += ` and ${filterQuery}`
           }
-
-          query += ` and ${filterQuery}`
         })
       }
 
-      const logs = await LogVaccine.query()
+      const logs = await VaccinationLog.query()
         .where('Sistema', 'MB')
         .whereRaw(query)
         .orderBy('Data', 'desc')
