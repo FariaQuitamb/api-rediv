@@ -20,6 +20,7 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import moment from 'moment'
 
 Route.get('/', async () => {
   /*const headers = request.headers()
@@ -61,8 +62,7 @@ Route.group(() => {
   Route.post('vaccination/booster', 'VaccinationsController.booster')
   //Logs
 
-  Route.post('logs/error', 'LogsController.errorGeneral')
-  Route.post('logs/bydate', 'LogsController.errorByDate')
+  Route.post('logs/error', 'LogsController.getErrorLogs')
 
   Route.post('logs/activity/getlogs', 'LogsController.getLogs')
 }).middleware('auth:api')
