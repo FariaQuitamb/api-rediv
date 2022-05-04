@@ -61,7 +61,7 @@ export default class PreloadsController {
 
       await logRegister({
         id: auth.user?.id ?? 0,
-        system: 'API_MB',
+        system: 'MB',
         screen: 'PreloadController/index',
         table: 'Provincia/Municipio/Tipo documentos/Vacinas',
         job: 'Consulta',

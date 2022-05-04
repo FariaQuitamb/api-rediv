@@ -12,11 +12,6 @@ import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 
 export default class PeopleController {
-  public async index({ response }: HttpContextContract) {
-    const data = await Person.query().limit(200)
-    return response.send(data)
-  }
-
   public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
     try {

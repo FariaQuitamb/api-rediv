@@ -20,12 +20,8 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import VaccinationLog from 'App/Models/VaccinationLog'
-import RegVaccinationLog from 'App/Models/RegVaccinationLog'
-import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
-import formatHeaders from 'Contracts/functions/format_log'
 
-Route.get('/', async ({ request }) => {
+Route.get('/', async () => {
   /*const headers = request.headers()
   const fields = formatHeaders(1, '996848384', headers)
 
@@ -51,7 +47,9 @@ Route.get('health', async ({ response }) => {
 Route.post('auth/login', 'AuthController.login')
 
 Route.group(() => {
+  //Auth
   Route.get('auth/logout', 'AuthController.logout')
+  Route.get('auth/logged', 'AuthController.loggedUsers')
   //Preload Route
   Route.get('preload', 'PreloadsController.index')
   //Person
@@ -61,4 +59,10 @@ Route.group(() => {
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
+  //Logs
+
+  Route.post('logs/error', 'LogsController.errorGeneral')
+  Route.post('logs/bydate', 'LogsController.errorByDate')
+
+  Route.post('logs/activity/getlogs', 'LogsController.getLogs')
 }).middleware('auth:api')
