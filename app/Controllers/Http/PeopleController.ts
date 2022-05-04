@@ -7,9 +7,11 @@ import SearchValidator from 'App/Validators/SearchValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
+import moment from 'moment'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -77,6 +79,13 @@ export default class PeopleController {
         }
       }
 
+      //Mudança : formatação da data
+      //const dateBefore = personData.dataCad
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      //const dateAfter = personData.dataCad
+
+      // console.log({ dateBefore, dateAfter })
+
       const person = await Person.create(personData)
 
       //Caso não tenha inserido o utente
@@ -102,7 +111,6 @@ export default class PeopleController {
       }
 
       //Log de actividade
-
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
@@ -122,9 +130,19 @@ export default class PeopleController {
       })
     } catch (error) {
       console.log(error)
+
+      const personJson = JSON.stringify(personData)
+
       //Log de erro
+
+      const userInfo = formatUserInfo(auth.user)
+
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/store', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/store',
+        error: `User:${userInfo} Dados : ${personJson} - ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
