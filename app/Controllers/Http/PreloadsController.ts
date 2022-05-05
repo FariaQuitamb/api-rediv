@@ -5,12 +5,13 @@ import Province from 'App/Models/Province'
 import Vaccine from 'App/Models/Vaccine'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 
 export default class PreloadsController {
-  public async index({ auth, response }: HttpContextContract) {
+  public async index({ auth, request, response }: HttpContextContract) {
     try {
       const provinces = await Province.query()
         .preload('municipalities', (query) => query.orderBy('Nome'))
@@ -79,12 +80,13 @@ export default class PreloadsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'PreloadController/index',
-        error: `User: ${userInfo} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

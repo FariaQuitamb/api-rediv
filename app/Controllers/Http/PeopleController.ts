@@ -7,6 +7,7 @@ import SearchValidator from 'App/Validators/SearchValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
@@ -81,8 +82,26 @@ export default class PeopleController {
 
       //Mudança : formatação da data
       //const dateBefore = personData.dataCad
-      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      //personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
       //const dateAfter = personData.dataCad
+
+      if (personData.dataCad === null) {
+        //Log de erro
+        const personJson = JSON.stringify(personData)
+        const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+        const userInfo = formatUserInfo(auth.user)
+
+        await logError({
+          type: 'MB',
+          page: 'PeopleController/store',
+          error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Data de  cadastro inválida!',
+          code: HttpStatusCode.OK,
+          data: {},
+        })
+      }
 
       // console.log({ dateBefore, dateAfter })
 
@@ -135,13 +154,14 @@ export default class PeopleController {
 
       //Log de erro
 
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
-
       const errorInfo = formatError(error)
+
       await logError({
         type: 'MB',
         page: 'PeopleController/store',
-        error: `User:${userInfo} Dados : ${personJson} - ${errorInfo}`,
+        error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} - ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -166,7 +186,7 @@ export default class PeopleController {
       const search = searchData.search
       const municipalityId = searchData.municipalityId
 
-      //Pesquisa pelo número de telefone
+      //Pesquisa de preenchimento dos dados de pré-carregamento
       if (search === 'FILL_OFFLINE_DB') {
         if (municipalityId === undefined) {
           return response.status(HttpStatusCode.OK).send({
@@ -248,7 +268,7 @@ export default class PeopleController {
         })
       }
 
-      //Pesquisa pelo número de telefone - Mudar para 13
+      //Pesquisa pelo CodigoNum
       if (search.match(regexNumberOnly) && search.length === 10) {
         const data = await Database.from(searchView)
           .select(
@@ -311,12 +331,13 @@ export default class PeopleController {
       console.log(error)
       //Log de erro
 
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'PeopleController/list',
-        error: `User: ${userInfo} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -446,13 +467,14 @@ export default class PeopleController {
       console.log(error)
       //Log de erro
 
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(personData)
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'PeopleController/checkPerson',
-        error: `User: ${userInfo} Dados: ${data} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

@@ -1,4 +1,5 @@
-const formatHeaderInfo = (headers: any) => {
+const formatHeaderInfo = (request: any) => {
+  const headers = request.headers()
   const data = {
     imei: `mac:${headers['x-application-latitude']}`,
     latitude: `${headers['x-application-latitude']}`,

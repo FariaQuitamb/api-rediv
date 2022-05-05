@@ -10,6 +10,7 @@ import GetVaccineLogValidator from 'App/Validators/getVaccineLogValidator'
 
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 
@@ -85,12 +86,13 @@ export default class LogsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'LogsController/getLogs',
-        error: `User: ${userInfo} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -150,12 +152,13 @@ export default class LogsController {
       console.log(error)
       //Log de erro
 
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'LogsController/getErrorLogs',
-        error: `User: ${userInfo} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -166,7 +169,7 @@ export default class LogsController {
   }
 
   //Pendente
-  public async getVaccineLogs({ response, request }: HttpContextContract) {
+  public async getVaccineLogs({ auth, response, request }: HttpContextContract) {
     const logData = await request.validate(GetVaccineLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
@@ -240,11 +243,14 @@ export default class LogsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'LogsController/getLogs',
-        error: errorInfo,
+        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

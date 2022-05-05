@@ -7,6 +7,7 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import geoLog from 'Contracts/functions/geo_log'
 import logError from 'Contracts/functions/log_error'
@@ -390,13 +391,14 @@ export default class VaccinationsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(vaccinationData)
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'VaccinationController/store',
-        error: `User: ${userInfo} Dados: ${data}  ${errorInfo}`,
+        error: `User: ${userInfo}  Device: ${deviceInfo}  Dados: ${data}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
@@ -821,13 +823,14 @@ export default class VaccinationsController {
       console.log(error)
       //Log de erro
 
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(Vaccination)
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'VaccinationController/booster',
-        error: `User: ${userInfo} Dados: ${data} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${data} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
