@@ -5,6 +5,7 @@ import Province from 'App/Models/Province'
 import Vaccine from 'App/Models/Vaccine'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 
@@ -78,8 +79,13 @@ export default class PreloadsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PreloadController/index', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PreloadController/index',
+        error: `User: ${userInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         message: 'Ocorreu um erro ao  obter os dados de pré-carregamento',

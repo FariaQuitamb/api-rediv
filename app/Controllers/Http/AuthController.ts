@@ -15,6 +15,7 @@ import LoggedUser from 'App/Models/LoggedUser'
 import logRegister from 'Contracts/functions/log_register'
 import Database from '@ioc:Adonis/Lucid/Database'
 import constants from 'Contracts/constants/constants'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
@@ -77,8 +78,14 @@ export default class AuthController {
       console.log(error)
 
       //Log de erro
+
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/login', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/login',
+        error: `User: ${userInfo} ${errorInfo}`,
+      })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -121,8 +128,13 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/logout', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/logout',
+        error: `User: ${userInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
@@ -157,8 +169,13 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/loggedUsers', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/loggedUsers',
+        error: `User: ${userInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,

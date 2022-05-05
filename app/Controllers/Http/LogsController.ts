@@ -10,12 +10,13 @@ import GetVaccineLogValidator from 'App/Validators/getVaccineLogValidator'
 
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 
 export default class LogsController {
   //Logs de actividades
 
-  public async getLogs({ response, request }: HttpContextContract) {
+  public async getLogs({ auth, response, request }: HttpContextContract) {
     const logData = await request.validate(GetLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
@@ -84,11 +85,12 @@ export default class LogsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'LogsController/getLogs',
-        error: errorInfo,
+        error: `User: ${userInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -98,7 +100,7 @@ export default class LogsController {
     }
   }
 
-  public async getErrorLogs({ response, request }: HttpContextContract) {
+  public async getErrorLogs({ auth, response, request }: HttpContextContract) {
     const logData = await request.validate(GetErrorLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
@@ -147,11 +149,13 @@ export default class LogsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'LogsController/getErrorLogs',
-        error: errorInfo,
+        error: `User: ${userInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

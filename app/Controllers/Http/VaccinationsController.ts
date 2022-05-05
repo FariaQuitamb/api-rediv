@@ -7,6 +7,7 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
 import moment from 'moment'
@@ -376,8 +377,14 @@ export default class VaccinationsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const data = JSON.stringify(vaccinationData)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'VaccinationController/store', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'VaccinationController/store',
+        error: `User: ${userInfo} Dados: ${data}  ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -785,8 +792,15 @@ export default class VaccinationsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const data = JSON.stringify(Vaccination)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'VaccinationController/booster', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'VaccinationController/booster',
+        error: `User: ${userInfo} Dados: ${data} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

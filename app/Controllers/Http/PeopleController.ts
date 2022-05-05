@@ -151,7 +151,7 @@ export default class PeopleController {
     }
   }
 
-  public async list({ response, request }: HttpContextContract) {
+  public async list({ auth, response, request }: HttpContextContract) {
     const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
     const searchData = await request.validate(SearchValidator)
 
@@ -310,8 +310,14 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/list', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/list',
+        error: `User: ${userInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -320,7 +326,7 @@ export default class PeopleController {
     }
   }
 
-  public async checkPerson({ response, request }: HttpContextContract) {
+  public async checkPerson({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(CheckPersonValidator)
     try {
       //Verifica se a pesquisa é por código
@@ -439,8 +445,15 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const data = JSON.stringify(personData)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/checkPerson', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/checkPerson',
+        error: `User: ${userInfo} Dados: ${data} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
