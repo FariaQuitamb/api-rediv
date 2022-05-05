@@ -82,7 +82,7 @@ export default class PeopleController {
 
       //Mudança : formatação da data
       //const dateBefore = personData.dataCad
-      //personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
       //const dateAfter = personData.dataCad
 
       if (personData.dataCad === null) {
