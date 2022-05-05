@@ -20,21 +20,28 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import moment from 'moment'
+import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
+import formatDeviceInfo from 'Contracts/functions/format_device_info'
+import geoLog from 'Contracts/functions/geo_log'
 
-Route.get('/', async () => {
-  /*const headers = request.headers()
-  const fields = formatHeaders(1, '996848384', headers)
-
+Route.get('/', async ({ request }) => {
+  const headers = request.headers()
+  /*
+  const fields = formatDeviceInfo('M', 1, '996848384', headers)
   const data = await regVaccinationLog(fields)
 
-  return { data, fields }
+  //const fields = formatHeaderInfo(headers)
 
-  const contentType = request.header('content-type')
+  console.log(fields)
 
-  const name = request.header('X-Aplication-Name')
+  */
 
-  console.log({ contentType, name })*/
+  //return { data, fields }
+
+  //const contentType = request.header('content-type')
+  //const name = request.header('X-Apliscation-Name')
+
+  await geoLog('F', 2, '921672882', request)
 
   return { hello: 'world', title: 'It Works!' }
 })
