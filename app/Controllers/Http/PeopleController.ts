@@ -330,14 +330,14 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
-
+      const searchInfo = JSON.stringify(searchData)
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
         page: 'PeopleController/list',
-        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
