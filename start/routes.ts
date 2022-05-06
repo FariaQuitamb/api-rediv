@@ -70,6 +70,6 @@ Route.group(() => {
   //Logs
 
   Route.post('logs/error', 'LogsController.getErrorLogs')
-
-  Route.post('logs/activity/getlogs', 'LogsController.getLogs')
+  Route.post('logs/activity', 'LogsController.getLogs')
+  Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
 }).middleware('auth:api')
