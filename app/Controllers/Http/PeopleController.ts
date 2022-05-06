@@ -7,9 +7,12 @@ import SearchValidator from 'App/Validators/SearchValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
+import moment from 'moment'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -77,6 +80,31 @@ export default class PeopleController {
         }
       }
 
+      //Mudança : formatação da data
+      //const dateBefore = personData.dataCad
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      //const dateAfter = personData.dataCad
+
+      if (personData.dataCad === null) {
+        //Log de erro
+        const personJson = JSON.stringify(personData)
+        const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+        const userInfo = formatUserInfo(auth.user)
+
+        await logError({
+          type: 'MB',
+          page: 'PeopleController/store',
+          error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Data de  cadastro inválida!',
+          code: HttpStatusCode.OK,
+          data: {},
+        })
+      }
+
+      // console.log({ dateBefore, dateAfter })
+
       const person = await Person.create(personData)
 
       //Caso não tenha inserido o utente
@@ -102,7 +130,6 @@ export default class PeopleController {
       }
 
       //Log de actividade
-
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
@@ -122,9 +149,20 @@ export default class PeopleController {
       })
     } catch (error) {
       console.log(error)
+
+      const personJson = JSON.stringify(personData)
+
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/store', error: errorInfo })
+
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/store',
+        error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} - ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -133,7 +171,7 @@ export default class PeopleController {
     }
   }
 
-  public async list({ response, request }: HttpContextContract) {
+  public async list({ auth, response, request }: HttpContextContract) {
     const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
     const searchData = await request.validate(SearchValidator)
 
@@ -148,7 +186,7 @@ export default class PeopleController {
       const search = searchData.search
       const municipalityId = searchData.municipalityId
 
-      //Pesquisa pelo número de telefone
+      //Pesquisa de preenchimento dos dados de pré-carregamento
       if (search === 'FILL_OFFLINE_DB') {
         if (municipalityId === undefined) {
           return response.status(HttpStatusCode.OK).send({
@@ -230,7 +268,7 @@ export default class PeopleController {
         })
       }
 
-      //Pesquisa pelo número de telefone - Mudar para 13
+      //Pesquisa pelo CodigoNum
       if (search.match(regexNumberOnly) && search.length === 10) {
         const data = await Database.from(searchView)
           .select(
@@ -292,8 +330,15 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/list', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/list',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -302,7 +347,7 @@ export default class PeopleController {
     }
   }
 
-  public async checkPerson({ response, request }: HttpContextContract) {
+  public async checkPerson({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(CheckPersonValidator)
     try {
       //Verifica se a pesquisa é por código
@@ -421,8 +466,16 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const data = JSON.stringify(personData)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/checkPerson', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/checkPerson',
+        error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class GetLogValidator {
+export default class GetErrorLogValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -33,7 +33,6 @@ export default class GetLogValidator {
     page: schema.number(),
     limit: schema.number(),
     controllerMethod: schema.string(),
-    type: schema.string(),
     date: schema.date.optional(),
   })
 

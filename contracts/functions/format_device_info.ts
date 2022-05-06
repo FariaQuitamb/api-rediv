@@ -1,6 +1,7 @@
-const formatHeaders = (vaccinationId, phone, headers: any) => {
+const formatDeviceInfo = (type, vaccinationId, phone, headers: any) => {
   const data = {
     vaccinationId: vaccinationId,
+    type: type,
     imei: `mac:${headers['x-application-latitude']}`,
     phone: phone ?? 'xxx-xxx-xxx',
     latitude: `${headers['x-application-latitude']}`,
@@ -9,4 +10,4 @@ const formatHeaders = (vaccinationId, phone, headers: any) => {
   return data
 }
 
-export default formatHeaders
+export default formatDeviceInfo

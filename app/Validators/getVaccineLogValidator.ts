@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class LogSearchValidator {
+export default class GetVaccineLogValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -23,9 +23,34 @@ export default class LogSearchValidator {
    *     ])
    *    ```
    */
+
+  /*
+
+  
+   
+ 
+   
+    
+    
+      ,[Data]
+      ,[Id_userPostoVacinacao]
+  */
+
   public schema = schema.create({
     page: schema.number(),
     limit: schema.number(),
+
+    controllerMethod: schema.string(),
+    job: schema.string(),
+    loginId: schema.string(),
+    logRecVacId: schema.string(),
+    vaccinationId: schema.string(),
+    action: schema.string(),
+    observation: schema.string(),
+
+    date: schema.date.optional(),
+    tableId: schema.string(),
+    actionId: schema.string(),
   })
 
   /**

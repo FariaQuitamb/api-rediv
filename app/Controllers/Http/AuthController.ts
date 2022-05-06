@@ -15,6 +15,8 @@ import LoggedUser from 'App/Models/LoggedUser'
 import logRegister from 'Contracts/functions/log_register'
 import Database from '@ioc:Adonis/Lucid/Database'
 import constants from 'Contracts/constants/constants'
+import formatUserInfo from 'Contracts/functions/format_user_info'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
@@ -77,8 +79,15 @@ export default class AuthController {
       console.log(error)
 
       //Log de erro
+
+      const deviceInfo = formatHeaderInfo(request)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/login', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/login',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+      })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -88,7 +97,7 @@ export default class AuthController {
     }
   }
 
-  public async logout({ auth, response }: HttpContextContract) {
+  public async logout({ auth, request, response }: HttpContextContract) {
     try {
       const id = auth.user?.id ?? 0
       await auth.use('api').revoke()
@@ -121,8 +130,14 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/logout', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/logout',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
@@ -131,7 +146,7 @@ export default class AuthController {
     }
   }
 
-  public async loggedUsers({ auth, response }: HttpContextContract) {
+  public async loggedUsers({ auth, request, response }: HttpContextContract) {
     try {
       const loggedUsers = await LoggedUser.query()
 
@@ -157,8 +172,14 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/loggedUsers', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/loggedUsers',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
