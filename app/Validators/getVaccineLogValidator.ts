@@ -39,7 +39,6 @@ export default class GetVaccineLogValidator {
   public schema = schema.create({
     page: schema.number(),
     limit: schema.number(),
-
     controllerMethod: schema.string(),
     job: schema.string(),
     loginId: schema.string(),
@@ -47,10 +46,8 @@ export default class GetVaccineLogValidator {
     vaccinationId: schema.string(),
     action: schema.string(),
     observation: schema.string(),
-
     date: schema.date.optional(),
-    tableId: schema.string(),
-    actionId: schema.string(),
+    vaccinationPostUserId: schema.string(),
   })
 
   /**
