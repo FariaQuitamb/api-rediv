@@ -3,9 +3,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import LogError from 'App/Models/LogError'
 import LogVaccine from 'App/Models/LogVaccine'
+import RegVaccinationLog from 'App/Models/RegVaccinationLog'
 import VaccinationLog from 'App/Models/VaccinationLog'
 import GetErrorLogValidator from 'App/Validators/getErrorLogValidator'
 import GetLogValidator from 'App/Validators/getLogValidator'
+import GetVaccineGeoLogValidator from 'App/Validators/getVaccineGeoLogValidator'
 import GetVaccineLogValidator from 'App/Validators/getVaccineLogValidator'
 
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
@@ -177,7 +179,7 @@ export default class LogsController {
     }
   }
 
-  //Pendente
+  //Log de vaccine done
   public async getVaccineLogs({ auth, response, request }: HttpContextContract) {
     const logData = await request.validate(GetVaccineLogValidator)
     try {
@@ -197,6 +199,58 @@ export default class LogsController {
 
       const logs = await VaccinationLog.query()
         .where('Sistema', 'MB')
+        .whereRaw(query)
+        .orderBy('Data', 'desc')
+        .paginate(logData.page, logData.limit)
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Logs de vacinação da API : ' + query,
+        code: HttpStatusCode.OK,
+        data: logs,
+      })
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'LogsController/getVaccineLogs',
+        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async getVaccineGeoLogs({ auth, response, request }: HttpContextContract) {
+    const logData = await request.validate(GetVaccineGeoLogValidator)
+    try {
+      /*
+
+      FROM [SIGIS].[dbo].[vac_regVacinacaoLog]
+
+      */
+      const fields: Array<{ field: string; value: any }> = [
+        { field: 'Id_regVacinacaoLog', value: logData.id },
+        { field: 'Id_regVacinacao', value: logData.vaccinationId },
+        { field: 'Imei', value: logData.imei },
+        { field: 'Telefobe', value: logData.phone },
+        { field: 'Latitude', value: logData.lat },
+        { field: 'Longitude', value: logData.Long },
+        { field: 'Tipo', value: logData.type },
+        { field: 'Id_regVacinacao', value: logData.vaccinationId },
+      ]
+
+      const query = generateQuery(fields)
+
+      console.log(query)
+
+      const logs = await RegVaccinationLog.query()
         .whereRaw(query)
         .orderBy('Data', 'desc')
         .paginate(logData.page, logData.limit)
