@@ -1,8 +1,6 @@
 import Env from '@ioc:Adonis/Core/Env'
 
 const formatDeviceInfo = (type, vaccinationId, headers: any) => {
-  const version = Env.get('API_VERSION')
-
   const data = {
     vaccinationId: vaccinationId,
     type: type,
