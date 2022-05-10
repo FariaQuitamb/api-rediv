@@ -1,9 +1,9 @@
 import formatDeviceInfo from './format_device_info'
 import regVaccinationLog from './reg_vaccination_log'
 
-const geoLog = async (type, vaccinationId, phone, request: any) => {
+const geoLog = async (type, vaccinationId, request: any) => {
   const headers = request.headers()
-  const fields = formatDeviceInfo(type, vaccinationId, phone, headers)
+  const fields = formatDeviceInfo(type, vaccinationId, headers)
   const data = await regVaccinationLog(fields)
   return data
 }

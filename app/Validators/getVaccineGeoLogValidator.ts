@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-export default class GetVaccineLogValidator {
+export default class GetVaccineGeoLogValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -21,33 +21,24 @@ export default class GetVaccineLogValidator {
    *       rules.email(),
    *       rules.unique({ table: 'users', column: 'email' }),
    *     ])
-   *    ```
-   */
-
-  /*
-
+   *    
+   * 
+   * 
   
-   
- 
-   
     
-    
-      ,[Data]
-      ,[Id_userPostoVacinacao]
-  */
+  
+   */
 
   public schema = schema.create({
     page: schema.number(),
     limit: schema.number(),
-    controllerMethod: schema.string(),
-    job: schema.string(),
-    loginId: schema.string(),
-    logRecVacId: schema.string(),
+    id: schema.string(),
+    imei: schema.string(),
     vaccinationId: schema.string(),
-    action: schema.string(),
-    observation: schema.string(),
-    date: schema.date.optional(),
-    vaccinationPostUserId: schema.string(),
+    phone: schema.string(),
+    lat: schema.string(),
+    Long: schema.string(),
+    type: schema.string(),
   })
 
   /**

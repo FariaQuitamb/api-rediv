@@ -25,24 +25,6 @@ import formatDeviceInfo from 'Contracts/functions/format_device_info'
 import geoLog from 'Contracts/functions/geo_log'
 
 Route.get('/', async ({ request }) => {
-  const headers = request.headers()
-  /*
-  const fields = formatDeviceInfo('M', 1, '996848384', headers)
-  const data = await regVaccinationLog(fields)
-
-  //const fields = formatHeaderInfo(headers)
-
-  console.log(fields)
-
-  */
-
-  //return { data, fields }
-
-  //const contentType = request.header('content-type')
-  //const name = request.header('X-Apliscation-Name')
-
-  await geoLog('F', 2, '921672882', request)
-
   return { hello: 'world', title: 'It Works!' }
 })
 
@@ -70,6 +52,7 @@ Route.group(() => {
   //Logs
 
   Route.post('logs/error', 'LogsController.getErrorLogs')
-
-  Route.post('logs/activity/getlogs', 'LogsController.getLogs')
+  Route.post('logs/activity', 'LogsController.getLogs')
+  Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
+  Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
 }).middleware('auth:api')
