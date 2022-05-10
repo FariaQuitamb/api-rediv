@@ -11,8 +11,6 @@ export default class RegVaccinationLog extends BaseModel {
   public imei: string
   @column({ columnName: 'Tipo' })
   public type: string
-  @column({ columnName: 'Telefobe' })
-  public phone: string
   @column({ columnName: 'Latitude' })
   public latitude: string
   @column({ columnName: 'longitude' })

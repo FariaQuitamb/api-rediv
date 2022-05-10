@@ -3,7 +3,6 @@ import RegVaccinationLog from 'App/Models/RegVaccinationLog'
 const regVaccinationLog = async (args: {
   vaccinationId: number
   imei: string
-  phone: string
   latitude: string
   longitude: string
 }) => {
