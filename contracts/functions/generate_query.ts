@@ -1,5 +1,3 @@
-import moment from 'moment'
-
 const generateQuery = (fields: Array<{ field: string; value: any }>) => {
   const filters: Array<{ field: string; value: any }> = []
 

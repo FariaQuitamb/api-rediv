@@ -1,5 +1,4 @@
-import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
-import Province from './Province'
+import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Municipality extends BaseModel {
   public static table = 'Municipio'
