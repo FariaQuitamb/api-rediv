@@ -92,6 +92,22 @@ const loginFields = [
   '[Status]  as status',
   '[Flag] as flag',
   '[Utilizador] as username',
+  '[Id_regInstituicaoPUS] as reg_institution_pus_id',
+]
+
+const searchPeopleFields = [
+  '[Id_regIndividual]',
+  '[Nome]',
+  '[Codigo]',
+  '[Documento]',
+  '[Telefone]',
+  '[docNum]',
+  '[dtNascimento]',
+  '[DataCad]',
+  '[Id_Municipio]',
+  '[recVac]',
+  '[TotVac]',
+  '[CodigoNum]',
 ]
 
 const constants = {
@@ -104,5 +120,6 @@ const constants = {
   getNumDiasBooster,
   getPeopleQuery,
   loginFields,
+  searchPeopleFields,
 }
 export default constants

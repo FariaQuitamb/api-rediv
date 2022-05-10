@@ -7,9 +7,13 @@ import SearchValidator from 'App/Validators/SearchValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
+import formatUserInfo from 'Contracts/functions/format_user_info'
 import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
+import moment from 'moment'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -77,6 +81,31 @@ export default class PeopleController {
         }
       }
 
+      //Mudança : formatação da data
+      //const dateBefore = personData.dataCad
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      //const dateAfter = personData.dataCad
+
+      if (personData.dataCad === null) {
+        //Log de erro
+        const personJson = JSON.stringify(personData)
+        const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+        const userInfo = formatUserInfo(auth.user)
+
+        await logError({
+          type: 'MB',
+          page: 'PeopleController/store',
+          error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Data de  cadastro inválida!',
+          code: HttpStatusCode.OK,
+          data: {},
+        })
+      }
+
+      // console.log({ dateBefore, dateAfter })
+
       const person = await Person.create(personData)
 
       //Caso não tenha inserido o utente
@@ -101,8 +130,8 @@ export default class PeopleController {
         person.merge({ code: code, docNumber: 'PM' + code }).save()
       }
 
+      const version = Env.get('API_VERSION')
       //Log de actividade
-
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
@@ -111,7 +140,7 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: person.id,
         action: 'Registro de Utente',
-        actionId: person.id.toString(),
+        actionId: `V:${version}-ID:${person.id.toString()}`,
       })
 
       //Utente inserido com sucesso
@@ -122,9 +151,20 @@ export default class PeopleController {
       })
     } catch (error) {
       console.log(error)
+
+      const personJson = JSON.stringify(personData)
+
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/store', error: errorInfo })
+
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/store',
+        error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} - ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -133,7 +173,7 @@ export default class PeopleController {
     }
   }
 
-  public async list({ response, request }: HttpContextContract) {
+  public async list({ auth, response, request }: HttpContextContract) {
     const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
     const searchData = await request.validate(SearchValidator)
 
@@ -148,7 +188,7 @@ export default class PeopleController {
       const search = searchData.search
       const municipalityId = searchData.municipalityId
 
-      //Pesquisa pelo número de telefone
+      //Pesquisa de preenchimento dos dados de pré-carregamento
       if (search === 'FILL_OFFLINE_DB') {
         if (municipalityId === undefined) {
           return response.status(HttpStatusCode.OK).send({
@@ -159,6 +199,7 @@ export default class PeopleController {
         }
         const data = await Database.from(searchView)
           .where('Id_Municipio', searchData.municipalityId as number)
+          .select(constants.searchPeopleFields)
           .limit(searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta geral',
@@ -180,22 +221,9 @@ export default class PeopleController {
         //Wildcard para pesquisa
         const wildCard = `'%${search}%'`
         const data = await Database.from(searchView)
-          .select(
-            'Id_regIndividual',
-            'Nome',
-            'Codigo',
-            'Documento',
-            'Telefone',
-            'docNum',
-            'dtNascimento',
-            'DataCad',
-            'Id_Municipio',
-            'recVac',
-            'TotVac',
-            'CodigoNum'
-          )
+          .select(constants.searchPeopleFields)
           .whereRaw(`Nome COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ${wildCard}`)
-
+          .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por nome!',
@@ -207,21 +235,9 @@ export default class PeopleController {
       //Pesquisa pelo número de telefone
       if (search.match(regexNumberOnly) && search.length === 9) {
         const data = await Database.from(searchView)
-          .select(
-            'Id_regIndividual',
-            'Nome',
-            'Codigo',
-            'Documento',
-            'Telefone',
-            'docNum',
-            'dtNascimento',
-            'DataCad',
-            'Id_Municipio',
-            'recVac',
-            'TotVac',
-            'CodigoNum'
-          )
+          .select(constants.searchPeopleFields)
           .where('Telefone', search)
+          .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por número de telefone!',
@@ -230,24 +246,12 @@ export default class PeopleController {
         })
       }
 
-      //Pesquisa pelo número de telefone - Mudar para 13
+      //Pesquisa pelo CodigoNum
       if (search.match(regexNumberOnly) && search.length === 10) {
         const data = await Database.from(searchView)
-          .select(
-            'Id_regIndividual',
-            'Nome',
-            'Codigo',
-            'Documento',
-            'Telefone',
-            'docNum',
-            'dtNascimento',
-            'DataCad',
-            'Id_Municipio',
-            'recVac',
-            'TotVac',
-            'CodigoNum'
-          )
+          .select(constants.searchPeopleFields)
           .where('CodigoNum', search)
+          .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por codigoNum!',
@@ -259,21 +263,9 @@ export default class PeopleController {
       //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
       if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
         const data = await Database.from(searchView)
-          .select(
-            'Id_regIndividual',
-            'Nome',
-            'Codigo',
-            'Documento',
-            'Telefone',
-            'docNum',
-            'dtNascimento',
-            'DataCad',
-            'Id_Municipio',
-            'recVac',
-            'TotVac',
-            'CodigoNum'
-          )
+          .select(constants.searchPeopleFields)
           .where('docNum', search)
+          .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por docNum!',
@@ -292,8 +284,15 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const searchInfo = JSON.stringify(searchData)
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/list', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/list',
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -302,7 +301,7 @@ export default class PeopleController {
     }
   }
 
-  public async checkPerson({ response, request }: HttpContextContract) {
+  public async checkPerson({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(CheckPersonValidator)
     try {
       //Verifica se a pesquisa é por código
@@ -421,8 +420,16 @@ export default class PeopleController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const data = JSON.stringify(personData)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'PeopleController/checkPerson', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'PeopleController/checkPerson',
+        error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

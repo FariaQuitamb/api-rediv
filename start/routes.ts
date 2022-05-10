@@ -22,29 +22,17 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 Route.get('/', async () => {
-  /*const headers = request.headers()
-  const fields = formatHeaders(1, '996848384', headers)
-
-  const data = await regVaccinationLog(fields)
-
-  return { data, fields }
-
-  const contentType = request.header('content-type')
-
-  const name = request.header('X-Aplication-Name')
-
-  console.log({ contentType, name })*/
-
+  //onsole.log(Env.get('API_VERSION'))
   return { hello: 'world', title: 'It Works!' }
 })
 
-Route.get('health', async ({ response }) => {
+Route.get('v2/health', async ({ response }) => {
   const report = await HealthCheck.getReport()
   return report.healthy ? response.ok(report) : response.badRequest(report)
 })
 
 //Auth Login
-Route.post('auth/login', 'AuthController.login')
+Route.post('v2/auth/login', 'AuthController.login')
 
 Route.group(() => {
   //Auth
@@ -59,10 +47,12 @@ Route.group(() => {
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
+
   //Logs
-
-  Route.post('logs/error', 'LogsController.errorGeneral')
-  Route.post('logs/bydate', 'LogsController.errorByDate')
-
-  Route.post('logs/activity/getlogs', 'LogsController.getLogs')
-}).middleware('auth:api')
+  Route.post('logs/error', 'LogsController.getErrorLogs')
+  Route.post('logs/activity', 'LogsController.getLogs')
+  Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
+  Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
+})
+  .prefix('v2')
+  .middleware('auth:api')

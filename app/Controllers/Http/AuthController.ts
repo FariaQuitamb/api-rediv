@@ -2,12 +2,11 @@
 
 import Env from '@ioc:Adonis/Core/Env'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
 
 import { Md5 } from 'ts-md5'
 import AuthValidator from 'App/Validators/AuthValidator'
 
-import { base64, string } from '@ioc:Adonis/Core/Helpers'
+import { string } from '@ioc:Adonis/Core/Helpers'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
@@ -16,6 +15,8 @@ import LoggedUser from 'App/Models/LoggedUser'
 import logRegister from 'Contracts/functions/log_register'
 import Database from '@ioc:Adonis/Lucid/Database'
 import constants from 'Contracts/constants/constants'
+import formatUserInfo from 'Contracts/functions/format_user_info'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
@@ -31,9 +32,8 @@ export default class AuthController {
         .where('Senha', md5)
         .first()
 
-      //const md5 = new Md5.()
-
       if (!user) {
+        const version = Env.get('API_VERSION')
         await logRegister({
           id: 0,
           system: 'MB',
@@ -42,7 +42,7 @@ export default class AuthController {
           job: 'Consulta',
           tableId: 0,
           action: 'LoginAttempt',
-          actionId: `U:${username}-P:${data.password}`,
+          actionId: `V:${version}-U:${username}-P:${data.password}`,
         })
 
         console.log('Login incorrecto')
@@ -58,6 +58,7 @@ export default class AuthController {
         name: user.username,
       })
 
+      const version = Env.get('API_VERSION')
       const id = auth.user?.id ?? 0
       //Log de actividade
       await logRegister({
@@ -68,7 +69,7 @@ export default class AuthController {
         job: 'Consulta',
         tableId: id,
         action: 'Login',
-        actionId: '',
+        actionId: `V:${version}`,
       })
 
       return response.status(HttpStatusCode.ACCEPTED).send({
@@ -80,8 +81,15 @@ export default class AuthController {
       console.log(error)
 
       //Log de erro
+
+      const deviceInfo = formatHeaderInfo(request)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/login', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/login',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+      })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -91,13 +99,15 @@ export default class AuthController {
     }
   }
 
-  public async logout({ auth, response }: HttpContextContract) {
+  public async logout({ auth, request, response }: HttpContextContract) {
     try {
       const id = auth.user?.id ?? 0
       await auth.use('api').revoke()
 
       if (auth.use('api').isLoggedOut) {
         //Log de actividade
+
+        const version = Env.get('API_VERSION')
         await logRegister({
           id: id,
           system: 'MB',
@@ -106,7 +116,7 @@ export default class AuthController {
           job: 'Eliminação',
           tableId: id,
           action: 'Logout',
-          actionId: '',
+          actionId: `V:${version}`,
         })
 
         return response.status(HttpStatusCode.ACCEPTED).send({
@@ -123,8 +133,14 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/logout', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/logout',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
@@ -133,21 +149,11 @@ export default class AuthController {
     }
   }
 
-  public async loggedUsers({ auth, response }: HttpContextContract) {
+  public async loggedUsers({ auth, request, response }: HttpContextContract) {
     try {
       const loggedUsers = await LoggedUser.query()
 
       //Log de actividade
-      await logRegister({
-        id: auth.user?.id ?? 0,
-        system: 'MB',
-        screen: 'AuthController/loggedUsers',
-        table: 'api_tokens',
-        job: 'Consulta',
-        tableId: 0,
-        action: 'loggedUsers',
-        actionId: '',
-      })
 
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,
@@ -157,8 +163,14 @@ export default class AuthController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'AuthController/loggedUsers', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'AuthController/loggedUsers',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,

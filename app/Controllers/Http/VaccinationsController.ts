@@ -7,10 +7,14 @@ import VaccinationValidator from 'App/Validators/VaccinationValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
-import formatHeaders from 'Contracts/functions/format_log'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
+import formatUserInfo from 'Contracts/functions/format_user_info'
+import geoLog from 'Contracts/functions/geo_log'
 import logError from 'Contracts/functions/log_error'
-import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
+import moment from 'moment'
+
+import Env from '@ioc:Adonis/Core/Env'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -25,10 +29,18 @@ interface DoseInfo {
   dtHoje: string
 }
 export default class VaccinationsController {
+  public version = Env.get('API_VERSION')
+
   public async store({ auth, response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Mudança : formatação da data para ISO 8601
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
       const person = await Person.find(vaccinationData.personId)
       //
       //Verificar se o registro individual está habilitado a receber a vacina
@@ -119,13 +131,15 @@ export default class VaccinationsController {
         await vaccination.load('vaccine')
         await vaccination.load('dose')
 
+        //Log de geolocalização - Telefone do utente
+        await geoLog('P', vaccination.id, request)
         //Log de actividade - vacina primeira dose
         await vaccinationLog({
           userId: auth.user?.id as number,
           vaccinationId: vaccination.id,
           system: 'MB',
           job: 'Cadastrar',
-          screen: 'VaccinationController/store',
+          screen: `V:${this.version}-VaccinationController/store`,
           action: 'Cadastrar Vacina',
           observation: '1ª Dose',
           userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -154,6 +168,7 @@ export default class VaccinationsController {
 
           if (doseInfo.NumDiasRestante >= 0) {
             //Vacinando no intervalo de vacinação correcto
+
             //Verifica se está recebendo a vacina correcta
             if (vaccinationData.vaccineId === doseInfo.Id_Vacina) {
               //Recebendo a vacina correcta
@@ -167,13 +182,16 @@ export default class VaccinationsController {
               await vaccination.load('vaccine')
               await vaccination.load('dose')
 
+              //Log de geolocalização - Telefone do utente
+              await geoLog('S', vaccination.id, request)
+
               //Log de actividade - vacina segunda dose
               await vaccinationLog({
                 userId: auth.user?.id as number,
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -224,6 +242,8 @@ export default class VaccinationsController {
               await vaccination.load('vaccine')
               await vaccination.load('dose')
 
+              //Log de geolocalização - Telefone do utente
+              await geoLog('S', vaccination.id, request)
               // console.log('Utente está recebendo vacina errada')
               //Log de actividade - vacina segunda dose errada
               await vaccinationLog({
@@ -231,7 +251,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Vacina Errada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -274,13 +294,17 @@ export default class VaccinationsController {
               await vaccination.load('person')
               await vaccination.load('vaccine')
               await vaccination.load('dose')
+
+              //Log de geolocalização - Telefone do utente
+              await geoLog('S', vaccination.id, request)
+
               //Log de actividade - vacina segunda dose antecipada
               await vaccinationLog({
                 userId: auth.user?.id as number,
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -333,7 +357,8 @@ export default class VaccinationsController {
               await vaccination.load('vaccine')
               await vaccination.load('dose')
 
-              //console.log('Utente está recebendo vacina diferente  antes do tempo previsto')
+              //Log de geolocalização - Telefone do utente
+              await geoLog('S', vaccination.id, request)
 
               //Log de actividade - vacina segunda dose errada e antecipada
               await vaccinationLog({
@@ -341,7 +366,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: ` V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Vacina Errada-Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -370,8 +395,15 @@ export default class VaccinationsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const data = JSON.stringify(vaccinationData)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'VaccinationController/store', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'VaccinationController/store',
+        error: `User: ${userInfo}  Device: ${deviceInfo}  Dados: ${data}  ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -384,7 +416,13 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
-      const headers = request.headers()
+      // const headers = request.headers()
+      //Mudança : formatação da data para ISO 8601
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
 
       //Verificar o status enviado
 
@@ -519,13 +557,16 @@ export default class VaccinationsController {
           await vaccination.load('vaccine')
           await vaccination.load('dose')
 
+          //Log de geolocalização - Telefone do utente
+          await geoLog('R', vaccination.id, request)
+
           //Log de actividade - vacina de reforço
           await vaccinationLog({
             userId: auth.user?.id as number,
             vaccinationId: vaccination.id,
             system: 'MB',
             job: 'Cadastrar',
-            screen: 'VaccinationController/booster',
+            screen: `V:${this.version}-VaccinationController/booster`,
             action: 'Cadastrar Vacina',
             observation: 'Vacina de reforço',
             userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -582,13 +623,16 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
+            //Log de geolocalização - Telefone do utente
+            await geoLog('R', vaccination.id, request)
+
             //Log de actividade - vacina de reforço
             await vaccinationLog({
               userId: auth.user?.id as number,
               vaccinationId: vaccination.id,
               system: 'MB',
               job: 'Cadastrar',
-              screen: 'VaccinationController/booster',
+              screen: ` V:${this.version}-VaccinationController/booster`,
               action: 'Cadastrar Vacina',
               observation: 'Adição de mais uma vacina de reforço do utente',
               userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -639,6 +683,9 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
+            //Log de geolocalização - Telefone do utente
+            await geoLog('R', vaccination.id, request)
+
             //Log de actividade - vacina de reforço errada
             await vaccinationLog({
               userId: auth.user?.id as number,
@@ -681,6 +728,9 @@ export default class VaccinationsController {
             await vaccination.load('person')
             await vaccination.load('vaccine')
             await vaccination.load('dose')
+
+            //Log de geolocalização - Telefone do utente
+            await geoLog('R', vaccination.id, request)
 
             //Log de actividade - vacina de reforço antes do tempo , mas dentro de 15 dias
             await vaccinationLog({
@@ -740,6 +790,9 @@ export default class VaccinationsController {
             await vaccination.load('vaccine')
             await vaccination.load('dose')
 
+            //Log de geolocalização - Telefone do utente
+            await geoLog('R', vaccination.id, request)
+
             //Log de actividade - Vacina de reforço errada antes do tempo mas,  dentro de 15 dias
             await vaccinationLog({
               userId: auth.user?.id as number,
@@ -773,8 +826,16 @@ export default class VaccinationsController {
     } catch (error) {
       console.log(error)
       //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const data = JSON.stringify(Vaccination)
+      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
-      await logError({ type: 'MB', page: 'VaccinationController/booster', error: errorInfo })
+      await logError({
+        type: 'MB',
+        page: 'VaccinationController/booster',
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${data} ${errorInfo}`,
+      })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

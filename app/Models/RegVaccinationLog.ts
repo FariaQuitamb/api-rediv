@@ -7,12 +7,12 @@ export default class RegVaccinationLog extends BaseModel {
   public id: number
   @column({ columnName: 'Id_regVacinacao' })
   public vaccinationId: number
-  @column({ columnName: 'Imei' })
-  public imei: string
-  @column({ columnName: 'Telefobe' })
-  public phone: string
+  @column({ columnName: 'Mac_address' })
+  public mac: string
+  @column({ columnName: 'Tipo' })
+  public type: string
   @column({ columnName: 'Latitude' })
   public latitude: string
-  @column({ columnName: 'longitude' })
+  @column({ columnName: 'Longitude' })
   public longitude: string
 }
