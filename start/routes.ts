@@ -20,11 +20,19 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import regVaccinationLog from 'Contracts/functions/reg_vaccination_log'
-import formatDeviceInfo from 'Contracts/functions/format_device_info'
-import geoLog from 'Contracts/functions/geo_log'
 
-Route.get('/', async ({ request }) => {
+//TESTING VIEW
+
+Route.get('/admineq2', async ({ view }) => {
+  return view.render('index')
+})
+Route.get('/admineq', async ({ view }) => {
+  return view.render('home', {
+    greeting: 'Hello',
+  })
+})
+
+Route.get('/', async () => {
   return { hello: 'world', title: 'It Works!' }
 })
 
@@ -55,4 +63,6 @@ Route.group(() => {
   Route.post('logs/activity', 'LogsController.getLogs')
   Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
   Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
-}).middleware('auth:api')
+})
+  .prefix('v2')
+  .middleware('auth:api')
