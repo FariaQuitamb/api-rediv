@@ -128,7 +128,7 @@ export default class VaccinationsController {
         await vaccination.load('dose')
 
         //Log de geolocalização - Telefone do utente
-        await geoLog('P', vaccination.id, vaccination.person.phone, request)
+        await geoLog('P', vaccination.id, request)
         //Log de actividade - vacina primeira dose
         await vaccinationLog({
           userId: auth.user?.id as number,
@@ -179,7 +179,7 @@ export default class VaccinationsController {
               await vaccination.load('dose')
 
               //Log de geolocalização - Telefone do utente
-              await geoLog('S', vaccination.id, vaccination.person.phone, request)
+              await geoLog('S', vaccination.id, request)
 
               //Log de actividade - vacina segunda dose
               await vaccinationLog({
@@ -239,7 +239,7 @@ export default class VaccinationsController {
               await vaccination.load('dose')
 
               //Log de geolocalização - Telefone do utente
-              await geoLog('S', vaccination.id, vaccination.person.phone, request)
+              await geoLog('S', vaccination.id, request)
               // console.log('Utente está recebendo vacina errada')
               //Log de actividade - vacina segunda dose errada
               await vaccinationLog({
@@ -292,7 +292,7 @@ export default class VaccinationsController {
               await vaccination.load('dose')
 
               //Log de geolocalização - Telefone do utente
-              await geoLog('S', vaccination.id, vaccination.person.phone, request)
+              await geoLog('S', vaccination.id, request)
 
               //Log de actividade - vacina segunda dose antecipada
               await vaccinationLog({
@@ -354,7 +354,7 @@ export default class VaccinationsController {
               await vaccination.load('dose')
 
               //Log de geolocalização - Telefone do utente
-              await geoLog('S', vaccination.id, vaccination.person.phone, request)
+              await geoLog('S', vaccination.id, request)
 
               //Log de actividade - vacina segunda dose errada e antecipada
               await vaccinationLog({
@@ -554,7 +554,7 @@ export default class VaccinationsController {
           await vaccination.load('dose')
 
           //Log de geolocalização - Telefone do utente
-          await geoLog('R', vaccination.id, vaccination.person.phone, request)
+          await geoLog('R', vaccination.id, request)
 
           //Log de actividade - vacina de reforço
           await vaccinationLog({
@@ -620,7 +620,7 @@ export default class VaccinationsController {
             await vaccination.load('dose')
 
             //Log de geolocalização - Telefone do utente
-            await geoLog('R', vaccination.id, vaccination.person.phone, request)
+            await geoLog('R', vaccination.id, request)
 
             //Log de actividade - vacina de reforço
             await vaccinationLog({
@@ -680,7 +680,7 @@ export default class VaccinationsController {
             await vaccination.load('dose')
 
             //Log de geolocalização - Telefone do utente
-            await geoLog('R', vaccination.id, vaccination.person.phone, request)
+            await geoLog('R', vaccination.id, request)
 
             //Log de actividade - vacina de reforço errada
             await vaccinationLog({
@@ -726,7 +726,7 @@ export default class VaccinationsController {
             await vaccination.load('dose')
 
             //Log de geolocalização - Telefone do utente
-            await geoLog('R', vaccination.id, vaccination.person.phone, request)
+            await geoLog('R', vaccination.id, request)
 
             //Log de actividade - vacina de reforço antes do tempo , mas dentro de 15 dias
             await vaccinationLog({
@@ -787,7 +787,7 @@ export default class VaccinationsController {
             await vaccination.load('dose')
 
             //Log de geolocalização - Telefone do utente
-            await geoLog('R', vaccination.id, vaccination.person.phone, request)
+            await geoLog('R', vaccination.id, request)
 
             //Log de actividade - Vacina de reforço errada antes do tempo mas,  dentro de 15 dias
             await vaccinationLog({
