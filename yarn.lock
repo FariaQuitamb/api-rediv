@@ -285,7 +285,7 @@
     "tmp-cache" "^1.1.0"
     "validator" "^13.7.0"
 
-"@adonisjs/view@^6.0.0", "@adonisjs/view@^6.0.2":
+"@adonisjs/view@^6.0.0", "@adonisjs/view@^6.0.2", "@adonisjs/view@^6.1.4":
   "integrity" "sha512-pX/st3SryIc3peC75z9oy++9wyUjh7+ETicCKS+eRB6+M0c+0Lt85ErGugWHhaxFo0CpH6ic0Mgh9iIE1tYmrA=="
   "resolved" "https://registry.npmjs.org/@adonisjs/view/-/view-6.1.4.tgz"
   "version" "6.1.4"
