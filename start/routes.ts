@@ -36,13 +36,13 @@ Route.get('/', async () => {
   return { hello: 'world', title: 'It Works!' }
 })
 
-Route.get('health', async ({ response }) => {
+Route.get('v2/health', async ({ response }) => {
   const report = await HealthCheck.getReport()
   return report.healthy ? response.ok(report) : response.badRequest(report)
 })
 
 //Auth Login
-Route.post('auth/login', 'AuthController.login')
+Route.post('v2/auth/login', 'AuthController.login')
 
 Route.group(() => {
   //Auth
