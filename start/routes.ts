@@ -22,7 +22,6 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 Route.get('/', async () => {
-  //onsole.log(Env.get('API_VERSION'))
   return { hello: 'world', title: 'It Works!' }
 })
 
