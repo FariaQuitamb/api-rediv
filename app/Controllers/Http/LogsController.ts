@@ -232,21 +232,17 @@ export default class LogsController {
       const fields: Array<{ field: string; value: any }> = [
         { field: 'Id_regVacinacaoLog', value: logData.id },
         { field: 'Id_regVacinacao', value: logData.vaccinationId },
-        { field: 'Imei', value: logData.imei },
-        { field: 'Telefobe', value: logData.phone },
+        { field: 'Mac_address', value: logData.mac },
         { field: 'Latitude', value: logData.lat },
         { field: 'Longitude', value: logData.Long },
         { field: 'Tipo', value: logData.type },
-        { field: 'Id_regVacinacao', value: logData.vaccinationId },
       ]
 
       const query = generateQuery(fields)
 
-      console.log(query)
-
       const logs = await RegVaccinationLog.query()
         .whereRaw(query)
-        .orderBy('Data', 'desc')
+        .orderBy('Id_regVacinacao', 'desc')
         .paginate(logData.page, logData.limit)
       return response.status(HttpStatusCode.OK).send({
         message: 'Logs de vacinação da API : ' + query,
