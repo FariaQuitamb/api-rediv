@@ -1,5 +1,3 @@
-import Env from '@ioc:Adonis/Core/Env'
-
 const formatDeviceInfo = (type, vaccinationId, headers: any) => {
   const data = {
     vaccinationId: vaccinationId,
