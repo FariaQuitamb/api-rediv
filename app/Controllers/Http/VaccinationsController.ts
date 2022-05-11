@@ -386,9 +386,9 @@ export default class VaccinationsController {
           })
         }
       } else {
-        return response.status(HttpStatusCode.CREATED).send({
+        return response.status(HttpStatusCode.OK).send({
           message: 'O utente não tem próxima dose a tomar!',
-          code: HttpStatusCode.CREATED,
+          code: HttpStatusCode.OK,
           data: {},
         })
       }
