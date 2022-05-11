@@ -13,6 +13,7 @@ import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -129,6 +130,7 @@ export default class PeopleController {
         person.merge({ code: code, docNumber: 'PM' + code }).save()
       }
 
+      const version = Env.get('API_VERSION')
       //Log de actividade
       await logRegister({
         id: auth.user?.id ?? 0,
@@ -138,7 +140,7 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: person.id,
         action: 'Registro de Utente',
-        actionId: person.id.toString(),
+        actionId: `V:${version}-ID:${person.id.toString()}`,
       })
 
       //Utente inserido com sucesso

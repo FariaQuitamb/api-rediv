@@ -33,6 +33,7 @@ export default class AuthController {
         .first()
 
       if (!user) {
+        const version = Env.get('API_VERSION')
         await logRegister({
           id: 0,
           system: 'MB',
@@ -41,7 +42,7 @@ export default class AuthController {
           job: 'Consulta',
           tableId: 0,
           action: 'LoginAttempt',
-          actionId: `U:${username}-P:${data.password}`,
+          actionId: `V:${version}-U:${username}-P:${data.password}`,
         })
 
         console.log('Login incorrecto')
@@ -57,6 +58,7 @@ export default class AuthController {
         name: user.username,
       })
 
+      const version = Env.get('API_VERSION')
       const id = auth.user?.id ?? 0
       //Log de actividade
       await logRegister({
@@ -67,7 +69,7 @@ export default class AuthController {
         job: 'Consulta',
         tableId: id,
         action: 'Login',
-        actionId: '',
+        actionId: `V:${version}`,
       })
 
       return response.status(HttpStatusCode.ACCEPTED).send({
@@ -105,6 +107,7 @@ export default class AuthController {
       if (auth.use('api').isLoggedOut) {
         //Log de actividade
 
+        const version = Env.get('API_VERSION')
         await logRegister({
           id: id,
           system: 'MB',
@@ -113,7 +116,7 @@ export default class AuthController {
           job: 'Eliminação',
           tableId: id,
           action: 'Logout',
-          actionId: '',
+          actionId: `V:${version}`,
         })
 
         return response.status(HttpStatusCode.ACCEPTED).send({
@@ -151,18 +154,6 @@ export default class AuthController {
       const loggedUsers = await LoggedUser.query()
 
       //Log de actividade
-
-      /*
-      await logRegister({
-        id: auth.user?.id ?? 0,
-        system: 'MB',
-        screen: 'AuthController/loggedUsers',
-        table: 'api_tokens',
-        job: 'Consulta',
-        tableId: 0,
-        action: 'loggedUsers',
-        actionId: '',
-      })*/
 
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,

@@ -14,6 +14,8 @@ import logError from 'Contracts/functions/log_error'
 import vaccinationLog from 'Contracts/functions/vaccination_log'
 import moment from 'moment'
 
+import Env from '@ioc:Adonis/Core/Env'
+
 interface DoseInfo {
   Id_regVacinacao: number
   Id_Dose: number
@@ -27,6 +29,8 @@ interface DoseInfo {
   dtHoje: string
 }
 export default class VaccinationsController {
+  public version = Env.get('API_VERSION')
+
   public async store({ auth, response, request }: HttpContextContract) {
     const vaccinationData = await request.validate(VaccinationValidator)
 
@@ -135,7 +139,7 @@ export default class VaccinationsController {
           vaccinationId: vaccination.id,
           system: 'MB',
           job: 'Cadastrar',
-          screen: 'VaccinationController/store',
+          screen: `V:${this.version}-VaccinationController/store`,
           action: 'Cadastrar Vacina',
           observation: '1ª Dose',
           userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -187,7 +191,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -247,7 +251,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Vacina Errada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -300,7 +304,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: `V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -362,7 +366,7 @@ export default class VaccinationsController {
                 vaccinationId: vaccination.id,
                 system: 'MB',
                 job: 'Cadastrar',
-                screen: 'VaccinationController/store',
+                screen: ` V:${this.version}-VaccinationController/store`,
                 action: 'Cadastrar Vacina',
                 observation: '2ª Dose Vacina Errada-Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -562,7 +566,7 @@ export default class VaccinationsController {
             vaccinationId: vaccination.id,
             system: 'MB',
             job: 'Cadastrar',
-            screen: 'VaccinationController/booster',
+            screen: `V:${this.version}-VaccinationController/booster`,
             action: 'Cadastrar Vacina',
             observation: 'Vacina de reforço',
             userPostoVaccination: vaccinationData.vaccinationPostId,
@@ -628,7 +632,7 @@ export default class VaccinationsController {
               vaccinationId: vaccination.id,
               system: 'MB',
               job: 'Cadastrar',
-              screen: 'VaccinationController/booster',
+              screen: ` V:${this.version}-VaccinationController/booster`,
               action: 'Cadastrar Vacina',
               observation: 'Adição de mais uma vacina de reforço do utente',
               userPostoVaccination: vaccinationData.vaccinationPostId,

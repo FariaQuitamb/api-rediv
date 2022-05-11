@@ -21,18 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
-//TESTING VIEW
-
-Route.get('/admineq2', async ({ view }) => {
-  return view.render('index')
-})
-Route.get('/admineq', async ({ view }) => {
-  return view.render('home', {
-    greeting: 'Hello',
-  })
-})
-
 Route.get('/', async () => {
+  //onsole.log(Env.get('API_VERSION'))
   return { hello: 'world', title: 'It Works!' }
 })
 
@@ -57,8 +47,8 @@ Route.group(() => {
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
-  //Logs
 
+  //Logs
   Route.post('logs/error', 'LogsController.getErrorLogs')
   Route.post('logs/activity', 'LogsController.getLogs')
   Route.post('logs/vaccine', 'LogsController.getVaccineLogs')

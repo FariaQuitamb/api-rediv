@@ -109,7 +109,7 @@ export default class LogsController {
     }
   }
 
-  public async getErrorLogs({ auth, response, request }: HttpContextContract) {
+  public async getErrorLogs({ response, request }: HttpContextContract) {
     const logData = await request.validate(GetErrorLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
@@ -127,8 +127,8 @@ export default class LogsController {
       let query = ''
 
       if (filters.length === 1) {
-        if (filters[0].field === 'Data') {
-          query = ` CONVERT(date,[Data]) =  CONVERT(date,'${filters[0].value}')`
+        if (filters[0].field === 'DataCad') {
+          query = ` CONVERT(date,[DataCad]) =  CONVERT(date,'${filters[0].value}')`
         } else {
           query += `${filters[0].field} = '${filters[0].value}'`
         }
@@ -163,14 +163,8 @@ export default class LogsController {
       console.log(error)
       //Log de erro
 
-      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
-      const userInfo = formatUserInfo(auth.user)
-      const errorInfo = formatError(error)
-      await logError({
-        type: 'MB',
-        page: 'LogsController/getErrorLogs',
-        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
-      })
+      console.log(error)
+
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
