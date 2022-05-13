@@ -38,6 +38,8 @@ export default class VaccinationValidator {
     lotId: schema.number(),
     vaccinationCountryId: schema.number(),
     regMB: schema.string({ escape: true, trim: true }, [rules.minLength(1), rules.maxLength(1)]),
+    latitude: schema.string.optional({ escape: true, trim: true }),
+    longitude: schema.string.optional({ escape: true, trim: true }),
   })
 
   /**

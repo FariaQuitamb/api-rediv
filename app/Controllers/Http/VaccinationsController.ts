@@ -15,6 +15,7 @@ import vaccinationLog from 'Contracts/functions/vaccination_log'
 import moment from 'moment'
 
 import Env from '@ioc:Adonis/Core/Env'
+import getGeoLocation from 'Contracts/functions/get_geolocation'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -35,6 +36,12 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      vaccinationData.regMB = 'S'
+      //Added geolocation
+      const geo = getGeoLocation(request.headers())
+      vaccinationData.latitude = geo.latitude
+      vaccinationData.longitude = geo.longitude
+
       //Mudança : formatação da data para ISO 8601
       vaccinationData.createdAt = moment(
         vaccinationData.createdAt,
@@ -416,7 +423,13 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
-      // const headers = request.headers()
+      vaccinationData.regMB = 'S'
+
+      //Added geolocation
+      const geo = getGeoLocation(request.headers())
+      vaccinationData.latitude = geo.latitude
+      vaccinationData.longitude = geo.longitude
+
       //Mudança : formatação da data para ISO 8601
       vaccinationData.createdAt = moment(
         vaccinationData.createdAt,
