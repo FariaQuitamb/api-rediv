@@ -47,6 +47,12 @@ export default class Vaccination extends BaseModel {
   @column({ columnName: 'RegMB' })
   public regMB: string
 
+  @column({ columnName: 'Latitude' })
+  public latitude: string
+
+  @column({ columnName: 'Longitude' })
+  public longitude: string
+
   @belongsTo(() => Person)
   public person: BelongsTo<typeof Person>
 
