@@ -108,6 +108,7 @@ const searchPeopleFields = [
   '[recVac]',
   '[TotVac]',
   '[CodigoNum]',
+  '[Id_Vacina]',
 ]
 
 const constants = {
