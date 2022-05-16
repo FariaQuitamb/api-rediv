@@ -290,7 +290,7 @@ export default class PeopleController {
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
-        page: 'PeopleController/list',
+        page: 'v2:PeopleController/list',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
