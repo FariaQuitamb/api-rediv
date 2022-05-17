@@ -52,6 +52,10 @@ Route.group(() => {
   Route.post('logs/activity', 'LogsController.getLogs')
   Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
   Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
+  //API ACCESS ROUTE
+
+  Route.post('accesses/list', 'ApiAcessesController.index')
+  Route.post('accesses', 'ApiAcessesController.store')
 })
   .prefix('v2')
   .middleware('auth:api')

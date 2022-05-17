@@ -41,6 +41,7 @@ const databaseConfig: DatabaseConfig = {
         server: Env.get('MSSQL_SERVER'),
         password: Env.get('MSSQL_PASSWORD', ''),
         database: Env.get('MSSQL_DB_NAME'),
+
         options: {
           trustServerCertificate: true,
         },
@@ -51,6 +52,9 @@ const databaseConfig: DatabaseConfig = {
       },
       healthCheck: false,
       debug: false,
+      pool: {
+        acquireTimeoutMillis: 60 * 1000,
+      },
     },
   },
 }
