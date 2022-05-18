@@ -15,7 +15,10 @@ export default class GoalsController {
     try {
       const vaccinationPost = await VaccinationPost.query()
         .preload('goals', (query) => {
-          query.whereRaw(`DtFim  >= CONVERT(DATE,GETDATE())`)
+          query
+            .whereRaw(`DtIni <= CONVERT(DATE,GETDATE())`)
+            .whereRaw(`DtFim  >= CONVERT(DATE,GETDATE())`)
+            .orderBy('DtIni', 'desc')
         })
         .where('Id_postoVacinacao', searchData.vaccinationPostId)
 
