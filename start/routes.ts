@@ -29,7 +29,7 @@ Route.get('/', async () => {
 
   const postGoals = await PostGoal.all()
 
-  const vaccinationPost = await VaccinationPost.query().preload('goals')
+  const vaccinationPost = await VaccinationPost.query().preload('goals').where('', '')
 
   return { goals, postGoals, vaccinationPost }
   //return { hello: 'world', title: 'It Works!' }
@@ -56,6 +56,9 @@ Route.group(() => {
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
+
+  //Goals
+  Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')
 
   //Logs
   Route.post('logs/error', 'LogsController.getErrorLogs')
