@@ -1,4 +1,13 @@
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  BelongsTo,
+  belongsTo,
+  column,
+  hasMany,
+  ManyToMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
+import Goal from './Goal'
 import Municipality from './Municipality'
 import Province from './Province'
 
@@ -84,4 +93,13 @@ export default class VaccinationPost extends BaseModel {
 
   @belongsTo(() => Municipality)
   public municipality: BelongsTo<typeof Municipality>
+
+  @manyToMany(() => Goal, {
+    pivotTable: 'vac_objPostoVacOBJ',
+    localKey: 'id',
+    pivotForeignKey: 'Id_postoVacinacao',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'Id_objPostoVac',
+  })
+  public goals: ManyToMany<typeof Goal>
 }
