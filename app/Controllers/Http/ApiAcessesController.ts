@@ -24,7 +24,7 @@ export default class ApiAcessesController {
       }
       const accesses = await ApiAccess.query()
         .whereRaw(query)
-        .orderBy('name', 'asc')
+        .orderBy('created_at', 'desc')
         .paginate(searchData.page, searchData.limit)
 
       return response.status(HttpStatusCode.OK).send({
@@ -61,7 +61,7 @@ export default class ApiAcessesController {
       if (findAccess) {
         return response.status(HttpStatusCode.OK).send({
           message: 'Essa Instituição já possuí acesso !',
-          code: HttpStatusCode.FOUND,
+          code: HttpStatusCode.OK,
           data: {},
         })
       }
