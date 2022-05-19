@@ -8,6 +8,8 @@ import logError from 'Contracts/functions/log_error'
 import jwt from 'jsonwebtoken'
 import Env from '@ioc:Adonis/Core/Env'
 import ListAccessesValidator from 'App/Validators/ListAccessesValidator'
+import logRegister from 'Contracts/functions/log_register'
+import ApiAccessStateValidator from 'App/Validators/ApiAccessStateValidator'
 
 export default class ApiAcessesController {
   public async index({ auth, response, request }: HttpContextContract) {
@@ -54,9 +56,10 @@ export default class ApiAcessesController {
   public async store({ auth, request, response }: HttpContextContract) {
     const accessData = await request.validate(ApiAccessValidator)
     try {
-      const findAccess = await ApiAccess.findBy('name', accessData.name)
-
-      console.log(accessData.name)
+      const findAccess = await ApiAccess.query()
+        .where('name', accessData.name)
+        .where('state', 1)
+        .first()
 
       if (findAccess) {
         return response.status(HttpStatusCode.OK).send({
@@ -75,10 +78,66 @@ export default class ApiAcessesController {
 
       await access.merge({ accessKey: token }).save()
 
+      const version = Env.get('API_VERSION')
+      //Log de actividade
+      await logRegister({
+        id: auth.user?.id ?? 0,
+        system: 'MB',
+        screen: 'ApiAcessesController/store',
+        table: 'api_accesses',
+        job: 'Cadastrar',
+        tableId: access.id,
+        action: 'Registro de accesso a API',
+        actionId: `V:${version}-ID:${access.id.toString()}`,
+      })
+
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Acesso criado com sucesso!',
         code: HttpStatusCode.CREATED,
         data: access,
+      })
+    } catch (error) {
+      console.log(error)
+
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'ApiAcessesController/store',
+        error: `User:${userInfo} - ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async changeState({ auth, response, request }: HttpContextContract) {
+    const searchData = await request.validate(ApiAccessStateValidator)
+    try {
+      const access = await ApiAccess.query().where('id', searchData.id).first()
+
+      if (!access) {
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Instituição não encontrada!',
+          code: HttpStatusCode.OK,
+          data: {},
+        })
+      }
+
+      const state = access.state === 1 ? 0 : 1
+      access.merge({ state })
+      await access.save()
+
+      const stateName = state === 1 ? 'Activo' : 'Inactivo'
+
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: `Estado do acesso  modificado para ${stateName}`,
+        code: HttpStatusCode.ACCEPTED,
+        data: {},
       })
     } catch (error) {
       console.log(error)
