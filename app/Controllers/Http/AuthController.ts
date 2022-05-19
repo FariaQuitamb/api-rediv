@@ -56,8 +56,6 @@ export default class AuthController {
 
       const version = Env.get('API_VERSION')
 
-      console.log(user)
-
       const token = await auth.use('api').generate(user, {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
