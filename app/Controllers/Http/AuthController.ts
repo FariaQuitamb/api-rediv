@@ -11,12 +11,13 @@ import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
 
-import LoggedUser from 'App/Models/LoggedUser'
 import logRegister from 'Contracts/functions/log_register'
 import Database from '@ioc:Adonis/Lucid/Database'
 import constants from 'Contracts/constants/constants'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
+import ApiTokenCustom from 'App/Models/ApiTokenCustom'
+
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
     const data = await request.validate(AuthValidator)
@@ -53,12 +54,24 @@ export default class AuthController {
         })
       }
 
+      const version = Env.get('API_VERSION')
+
+      console.log(user)
+
       const token = await auth.use('api').generate(user, {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
+        role: user.user_role,
+        personal_name: user.name,
+        national_id: user.doc_number,
+        phone: user.phone,
+        vaccination_post: user.post_name,
+        vaccination_post_id: user.vaccination_post_id,
+        province: user.post_province,
+        municipality: user.post_municipality,
+        api_version: version,
       })
 
-      const version = Env.get('API_VERSION')
       const id = auth.user?.id ?? 0
       //Log de actividade
       await logRegister({
@@ -151,7 +164,7 @@ export default class AuthController {
 
   public async loggedUsers({ auth, request, response }: HttpContextContract) {
     try {
-      const loggedUsers = await LoggedUser.query()
+      const loggedUsers = await ApiTokenCustom.query().orderBy('created_at', 'desc')
 
       //Log de actividade
 
