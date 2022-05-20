@@ -28,15 +28,15 @@ export default class GoalsController {
         return response.status(HttpStatusCode.OK).send({
           message: 'Posto de vacinação não encontrado',
           code: HttpStatusCode.OK,
-          data: {},
+          data: [],
         })
       }
 
       if (vaccinationPost.goals.length === 0) {
-        return response.status(HttpStatusCode.OK).send({
+        return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Posto de vacinação sem objectivos',
-          code: HttpStatusCode.OK,
-          data: {},
+          code: HttpStatusCode.ACCEPTED,
+          data: [],
         })
       }
 
