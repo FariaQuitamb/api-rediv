@@ -36,7 +36,7 @@ Route.post('v2/auth/login', 'AuthController.login')
 Route.group(() => {
   //Auth
   Route.get('auth/logout', 'AuthController.logout')
-  Route.get('auth/logged', 'AuthController.loggedUsers')
+  Route.post('auth/logged', 'AuthController.loggedUsers')
   //Preload Route
   Route.get('preload', 'PreloadsController.index')
   //Person

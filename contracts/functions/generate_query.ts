@@ -11,16 +11,20 @@ const generateQuery = (fields: Array<{ field: string; value: any }>) => {
   let query = ''
 
   if (filters.length === 1) {
-    if (filters[0].field === 'Data') {
-      query = ` CONVERT(date,[Data]) =  CONVERT(date,'${filters[0].value}')`
+    if (
+      filters[0].field === 'Data' ||
+      filters[0].field === 'created_at' ||
+      filters[0].field === 'expires_at'
+    ) {
+      query = ` CONVERT(date,[${filters[0].field}]) =  CONVERT(date,'${filters[0].value}')`
     } else {
       query += `${filters[0].field} = '${filters[0].value}'`
     }
   } else {
     let filterQuery: string
     filters.map((elem, index) => {
-      if (elem.field === 'Data') {
-        filterQuery = ` CONVERT(date,[Data]) =  CONVERT(date,'${elem.value}')`
+      if (elem.field === 'Data' || elem.field === 'created_at' || elem.field === 'expires_at') {
+        filterQuery = ` CONVERT(date,[${elem.field}]) =  CONVERT(date,'${elem.value}')`
       } else {
         filterQuery = ` ${elem.field} = '${elem.value}'`
       }
