@@ -17,6 +17,8 @@ import constants from 'Contracts/constants/constants'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import ApiTokenCustom from 'App/Models/ApiTokenCustom'
+import generateQuery from 'Contracts/functions/generate_query'
+import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -161,14 +163,52 @@ export default class AuthController {
   }
 
   public async loggedUsers({ auth, request, response }: HttpContextContract) {
+    const searchData = await request.validate(LoggedUserValidator)
     try {
-      const loggedUsers = await ApiTokenCustom.query().orderBy('created_at', 'desc')
+      /*
+
+
+ 
+   
+      ,[api_version]
+
+      */
+      const fields: Array<{ field: string; value: any }> = [
+        { field: 'id', value: searchData.id },
+        { field: 'user_id', value: searchData.userId },
+        { field: 'name', value: searchData.username },
+
+        { field: 'expires_at', value: searchData.expiresAt },
+        { field: 'created_at', value: searchData.sessionDate },
+
+        { field: 'personal_name', value: searchData.personalName },
+        { field: 'national_id', value: searchData.nationalID },
+
+        { field: 'phone', value: searchData.phone },
+
+        { field: 'role', value: searchData.role },
+
+        { field: 'vaccination_post', value: searchData.vaccinationPost },
+
+        { field: 'vaccination_post_id', value: searchData.vaccinationPostId },
+
+        { field: 'province', value: searchData.province },
+        { field: 'municipality', value: searchData.municipality },
+        { field: 'api_version', value: searchData.apiVersion },
+      ]
+
+      const query = generateQuery(fields)
+
+      const loggedUsers = await ApiTokenCustom.query()
+        .whereRaw(query)
+        .orderBy('created_at', 'desc')
+        .paginate(searchData.page, searchData.limit)
 
       //Log de actividade
 
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,
-        message: 'Utilizadores com sessão activa',
+        message: 'Utilizadores com sessão activa : ' + query,
         data: { qtd: loggedUsers.length, users: loggedUsers },
       })
     } catch (error) {
