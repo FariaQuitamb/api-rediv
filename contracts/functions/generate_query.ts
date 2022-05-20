@@ -11,19 +11,29 @@ const generateQuery = (fields: Array<{ field: string; value: any }>) => {
   let query = ''
 
   if (filters.length === 1) {
+    query += `${filters[0].field} = '${filters[0].value}'`
+
+    if (filters[0].field === 'Id_postoVacinacao') {
+      query = `[vac_postoVacinacao].[Id_postoVacinacao] = '${filters[0].value}' `
+    }
     if (
       filters[0].field === 'Data' ||
       filters[0].field === 'created_at' ||
       filters[0].field === 'expires_at'
     ) {
+      //Converte as datas
       query = ` CONVERT(date,[${filters[0].field}]) =  CONVERT(date,'${filters[0].value}')`
-    } else {
-      query += `${filters[0].field} = '${filters[0].value}'`
     }
   } else {
     let filterQuery: string
     filters.map((elem, index) => {
-      if (elem.field === 'Data' || elem.field === 'created_at' || elem.field === 'expires_at') {
+      if (elem.field === 'Id_postoVacinacao') {
+        filterQuery = ` [vac_postoVacinacao].[Id_postoVacinacao] = '${elem.value}' `
+      } else if (
+        elem.field === 'Data' ||
+        elem.field === 'created_at' ||
+        elem.field === 'expires_at'
+      ) {
         filterQuery = ` CONVERT(date,[${elem.field}]) =  CONVERT(date,'${elem.value}')`
       } else {
         filterQuery = ` ${elem.field} = '${elem.value}'`
