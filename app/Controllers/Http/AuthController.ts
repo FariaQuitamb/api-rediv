@@ -19,6 +19,7 @@ import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import ApiTokenCustom from 'App/Models/ApiTokenCustom'
 import generateQuery from 'Contracts/functions/generate_query'
 import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
+import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -165,14 +166,6 @@ export default class AuthController {
   public async loggedUsers({ auth, request, response }: HttpContextContract) {
     const searchData = await request.validate(LoggedUserValidator)
     try {
-      /*
-
-
- 
-   
-      ,[api_version]
-
-      */
       const fields: Array<{ field: string; value: any }> = [
         { field: 'id', value: searchData.id },
         { field: 'user_id', value: searchData.userId },
@@ -204,12 +197,10 @@ export default class AuthController {
         .orderBy('created_at', 'desc')
         .paginate(searchData.page, searchData.limit)
 
-      //Log de actividade
-
-      return response.status(HttpStatusCode.ACCEPTED).send({
-        code: HttpStatusCode.ACCEPTED,
-        message: 'Utilizadores com sessão activa : ' + query,
-        data: { qtd: loggedUsers.length, users: loggedUsers },
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Usuários com login activo na API : ' + query,
+        code: HttpStatusCode.OK,
+        data: loggedUsers,
       })
     } catch (error) {
       console.log(error)
@@ -221,6 +212,74 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/loggedUsers',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        details: error,
+        message: 'Não foi possível listar utilizadores com sessão activa',
+      })
+    }
+  }
+
+  public async loggedUsersView({ auth, request, response }: HttpContextContract) {
+    const searchData = await request.validate(LoggedUserViewValidator)
+    try {
+      const fields: Array<{ field: string; value: any }> = [
+        { field: 'id', value: searchData.id },
+        { field: 'Id_userPostoVacinacao', value: searchData.userId },
+        { field: 'Utilizador', value: searchData.username },
+
+        { field: 'expires_at', value: searchData.expiresAt },
+        { field: 'created_at', value: searchData.sessionDate },
+
+        { field: 'Nome', value: searchData.personalName },
+
+        { field: 'BI', value: searchData.nationalID },
+
+        { field: 'Telefone', value: searchData.phone },
+
+        { field: 'Funcao', value: searchData.role },
+
+        { field: 'Posto', value: searchData.vaccinationPost },
+
+        { field: 'Id_postoVacinacao', value: searchData.vaccinationPostId },
+
+        { field: 'ProvPosto', value: searchData.province },
+        { field: 'MunicPosto', value: searchData.municipality },
+        { field: 'Id_ComunaEM', value: searchData.communeId },
+        { field: 'api_version', value: searchData.apiVersion },
+        { field: 'Latitude', value: searchData.latitude },
+        { field: 'Longitude', value: searchData.longitude },
+
+        { field: 'NomeResp', value: searchData.postManagerName },
+        { field: 'BIResp', value: searchData.postManagerNationalId },
+        { field: 'TelResp', value: searchData.postManagerPhone },
+      ]
+
+      const query = generateQuery(fields)
+
+      const loggedUsers = await Database.from(constants.mainSource)
+        .select(constants.loggedUserFields)
+        .joinRaw(constants.sources)
+        .whereRaw(query)
+        .orderBy('id', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Usuários com login activo na API : ' + query,
+        code: HttpStatusCode.OK,
+        data: loggedUsers,
+      })
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'AuthController/loggedUsers',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
