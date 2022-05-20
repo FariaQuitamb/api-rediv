@@ -20,19 +20,9 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import Goal from 'App/Models/Goal'
-import PostGoal from 'App/Models/PostGoal'
-import VaccinationPost from 'App/Models/VaccinationPost'
 
 Route.get('/', async () => {
-  const goals = await Goal.all()
-
-  const postGoals = await PostGoal.all()
-
-  const vaccinationPost = await VaccinationPost.query().preload('goals').where('', '')
-
-  return { goals, postGoals, vaccinationPost }
-  //return { hello: 'world', title: 'It Works!' }
+  return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('v2/health', async ({ response }) => {
@@ -69,6 +59,7 @@ Route.group(() => {
 
   Route.post('accesses/list', 'ApiAcessesController.index')
   Route.post('accesses', 'ApiAcessesController.store')
+  Route.post('accesses/state', 'ApiAcessesController.changeState')
 })
   .prefix('v2')
   .middleware('auth:api')
