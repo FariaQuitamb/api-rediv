@@ -145,6 +145,17 @@ sources +=
   ' on([SIGIS].[dbo].[vac_postoVacinacao].[Id_postoVacinacao]=[SIGIS].[dbo].[vw_AcsPostoVac_MB].[Id_postoVacinacao])'
 //sources += ' order by [id] desc'
 
+//Ranking query
+
+const rankingQueryNational =
+  ' SELECT TOP(?)  tbl.[Id_userPostoVacinacao],tbl.[NOME] as name, tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio], [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] where [Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]    ORDER BY total DESC'
+
+const rankingQueryProvince =
+  ' SELECT TOP(?)  tbl.[Id_userPostoVacinacao],tbl.[NOME] as name, tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio], [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] where [Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_provincia] = ?   ORDER BY total DESC'
+
+const rankingQueryMunicipality =
+  ' SELECT TOP(?)  tbl.[Id_userPostoVacinacao],tbl.[NOME] as name, tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio], [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] where [Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?   ORDER BY total DESC'
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -159,5 +170,8 @@ const constants = {
   loggedUserFields,
   sources,
   mainSource,
+  rankingQueryNational,
+  rankingQueryProvince,
+  rankingQueryMunicipality,
 }
 export default constants
