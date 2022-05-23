@@ -14,6 +14,8 @@ import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
+import GetUserRank from 'App/Validators/getUserRank'
+import getUserRank from 'Contracts/functions/get_user_rank'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -429,6 +431,50 @@ export default class PeopleController {
         type: 'MB',
         page: 'PeopleController/checkPerson',
         error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async getUserRankNational({ auth, response, request }: HttpContextContract) {
+    const searchData = await request.validate(GetUserRank)
+    try {
+      const topUsers = await Database.rawQuery(constants.rankingQueryNational, [searchData.top])
+
+      const provinceTopUsers = await Database.rawQuery(constants.rankingQueryProvince, [
+        searchData.top,
+        searchData.provinceId,
+      ])
+
+      const municipalityTopUsers = await Database.rawQuery(constants.rankingQueryMunicipality, [
+        searchData.top,
+        searchData.municipalityId,
+      ])
+
+      const rankNational = getUserRank(topUsers, searchData.userId)
+      const rankProvince = getUserRank(provinceTopUsers, searchData.userId)
+      const rankMunicipality = getUserRank(municipalityTopUsers, searchData.userId)
+
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: `Ranking do utilizador`,
+        code: HttpStatusCode.ACCEPTED,
+        data: { rankNational, rankProvince, rankMunicipality },
+      })
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'LogsController/getUserRankNational',
+        error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

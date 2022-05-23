@@ -37,12 +37,17 @@ Route.group(() => {
   //Auth
   Route.get('auth/logout', 'AuthController.logout')
   Route.post('auth/logged', 'AuthController.loggedUsers')
+  Route.post('auth/logged_users', 'AuthController.loggedUsersView')
   //Preload Route
   Route.get('preload', 'PreloadsController.index')
   //Person
   Route.post('people', 'PeopleController.store')
   Route.post('people/search', 'PeopleController.list')
   Route.post('people/check', 'PeopleController.checkPerson')
+
+  //RANKING
+  Route.post('ranking', 'PeopleController.getUserRankNational')
+
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
