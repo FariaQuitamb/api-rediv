@@ -7,7 +7,6 @@ const getUserRank = (arr: any, userId: number) => {
 
       return true
     }
-    console.log('item is :' + userRank.name + ' index is : ' + index)
   })
 
   return nationalPosition
