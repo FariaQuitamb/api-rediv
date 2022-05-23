@@ -44,6 +44,10 @@ Route.group(() => {
   Route.post('people', 'PeopleController.store')
   Route.post('people/search', 'PeopleController.list')
   Route.post('people/check', 'PeopleController.checkPerson')
+
+  //RANKING
+  Route.post('ranking', 'PeopleController.getUserRankNational')
+
   //Vaccination
   Route.post('vaccination/', 'VaccinationsController.store')
   Route.post('vaccination/booster', 'VaccinationsController.booster')
