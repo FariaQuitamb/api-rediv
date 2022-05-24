@@ -330,6 +330,12 @@ export default class PeopleController {
             code: HttpStatusCode.OK,
             data: { person, vacinationCicle },
           })
+        } else {
+          return response.status(HttpStatusCode.OK).send({
+            message: 'Utente não encontrado!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
         }
       }
 
