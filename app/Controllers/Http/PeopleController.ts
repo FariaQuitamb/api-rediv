@@ -23,6 +23,30 @@ export default class PeopleController {
     try {
       let hasDocNumber = true
 
+      //START - CORRECÇÃO PARA DATA ERRADA
+      const dateParts = personData.birthday.split('-')
+
+      const hasMonthError = parseInt(dateParts[1]) < 1 || parseInt(dateParts[1]) > 12
+
+      const hasDayError = parseInt(dateParts[2]) < 1 || parseInt(dateParts[2]) > 31
+
+      let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true)
+
+      if (receivedDate.toISOString() === null) {
+        const month = hasMonthError ? '01' : dateParts[1]
+        const day = hasDayError ? '01' : dateParts[2]
+
+        const changedDate = `${dateParts[0]}-${month}-${day}`
+
+        receivedDate = moment(new Date(changedDate), moment.ISO_8601, true)
+
+        console.log('DATE WAS CHANGED TO: ' + personData.birthday)
+      }
+
+      personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
+
+      //END-CORRECÇÃO PARA DATA ERRADA
+
       //Verifica se o utente tem número de documento
       if (personData.docNumber === undefined || personData.docNumber === ' ') {
         hasDocNumber = false
