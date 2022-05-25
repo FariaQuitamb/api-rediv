@@ -20,9 +20,17 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import VaccinationMessage from 'App/Models/VaccinationMessage'
+import VaccinationPostMessage from 'App/Models/VaccinationPostMessage'
+import moment from 'moment'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  // var date = '2008-15-24
+  /* const msg = await VaccinationMessage.query()
+  const postMsg = await VaccinationPostMessage.query().preload('messages', (query) =>
+    query.preload('archives')
+  )*/
+  //return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('v2/health', async ({ response }) => {
