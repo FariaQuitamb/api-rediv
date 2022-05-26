@@ -1,3 +1,54 @@
-// import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import VaccinationPostMessage from 'App/Models/VaccinationPostMessage'
+import VaccinationPostUserMessage from 'App/Models/VaccinationPostUserMessage'
 
-export default class VaccinationMessagesController {}
+import MessageValidator from 'App/Validators/messageValidator'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatError from 'Contracts/functions/format_error'
+import formatHeaderInfo from 'Contracts/functions/format_header_info'
+import formatUserInfo from 'Contracts/functions/format_user_info'
+import logError from 'Contracts/functions/log_error'
+
+export default class VaccinationMessagesController {
+  public async getMessage({ auth, response, request }: HttpContextContract) {
+    const userMessage = await request.validate(MessageValidator)
+
+    try {
+      const vaccinationPostMessages = await VaccinationPostMessage.query()
+        .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
+        .where('Id_postoVacinacao', userMessage.vaccinationPostId)
+        .orWhere('Id_tipoFuncPostoVac', userMessage.userPostRoleId)
+        .orderBy('DataCad', 'desc')
+        .paginate(userMessage.page, userMessage.limit)
+
+      const userMessages = await VaccinationPostUserMessage.query()
+        .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
+        .where('Id_userPostoVacinacao', 3875)
+        .orderBy('DataCad', 'desc')
+        .paginate(userMessage.page, userMessage.limit)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Notificações do utilizador',
+        code: HttpStatusCode.OK,
+        data: { vaccinationPostMessages, userMessages },
+      })
+    } catch (error) {
+      console.log(error)
+      //Log de erro
+      const searchInfo = JSON.stringify(userMessage)
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'v2:PeopleController/list',
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+}
