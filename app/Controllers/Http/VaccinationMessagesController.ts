@@ -8,6 +8,7 @@ import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class VaccinationMessagesController {
   public async getMessage({ auth, response, request }: HttpContextContract) {
@@ -15,15 +16,25 @@ export default class VaccinationMessagesController {
 
     try {
       const vaccinationPostMessages = await VaccinationPostMessage.query()
-        .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
+        .preload('messages', (query) =>
+          query
+            .preload('archives')
+            .preload('views', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
+            .orderBy('DataCad', 'desc')
+        )
         .where('Id_postoVacinacao', userMessage.vaccinationPostId)
         .orWhere('Id_tipoFuncPostoVac', userMessage.userPostRoleId)
         .orderBy('DataCad', 'desc')
         .paginate(userMessage.page, userMessage.limit)
 
       const userMessages = await VaccinationPostUserMessage.query()
-        .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
-        .where('Id_userPostoVacinacao', 3875)
+        .preload('messages', (query) =>
+          query
+            .preload('archives')
+            .preload('views', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
+            .orderBy('DataCad', 'desc')
+        )
+        .where('Id_userPostoVacinacao', userMessage.userId)
         .orderBy('DataCad', 'desc')
         .paginate(userMessage.page, userMessage.limit)
 
@@ -39,9 +50,11 @@ export default class VaccinationMessagesController {
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
+
+      const version = Env.get('API_VERSION')
       await logError({
         type: 'MB',
-        page: 'v2:PeopleController/list',
+        page: `V:${version} VaccinationMessagesController/getMessage`,
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
