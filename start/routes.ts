@@ -20,20 +20,26 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import VaccinationMessage from 'App/Models/VaccinationMessage'
 import VaccinationPostMessage from 'App/Models/VaccinationPostMessage'
-import moment from 'moment'
 import VaccinationPostUserMessage from 'App/Models/VaccinationPostUserMessage'
 
 Route.get('/', async () => {
-  const msg = await VaccinationMessage.query()
-  const postMsg = await VaccinationPostMessage.query().preload('messages', (query) =>
-    query.preload('archives')
-  )
-  const userMsg = await VaccinationPostUserMessage.query().preload('messages', (query) =>
-    query.preload('archives')
-  )
-  return { postMsg, userMsg, hello: 'world', title: 'It Works!' }
+  /** UserId e UserRoleId */
+  const vaccinationPostMessages = await VaccinationPostMessage.query()
+    .preload('messages', (query) => query.preload('archives'))
+    .where('Id_postoVacinacao', 96)
+    .where('Id_tipoFuncPostoVac', 0)
+    .orWhere('Id_tipoFuncPostoVac', 4)
+    .paginate(1, 10)
+
+  const userMessages = await VaccinationPostUserMessage.query()
+    .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
+    .where('Id_userPostoVacinacao', 3875)
+    .orderBy('DataCad', 'desc')
+    .paginate(1, 10)
+
+  return { vaccinationPostMessages, userMessages }
+  //return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('v2/health', async ({ response }) => {
@@ -76,6 +82,10 @@ Route.group(() => {
   Route.post('accesses/list', 'ApiAcessesController.index')
   Route.post('accesses', 'ApiAcessesController.store')
   Route.post('accesses/state', 'ApiAcessesController.changeState')
+
+  //MESSAGE ROUTES
+
+  Route.post('usermessages', 'VaccinationMessagesController.getMessage')
 })
   .prefix('v2')
   .middleware('auth:api')
