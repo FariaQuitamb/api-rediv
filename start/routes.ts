@@ -86,6 +86,7 @@ Route.group(() => {
   //MESSAGE ROUTES
 
   Route.post('usermessages', 'VaccinationMessagesController.getMessage')
+  Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
 })
   .prefix('v2')
   .middleware('auth:api')

@@ -20,6 +20,7 @@ import ApiTokenCustom from 'App/Models/ApiTokenCustom'
 import generateQuery from 'Contracts/functions/generate_query'
 import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
+import deviceInfo from 'Contracts/functions/device_info '
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -59,6 +60,11 @@ export default class AuthController {
 
       const version = Env.get('API_VERSION')
 
+      const headers = request.headers()
+      const device = deviceInfo(headers)
+
+      console.log(device)
+
       const token = await auth.use('api').generate(user, {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
@@ -71,6 +77,10 @@ export default class AuthController {
         province: user.post_province,
         municipality: user.post_municipality,
         api_version: version,
+        commune: '',
+        latitude: device?.latitude,
+        longitude: device?.longitude,
+        mac_address: device?.mac,
       })
 
       const id = auth.user?.id ?? 0
