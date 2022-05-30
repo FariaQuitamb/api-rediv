@@ -77,11 +77,12 @@ Route.group(() => {
   Route.post('logs/activity', 'LogsController.getLogs')
   Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
   Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
-  //API ACCESS ROUTE
 
+  //API ACCESS ROUTE
   Route.post('accesses/list', 'ApiAcessesController.index')
   Route.post('accesses', 'ApiAcessesController.store')
   Route.post('accesses/state', 'ApiAcessesController.changeState')
+  Route.post('accesses/search', 'ApiAcessesController.search')
 
   //MESSAGE ROUTES
 
