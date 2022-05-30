@@ -158,6 +158,47 @@ export default class ApiAcessesController {
     }
   }
 
+  public async search({ auth, response, request }: HttpContextContract) {
+    const searchData = await request.validate(ListAccessesValidator)
+    try {
+      let query
+
+      if (searchData.search !== ' ' && searchData.search !== undefined) {
+        const wildCard = `'%${searchData.search}%'`
+
+        query = `name COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ${wildCard}`
+      } else {
+        query = ''
+      }
+      const accesses = await ApiAccess.query()
+        .whereRaw(query)
+        .orderBy('created_at', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Lista de instituições com acesso a API : ',
+        code: HttpStatusCode.OK,
+        data: accesses,
+      })
+    } catch (error) {
+      console.log(error)
+
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'ApiAcessesController/store',
+        error: `User:${userInfo} - ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
   public async show({}: HttpContextContract) {}
 
   public async edit({}: HttpContextContract) {}
