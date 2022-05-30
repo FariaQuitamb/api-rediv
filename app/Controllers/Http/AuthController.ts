@@ -81,6 +81,7 @@ export default class AuthController {
         latitude: device?.latitude,
         longitude: device?.longitude,
         mac_address: device?.mac,
+        app_version: device.version,
       })
 
       const id = auth.user?.id ?? 0
