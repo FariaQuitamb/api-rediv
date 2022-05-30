@@ -10,6 +10,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import ListAccessesValidator from 'App/Validators/ListAccessesValidator'
 import logRegister from 'Contracts/functions/log_register'
 import ApiAccessStateValidator from 'App/Validators/ApiAccessStateValidator'
+import ListAccessesSearchValidator from 'App/Validators/ListAccessesSearchValidator'
 
 export default class ApiAcessesController {
   public async index({ auth, response, request }: HttpContextContract) {
@@ -159,7 +160,7 @@ export default class ApiAcessesController {
   }
 
   public async search({ auth, response, request }: HttpContextContract) {
-    const searchData = await request.validate(ListAccessesValidator)
+    const searchData = await request.validate(ListAccessesSearchValidator)
     try {
       let query
 
