@@ -10,6 +10,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import ListAccessesValidator from 'App/Validators/ListAccessesValidator'
 import logRegister from 'Contracts/functions/log_register'
 import ApiAccessStateValidator from 'App/Validators/ApiAccessStateValidator'
+import ListAccessesSearchValidator from 'App/Validators/ListAccessesSearchValidator'
 
 export default class ApiAcessesController {
   public async index({ auth, response, request }: HttpContextContract) {
@@ -138,6 +139,47 @@ export default class ApiAcessesController {
         message: `Estado do acesso  modificado para ${stateName}`,
         code: HttpStatusCode.ACCEPTED,
         data: {},
+      })
+    } catch (error) {
+      console.log(error)
+
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'ApiAcessesController/store',
+        error: `User:${userInfo} - ${errorInfo}`,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async search({ auth, response, request }: HttpContextContract) {
+    const searchData = await request.validate(ListAccessesSearchValidator)
+    try {
+      let query
+
+      if (searchData.search !== ' ' && searchData.search !== undefined) {
+        const wildCard = `'%${searchData.search}%'`
+
+        query = `name COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ${wildCard}`
+      } else {
+        query = ''
+      }
+      const accesses = await ApiAccess.query()
+        .whereRaw(query)
+        .orderBy('created_at', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Lista de instituições com acesso a API : ',
+        code: HttpStatusCode.OK,
+        data: accesses,
       })
     } catch (error) {
       console.log(error)

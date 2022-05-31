@@ -42,7 +42,7 @@ const databaseConfig: DatabaseConfig = {
         password: Env.get('MSSQL_PASSWORD', ''),
         database: Env.get('MSSQL_DB_NAME'),
 
-        connectionTimeout: 40 * 1000,
+        connectionTimeout: 30 * 1000,
         requestTimeout: 40 * 1000,
 
         options: {
