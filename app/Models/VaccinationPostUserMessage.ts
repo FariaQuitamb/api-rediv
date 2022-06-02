@@ -1,4 +1,4 @@
-import { BaseModel, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import VaccinationMessage from './VaccinationMessage'
 
 export default class VaccinationPostUserMessage extends BaseModel {
@@ -17,6 +17,6 @@ export default class VaccinationPostUserMessage extends BaseModel {
   @column({ columnName: 'Flag' })
   public flag: string
 
-  @hasMany(() => VaccinationMessage, { foreignKey: 'id', localKey: 'vaccinationMessageId' })
-  public messages: HasMany<typeof VaccinationMessage>
+  @hasOne(() => VaccinationMessage, { foreignKey: 'id', localKey: 'vaccinationMessageId' })
+  public message: HasOne<typeof VaccinationMessage>
 }
