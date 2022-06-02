@@ -1,4 +1,5 @@
-import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasMany, HasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import Login from './Login'
 import VaccinationMessageArchive from './VaccinationMessageArchive'
 import ViewedMessage from './ViewedMessage'
 
@@ -20,9 +21,12 @@ export default class VaccinationMessage extends BaseModel {
   @column({ columnName: 'Flag' })
   public flag: string
 
+  @hasOne(() => Login, { localKey: 'loginId', foreignKey: 'id' })
+  public sender: HasOne<typeof Login>
+
   @hasMany(() => VaccinationMessageArchive, { localKey: 'id', foreignKey: 'vaccinationMessageId' })
   public archives: HasMany<typeof VaccinationMessageArchive>
 
-  @hasMany(() => ViewedMessage, { localKey: 'id', foreignKey: 'vaccinationMessageId' })
-  public views: HasMany<typeof ViewedMessage>
+  @hasOne(() => ViewedMessage, { localKey: 'id', foreignKey: 'vaccinationMessageId' })
+  public view: HasOne<typeof ViewedMessage>
 }
