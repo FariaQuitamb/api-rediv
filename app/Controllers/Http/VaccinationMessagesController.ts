@@ -11,6 +11,7 @@ import logError from 'Contracts/functions/log_error'
 import Env from '@ioc:Adonis/Core/Env'
 import ViewedMessageValidator from 'App/Validators/viewedValidator'
 import ViewedMessage from 'App/Models/ViewedMessage'
+import orderNotifications from 'Contracts/functions/order_notifications'
 
 export default class VaccinationMessagesController {
   public async getMessage({ auth, response, request }: HttpContextContract) {
@@ -18,10 +19,11 @@ export default class VaccinationMessagesController {
 
     try {
       const vaccinationPostMessages = await VaccinationPostMessage.query()
-        .preload('messages', (query) =>
+        .preload('message', (query) =>
           query
+            .preload('sender')
             .preload('archives')
-            .preload('views', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
+            .preload('view', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
             .orderBy('DataCad', 'desc')
         )
         .whereRaw(
@@ -29,23 +31,30 @@ export default class VaccinationMessagesController {
           [userMessage.vaccinationPostId, userMessage.userPostRoleId]
         )
         .orderBy('DataCad', 'desc')
-        .paginate(userMessage.page, userMessage.limit)
 
       const userMessages = await VaccinationPostUserMessage.query()
-        .preload('messages', (query) =>
+        .preload('message', (query) =>
           query
+            .preload('sender')
             .preload('archives')
-            .preload('views', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
+            .preload('view', (query) => query.where('Id_userPostoVacinacao', userMessage.userId))
             .orderBy('DataCad', 'desc')
         )
         .where('Id_userPostoVacinacao', userMessage.userId)
         .orderBy('DataCad', 'desc')
-        .paginate(userMessage.page, userMessage.limit)
+
+      const notifications = [...vaccinationPostMessages.values(), ...userMessages.values()]
+
+      // vaccinationPostMessages, userMessages,
+
+      const total = notifications.length
+
+      const result = orderNotifications(notifications)
 
       return response.status(HttpStatusCode.OK).send({
         message: 'Notificações do utilizador',
         code: HttpStatusCode.OK,
-        data: { vaccinationPostMessages, userMessages },
+        data: { result },
       })
     } catch (error) {
       console.log(error)
