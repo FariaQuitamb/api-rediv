@@ -43,18 +43,18 @@ export default class VaccinationMessagesController {
         .where('Id_userPostoVacinacao', userMessage.userId)
         .orderBy('DataCad', 'desc')
 
-      const notifications = [...vaccinationPostMessages.values(), ...userMessages.values()]
+      const notificationList = [...vaccinationPostMessages.values(), ...userMessages.values()]
 
       // vaccinationPostMessages, userMessages,
 
-      const total = notifications.length
+      const total = notificationList.length
 
-      const result = orderNotifications(notifications)
+      const notifications = orderNotifications(notificationList)
 
       return response.status(HttpStatusCode.OK).send({
         message: 'Notificações do utilizador',
         code: HttpStatusCode.OK,
-        data: { result },
+        data: { total, notifications },
       })
     } catch (error) {
       console.log(error)
