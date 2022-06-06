@@ -20,35 +20,18 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import VaccinationPostMessage from 'App/Models/VaccinationPostMessage'
-import VaccinationPostUserMessage from 'App/Models/VaccinationPostUserMessage'
 
 Route.get('/', async () => {
-  /** UserId e UserRoleId */
-  const vaccinationPostMessages = await VaccinationPostMessage.query()
-    .preload('messages', (query) => query.preload('archives'))
-    .where('Id_postoVacinacao', 96)
-    .where('Id_tipoFuncPostoVac', 0)
-    .orWhere('Id_tipoFuncPostoVac', 4)
-    .paginate(1, 10)
-
-  const userMessages = await VaccinationPostUserMessage.query()
-    .preload('messages', (query) => query.preload('archives').orderBy('DataCad', 'desc'))
-    .where('Id_userPostoVacinacao', 3875)
-    .orderBy('DataCad', 'desc')
-    .paginate(1, 10)
-
-  return { vaccinationPostMessages, userMessages }
-  //return { hello: 'world', title: 'It Works!' }
+  return { hello: 'world', title: 'It Works!' }
 })
 
-Route.get('v2/health', async ({ response }) => {
+Route.get('/health', async ({ response }) => {
   const report = await HealthCheck.getReport()
   return report.healthy ? response.ok(report) : response.badRequest(report)
 })
 
 //Auth Login
-Route.post('v2/auth/login', 'AuthController.login')
+Route.post('auth/login', 'AuthController.login')
 
 Route.group(() => {
   //Auth
@@ -88,6 +71,4 @@ Route.group(() => {
 
   Route.post('usermessages', 'VaccinationMessagesController.getMessage')
   Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
-})
-  .prefix('v2')
-  .middleware('auth:api')
+}).middleware('auth:api')
