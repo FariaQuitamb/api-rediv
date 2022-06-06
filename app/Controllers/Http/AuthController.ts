@@ -198,6 +198,12 @@ export default class AuthController {
 
         { field: 'province', value: searchData.province },
         { field: 'municipality', value: searchData.municipality },
+
+        { field: 'latitude', value: searchData.latitude },
+        { field: 'longitude', value: searchData.longitude },
+
+        { field: 'mac_address', value: searchData.mac },
+
         { field: 'api_version', value: searchData.apiVersion },
       ]
 
@@ -257,10 +263,10 @@ export default class AuthController {
 
         { field: 'ProvPosto', value: searchData.province },
         { field: 'MunicPosto', value: searchData.municipality },
-        { field: 'Id_ComunaEM', value: searchData.communeId },
         { field: 'api_version', value: searchData.apiVersion },
-        { field: 'Latitude', value: searchData.latitude },
-        { field: 'Longitude', value: searchData.longitude },
+
+        /*  { field: 'Latitude', value: searchData.latitude },
+        { field: 'Longitude', value: searchData.longitude },*/
 
         { field: 'NomeResp', value: searchData.postManagerName },
         { field: 'BIResp', value: searchData.postManagerNationalId },
