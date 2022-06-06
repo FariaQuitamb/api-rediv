@@ -42,6 +42,15 @@ export default class ApiTokenCustom extends BaseModel {
   @column()
   public apiVersion: string
 
+  @column()
+  public latitude: string
+
+  @column()
+  public longitude: string
+
+  @column()
+  public macAddress: string
+
   @column.dateTime()
   public expiresAt: DateTime
 
