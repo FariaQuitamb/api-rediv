@@ -11,9 +11,9 @@ function compare(a, b) {
 const orderNotifications = (notifications: any) => {
   const ordered = notifications.sort(compare)
 
-  ordered.forEach((notification) => {
+  /* ordered.forEach((notification) => {
     console.log(notification.message.view)
-  })
+  })*/
 
   return ordered
 }
