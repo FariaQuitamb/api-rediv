@@ -427,6 +427,24 @@ export default class PeopleController {
         //Verifica se existe um utente com esse nome ,
         //nome do pai , mãe e data de nascimento enviada
 
+        //VERIFICAR DATA
+
+        const previousDate = personData.birthday
+
+        personData.birthday = moment(personData.birthday, moment.ISO_8601, true).toISOString()
+
+        if (personData.birthday === null) {
+          const userInfo = formatUserInfo(auth.user)
+          console.log(
+            `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`
+          )
+          return response.status(HttpStatusCode.CONFLICT).send({
+            message: 'Data de nascimento mal formada!',
+            code: HttpStatusCode.OK,
+            data: [],
+          })
+        }
+
         const person = await Person.query()
           .where('nome', personData.name as string)
           .where('NomePai', personData.fatherName as string)
@@ -470,7 +488,7 @@ export default class PeopleController {
     }
   }
 
-  public async getUserRankNational({ auth, response, request }: HttpContextContract) {
+  public async rankUser({ auth, response, request }: HttpContextContract) {
     const searchData = await request.validate(GetUserRank)
     try {
       const topUsers = await Database.rawQuery(constants.rankingQueryNational, [searchData.top])
@@ -503,7 +521,7 @@ export default class PeopleController {
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
-        page: 'LogsController/getUserRankNational',
+        page: 'PeopleController/rankUser',
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
