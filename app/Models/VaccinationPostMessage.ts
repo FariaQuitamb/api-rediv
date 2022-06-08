@@ -1,4 +1,4 @@
-import { BaseModel, column, hasMany, HasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import VaccinationMessage from './VaccinationMessage'
 
 export default class VaccinationPostMessage extends BaseModel {
