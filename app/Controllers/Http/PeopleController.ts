@@ -130,8 +130,6 @@ export default class PeopleController {
         })
       }
 
-      // console.log({ dateBefore, dateAfter })
-
       const person = await Person.create(personData)
 
       //Caso não tenha inserido o utente
