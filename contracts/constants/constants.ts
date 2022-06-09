@@ -131,7 +131,8 @@ let loggedUserFields = [
   '[expires_at] as access_expiration',
   '[created_at] as accessed_at',
   '[mac_address]',
-  ' [api_version]',
+  '[api_version]',
+  '[app_version]',
 ]
 
 let mainSource = ' [SIGIS].[dbo].[vw_AcsPostoVac_MB] '
