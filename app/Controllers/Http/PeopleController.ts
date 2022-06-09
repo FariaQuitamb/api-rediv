@@ -193,6 +193,7 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -332,6 +333,7 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -504,6 +506,7 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
