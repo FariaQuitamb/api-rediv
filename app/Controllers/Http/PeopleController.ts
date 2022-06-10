@@ -189,6 +189,18 @@ export default class PeopleController {
         page: 'PeopleController/store',
         error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} - ${errorInfo}`,
       })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -317,6 +329,18 @@ export default class PeopleController {
         page: 'v2:PeopleController/list',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
       })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -478,6 +502,18 @@ export default class PeopleController {
         page: 'PeopleController/checkPerson',
         error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
       })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

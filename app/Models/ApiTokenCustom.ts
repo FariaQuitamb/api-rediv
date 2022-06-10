@@ -43,6 +43,9 @@ export default class ApiTokenCustom extends BaseModel {
   public apiVersion: string
 
   @column()
+  public appVersion: string
+
+  @column()
   public latitude: string
 
   @column()

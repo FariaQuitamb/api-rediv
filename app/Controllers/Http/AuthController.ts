@@ -205,6 +205,7 @@ export default class AuthController {
         { field: 'mac_address', value: searchData.mac },
 
         { field: 'api_version', value: searchData.apiVersion },
+        { field: 'app_version', value: searchData.appVersion },
       ]
 
       const query = generateQuery(fields)
@@ -264,6 +265,7 @@ export default class AuthController {
         { field: 'ProvPosto', value: searchData.province },
         { field: 'MunicPosto', value: searchData.municipality },
         { field: 'api_version', value: searchData.apiVersion },
+        { field: 'app_version', value: searchData.appVersion },
 
         /*  { field: 'Latitude', value: searchData.latitude },
         { field: 'Longitude', value: searchData.longitude },*/

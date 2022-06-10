@@ -45,6 +45,7 @@ export default class LoggedUserValidator {
     longitude: schema.string(),
     mac: schema.string(),
     apiVersion: schema.string(),
+    appVersion: schema.string(),
     page: schema.number(),
     limit: schema.number(),
   })

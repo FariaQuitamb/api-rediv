@@ -45,6 +45,7 @@ export default class LoggedUserViewValidator {
     province: schema.string(),
     municipality: schema.string(),
     apiVersion: schema.string(),
+    appVersion: schema.string(),
     postManagerName: schema.string(),
     postManagerNationalId: schema.string(),
     postManagerPhone: schema.string(),
