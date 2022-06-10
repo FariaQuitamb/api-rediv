@@ -493,10 +493,12 @@ export default class PeopleController {
       console.log(error)
       //Log de erro
 
+      const errorInfo = formatError(error)
+
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(personData)
       const userInfo = formatUserInfo(auth.user)
-      const errorInfo = formatError(error)
+
       await logError({
         type: 'MB',
         page: 'PeopleController/checkPerson',
@@ -550,9 +552,11 @@ export default class PeopleController {
       console.log(error)
       //Log de erro
 
+      const errorInfo = formatError(error)
+
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
-      const errorInfo = formatError(error)
+
       await logError({
         type: 'MB',
         page: 'PeopleController/rankUser',
