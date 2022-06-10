@@ -95,6 +95,7 @@ export default class PeopleController {
           .where('NomePai', personData.fatherName as string)
           .where('NomeMae', personData.motherName as string)
           .where('dtNascimento', personData.birthday)
+          .timeout(60000)
           .limit(1)
 
         if (exists.length > 0) {
@@ -259,6 +260,7 @@ export default class PeopleController {
         const data = await Database.from(searchView)
           .select(constants.searchPeopleFields)
           .whereRaw(`Nome COLLATE SQL_Latin1_General_CP1_CI_AS LIKE ${wildCard}`)
+          .timeout(60000)
           .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
         return response.status(HttpStatusCode.ACCEPTED).send({
