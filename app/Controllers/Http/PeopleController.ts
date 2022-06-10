@@ -96,9 +96,9 @@ export default class PeopleController {
           .where('NomeMae', personData.motherName as string)
           .where('dtNascimento', personData.birthday)
           .timeout(60000)
-          .limit(1)
+          .first()
 
-        if (exists.length > 0) {
+        if (exists) {
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
