@@ -73,7 +73,8 @@ Route.group(() => {
   Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
 
   //MOBILE APP VERSION
-  Route.post('mobile_version', 'ConfigsController.getMobileVersion')
+  Route.post('mobile_version', 'ConfigsController.changeAppVersion')
+  Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 }).middleware('auth:api')
 
 //Rede de Confiança
