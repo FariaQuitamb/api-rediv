@@ -71,4 +71,14 @@ Route.group(() => {
 
   Route.post('usermessages', 'VaccinationMessagesController.getMessage')
   Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
+
+  //MOBILE APP VERSION
+  Route.post('mobile_version', 'ConfigsController.getMobileVersion')
 }).middleware('auth:api')
+
+//Rede de Confiança
+Route.group(() => {
+  Route.post('today', 'TrustNetworksController.today')
+})
+  .prefix('trust')
+  .middleware('auth:api')
