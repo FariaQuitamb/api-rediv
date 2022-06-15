@@ -57,7 +57,7 @@ export default class VaccinationMessagesController {
         data: { total, notifications },
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const searchInfo = JSON.stringify(userMessage)
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
@@ -90,7 +90,7 @@ export default class VaccinationMessagesController {
         data: viewed,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const searchInfo = JSON.stringify(viewMessage)
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))

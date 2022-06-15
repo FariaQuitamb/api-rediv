@@ -21,6 +21,7 @@ import generateQuery from 'Contracts/functions/generate_query'
 import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
 import deviceInfo from 'Contracts/functions/device_info '
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -50,7 +51,8 @@ export default class AuthController {
           actionId: `V:${version}-U:${username}-P:${data.password}`,
         })
 
-        console.log('Login incorrecto')
+        formatedLog('Login incorrecto', LogType.error)
+
         return response.status(HttpStatusCode.OK).send({
           code: HttpStatusCode.OK,
           message: 'Login incorrecto',
@@ -103,7 +105,7 @@ export default class AuthController {
         data: { user, token },
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
 
       //Log de erro
 
@@ -156,7 +158,7 @@ export default class AuthController {
         })
       }
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -221,7 +223,7 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -290,7 +292,7 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)

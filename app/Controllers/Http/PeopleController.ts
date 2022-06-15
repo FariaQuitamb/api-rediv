@@ -16,6 +16,7 @@ import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
 import GetUserRank from 'App/Validators/getUserRank'
 import getUserRank from 'Contracts/functions/get_user_rank'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -40,7 +41,11 @@ export default class PeopleController {
 
         receivedDate = moment(new Date(changedDate), moment.ISO_8601, true)
 
-        console.log('DATE WAS CHANGED TO: ' + personData.birthday)
+        //console.log('DATE WAS CHANGED TO: ' + personData.birthday)
+        formatedLog(
+          'Data de nascimento erra foi modificada para: ' + personData.birthday,
+          LogType.warning
+        )
       }
 
       personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
@@ -175,7 +180,7 @@ export default class PeopleController {
         data: { utente: person },
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
 
       const personJson = JSON.stringify(personData)
 
@@ -194,7 +199,13 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
+
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -320,7 +331,7 @@ export default class PeopleController {
         data: {},
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const searchInfo = JSON.stringify(searchData)
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
@@ -335,7 +346,13 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
+
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -459,8 +476,10 @@ export default class PeopleController {
 
         if (personData.birthday === null) {
           const userInfo = formatUserInfo(auth.user)
-          console.log(
-            `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`
+
+          formatedLog(
+            `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`,
+            LogType.warning
           )
           return response.status(HttpStatusCode.CONFLICT).send({
             message: 'Data de nascimento mal formada!',
@@ -492,7 +511,7 @@ export default class PeopleController {
         data: {},
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
 
       const errorInfo = formatError(error)
@@ -510,7 +529,13 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
+
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -551,8 +576,10 @@ export default class PeopleController {
         data: { rankNational, rankProvince, rankMunicipality },
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
+
+      formatedLog(error, LogType.error)
 
       const errorInfo = formatError(error)
 

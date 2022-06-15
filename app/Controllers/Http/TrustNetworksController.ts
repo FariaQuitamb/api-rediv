@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import trustNetworkQueries from 'Contracts/constants/trust_network_query'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
@@ -35,7 +36,10 @@ export default class TrustNetworksController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        console.log('Não foi possível completar a operação dentro do tempo esperado!')
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,

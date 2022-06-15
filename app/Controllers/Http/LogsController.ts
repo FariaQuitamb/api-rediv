@@ -11,6 +11,7 @@ import GetVaccineGeoLogValidator from 'App/Validators/getVaccineGeoLogValidator'
 import GetVaccineLogValidator from 'App/Validators/getVaccineLogValidator'
 
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
@@ -91,7 +92,7 @@ export default class LogsController {
         data: logs,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -160,10 +161,11 @@ export default class LogsController {
         data: logs,
       })
     } catch (error) {
-      console.log(error)
-      //Log de erro
+      //console.log(error)
+      //Log de erro-
+      //console.log(error)
 
-      console.log(error)
+      formatedLog(error, LogType.error)
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -202,7 +204,7 @@ export default class LogsController {
         data: logs,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
@@ -250,7 +252,7 @@ export default class LogsController {
         data: logs,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))

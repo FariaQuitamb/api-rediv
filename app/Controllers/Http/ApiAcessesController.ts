@@ -36,8 +36,6 @@ export default class ApiAcessesController {
         data: accesses,
       })
     } catch (error) {
-      console.log(error)
-
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
 
@@ -141,7 +139,7 @@ export default class ApiAcessesController {
         data: {},
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
 
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
@@ -182,7 +180,7 @@ export default class ApiAcessesController {
         data: accesses,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
 
       const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
