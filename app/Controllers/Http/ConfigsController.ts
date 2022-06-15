@@ -21,7 +21,10 @@ export default class ConfigsController {
       const newData = await fs.readFile(fileName, 'utf8')
       const version = JSON.parse(newData)
 
-      console.log('Versão actual da aplicação mobile modificada!')
+      console.log('\x1b[1m\x1b[102m\x1b[97mVersão actual da aplicação mobile modificada!\x1b[0m')
+
+      console.log('\x1b[2m', '\x1b[31m', '\x1b[44m', 'Sample Text', '\x1b[0m')
+
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Versão actual da aplicação mobile modificada!',
         code: HttpStatusCode.CREATED,
@@ -53,10 +56,34 @@ export default class ConfigsController {
       const newData = await fs.readFile(fileName, 'utf8')
       const version = JSON.parse(newData)
 
-      console.log('Versão actual da aplicação mobile : ' + version?.mobile_app_version)
-      return response.status(HttpStatusCode.CREATED).send({
+      console.log('\x1b[36m', 'sometext', '\x1b[0m')
+      console.log("\nI'm the normal output")
+      console.log("\x1b[31mAnd now I'm red!")
+      console.log('Shoot, why am I still red?')
+      console.log('I need to \x1b[0mreset my console to get back to normal')
+      console.log(
+        'Colors \x1b[32mcan \x1b[33mchange \x1b[35min \x1b[36mthe \x1b[34msame \x1b[0mlog'
+      )
+      console.log(
+        '\x1b[1mBRIGHT colors \x1b[32mare \x1b[33mbolded \x1b[35mand \x1b[36mbrighter \x1b[0m'
+      )
+      console.log('\x1b[2mDIM colors \x1b[32mare \x1b[33mdarker \x1b[0m')
+      console.log('and of course, \x1b[41mwe have \x1b[30m\x1b[43mbackground colors\x1b[0m')
+      console.log(
+        '\x1b[7mReverse \x1b[32mswap \x1b[33mforeground \x1b[35mand \x1b[36mbackground\x1b[0m'
+      )
+      console.log(
+        '\x1b[8m\x1b[41mthis [1mtext \x1b[43mis hidden \x1b[42mbut the background\x1b[42m still comes \x1b[45mthrough\x1b[0m'
+      )
+      console.log(
+        '\x1b[4mgetting  \x1b[1mfancy with underlines \x1b[30m\x1b[3m\x1b[105mand italics\x1b[0m'
+      )
+      console.log(
+        ' \x1b[36m \x1b[1mVersão actual da aplicação mobile : ' + version?.mobile_app_version
+      )
+      return response.status(HttpStatusCode.OK).send({
         message: 'Versão actual da aplicação mobile : ' + version?.mobile_app_version,
-        code: HttpStatusCode.CREATED,
+        code: HttpStatusCode.OK,
         data: { version: version?.mobile_app_version },
       })
     } catch (error) {

@@ -74,8 +74,8 @@ Route.group(() => {
 
   //MOBILE APP VERSION
   Route.post('mobile_version', 'ConfigsController.changeAppVersion')
-  Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 }).middleware('auth:api')
+Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
 //Rede de Confiança
 Route.group(() => {
