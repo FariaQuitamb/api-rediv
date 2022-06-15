@@ -1,8 +1,10 @@
 //import LogError from 'App/Models/LogError'
 //import formatError from './format_error'
 
+import formatedLog, { LogType } from './formated_log'
+
 const logError = async (args: { type: string; page: string; error: string }) => {
-  console.log(`Controller:${args.page} -- ${args.error}`)
+  formatedLog(`Controller:${args.page} -- ${args.error}`, LogType.error)
 
   // Desabilitada a inserção de log de erro no banco de dados - 10-06-2022
   /*  try {
