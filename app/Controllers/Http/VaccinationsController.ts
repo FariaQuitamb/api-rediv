@@ -16,6 +16,7 @@ import moment from 'moment'
 
 import Env from '@ioc:Adonis/Core/Env'
 import getGeoLocation from 'Contracts/functions/get_geolocation'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -37,6 +38,10 @@ export default class VaccinationsController {
 
     try {
       vaccinationData.regMB = 'S'
+      //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita
+      //Fix abaixo
+      vaccinationData.vaccinationCountryId = 0
+
       //Added geolocation
       const geo = getGeoLocation(request.headers())
       vaccinationData.latitude = geo.latitude
@@ -63,7 +68,7 @@ export default class VaccinationsController {
 
       //RN [001]
       if (person.status !== 'C') {
-        console.log('O status do registro individual é diferente de C')
+        formatedLog('O status do registro individual é diferente de Confirmado', LogType.warning)
         return response.status(HttpStatusCode.OK).send({
           message: 'O registro individual não reúne condições para vacinação!',
           code: HttpStatusCode.OK,
@@ -84,7 +89,11 @@ export default class VaccinationsController {
 
       //Verifica se a vacina selecionada existe
       if (!vaccineDose) {
-        console.log('A vacina selecionada não existe ou não está habilitada! - visualizar != S')
+        formatedLog(
+          'A vacina selecionada não existe ou não está habilitada! - visualizar != S',
+          LogType.error
+        )
+
         return response.status(HttpStatusCode.OK).send({
           message: 'A vacina selecionada não existe ou está fora de uso!',
           code: HttpStatusCode.OK,
@@ -106,7 +115,8 @@ export default class VaccinationsController {
         //Verificar o status enviado
 
         if (vaccinationData.status === 'R') {
-          console.log('O status da primeira vacina não pode ser R - reforço')
+          formatedLog('O status da primeira vacina não pode ser R - reforço', LogType.warning)
+
           return response.status(HttpStatusCode.OK).send({
             message: 'Verifique o status enviado, não pode ser R-reforço!',
             code: HttpStatusCode.OK,
@@ -152,6 +162,7 @@ export default class VaccinationsController {
           userPostoVaccination: vaccinationData.vaccinationPostId,
         })
 
+        formatedLog('Utente vacinado com sucesso 1ª Dose!', LogType.success)
         return response.status(HttpStatusCode.CREATED).send({
           message: 'Utente vacinado com sucesso!',
           code: HttpStatusCode.CREATED,
@@ -204,6 +215,8 @@ export default class VaccinationsController {
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
 
+              formatedLog('Utente vacinado com sucesso  2ª Dose!', LogType.success)
+
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
                 code: HttpStatusCode.CREATED,
@@ -251,7 +264,9 @@ export default class VaccinationsController {
 
               //Log de geolocalização - Telefone do utente
               await geoLog('S', vaccination.id, request)
-              // console.log('Utente está recebendo vacina errada')
+
+              formatedLog('O utente está recebendo vacina errada!', LogType.warning)
+
               //Log de actividade - vacina segunda dose errada
               await vaccinationLog({
                 userId: auth.user?.id as number,
@@ -263,6 +278,8 @@ export default class VaccinationsController {
                 observation: '2ª Dose Vacina Errada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog('Utente vacinado com sucesso 2ª Dose Vacina Errada !', LogType.warning)
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -277,7 +294,11 @@ export default class VaccinationsController {
             // Reminder false for Day 7 to Day 22 When NumDays = 21
             // Verifica se o número de dias passados é inferior a 15 dias
             if (Math.abs(doseInfo.NumDias - doseInfo.NumDias2) < 15) {
-              console.log('O intervalo entre as vacinas não permite adicionar uma nova!')
+              formatedLog(
+                'O intervalo entre as vacinas não permite adicionar uma nova!',
+                LogType.warning
+              )
+
               return response.status(HttpStatusCode.OK).send({
                 message: 'Já recebeu vacina!',
                 code: HttpStatusCode.OK,
@@ -316,6 +337,8 @@ export default class VaccinationsController {
                 observation: '2ª Dose Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog('Utente vacinado com sucesso 2ª Dose Antecipada!', LogType.warning)
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -378,6 +401,12 @@ export default class VaccinationsController {
                 observation: '2ª Dose Vacina Errada-Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog(
+                'Utente vacinado com sucesso 2ª Dose Vacina Errada-Antecipada!',
+                LogType.warning
+              )
+
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
                 code: HttpStatusCode.CREATED,
@@ -400,7 +429,7 @@ export default class VaccinationsController {
         })
       }
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(vaccinationData)
@@ -425,6 +454,10 @@ export default class VaccinationsController {
     try {
       vaccinationData.regMB = 'S'
 
+      //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita
+      //Fix abaixo
+      vaccinationData.vaccinationCountryId = 0
+
       //Added geolocation
       const geo = getGeoLocation(request.headers())
       vaccinationData.latitude = geo.latitude
@@ -440,7 +473,8 @@ export default class VaccinationsController {
       //Verificar o status enviado
 
       if (vaccinationData.status !== 'R') {
-        console.log('O status deve ser R para vacina de reforço')
+        formatedLog('O status deve ser R para vacina de reforço', LogType.warning)
+
         return response.status(HttpStatusCode.OK).send({
           message: 'Verifique o status da vacinação enviado, deve ser R para reforço!',
           code: HttpStatusCode.OK,
@@ -463,7 +497,8 @@ export default class VaccinationsController {
 
       //RN [001]
       if (person.status !== 'C') {
-        console.log('O status do registro individual é diferente de C')
+        formatedLog('O status do registro individual é diferente de Confirmado!', LogType.warning)
+
         return response.status(HttpStatusCode.OK).send({
           message: 'O registro individual não reúne condições para vacinação!',
           code: HttpStatusCode.OK,
@@ -484,7 +519,10 @@ export default class VaccinationsController {
 
       //Verifica se a vacina selecionada existe
       if (!vaccineDose) {
-        console.log('A vacina selecionada não existe ou não está habilitada! - visualizar != S')
+        formatedLog(
+          'A vacina selecionada não existe ou não está habilitada! - visualizar != S!',
+          LogType.error
+        )
         return response.status(HttpStatusCode.OK).send({
           message: 'A vacina selecionada não existe ou está fora de uso!',
           code: HttpStatusCode.OK,
@@ -501,9 +539,11 @@ export default class VaccinationsController {
       const numDose = await Database.rawQuery(constants.getNumDoses, [vaccinationData.personId])
 
       if (numDose.length === 0) {
-        console.log(
-          'Houve um erro no registro de vacinação , não foi possível retornar o número de doses da vacina e quantas o utente já tomou!'
+        formatedLog(
+          'Houve um erro no registro de vacinação , não foi possível retornar o número de doses da vacina e quantas o utente já tomou!',
+          LogType.warning
         )
+
         return response.status(HttpStatusCode.OK).send({
           message: 'Não é possível adicionar dose de reforço neste utente !',
           code: HttpStatusCode.OK,
@@ -514,7 +554,7 @@ export default class VaccinationsController {
       const doses = numDose[0]
 
       if (doses.NumDoseVac !== doses.NumVac) {
-        console.log('O utente ainda não tem o ciclo de vacinação completo!')
+        formatedLog('O utente ainda não tem o ciclo de vacinação completo!', LogType.warning)
         return response.status(HttpStatusCode.OK).send({
           message: 'O utente ainda não tem o ciclo de vacinação completo!',
           code: HttpStatusCode.OK,
@@ -537,7 +577,7 @@ export default class VaccinationsController {
 
         //Verifica se foi retornada alguma informação
         if (numDays.length === 0) {
-          console.log('Erro ao obter o número de dias entre as vacinações!')
+          formatedLog('Erro ao obter o número de dias entre as vacinações!', LogType.error)
           return response.status(HttpStatusCode.OK).send({
             message: 'Ocorreu um erro inesperado!',
             code: HttpStatusCode.OK,
@@ -554,7 +594,8 @@ export default class VaccinationsController {
 
           //Verifica se existe dose disponível
           if (firstDose.length === 0) {
-            console.log('Erro não existe dose disponível da vacina!')
+            formatedLog('Erro não existe dose disponível da vacina!', LogType.error)
+
             return response.status(HttpStatusCode.OK).send({
               message:
                 'Informe ao Administrador do Sistema, que não esta configurada nenhuma Dose da Vacina!',
@@ -588,14 +629,17 @@ export default class VaccinationsController {
 
           // await regVaccinationLog(fields)
 
+          formatedLog('Utente vacinado com sucesso Vacina de reforço!', LogType.success)
+
           return response.status(HttpStatusCode.CREATED).send({
             message: 'Utente vacinado com sucesso!',
             code: HttpStatusCode.CREATED,
             data: { vaccination: vaccination },
           })
         } else {
-          console.log(
-            'Tempo necessário para receber a Vacina de Reforço é de 15 dias depois do registo de vacinação'
+          formatedLog(
+            'Tempo necessário para receber a Vacina de Reforço é de 15 dias depois do registo de vacinação!',
+            LogType.warning
           )
           return response.status(HttpStatusCode.OK).send({
             message:
@@ -613,7 +657,10 @@ export default class VaccinationsController {
       if (boosterInfo.PrxDose !== 0) {
         //Verifica se o registro de reforço existente foi feito na data actual
         if (boosterInfo.DataCad === boosterInfo.dtHoje) {
-          console.log('Já recebeu vacina , realizou vacina de reforço no corrente dia')
+          formatedLog(
+            'Já recebeu vacina , realizou vacina de reforço no corrente dia!',
+            LogType.warning
+          )
           return response.status(HttpStatusCode.OK).send({
             message: 'Já recebeu vacina!',
             code: HttpStatusCode.OK,
@@ -651,6 +698,11 @@ export default class VaccinationsController {
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
 
+            formatedLog(
+              'Adição de mais uma vacina de reforço do utente realizada com sucesso!',
+              LogType.success
+            )
+
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
               code: HttpStatusCode.CREATED,
@@ -685,7 +737,7 @@ export default class VaccinationsController {
             vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
             vaccinationData.numLot = wrongVaccineLote[0].NumLote
 
-            console.log('Recebendo dose de reforço da vacina errada')
+            formatedLog('Recebendo dose de reforço da vacina errada!', LogType.warning)
 
             //Não se atribui um status especifico para vacina de reforço incorrecta
 
@@ -711,6 +763,11 @@ export default class VaccinationsController {
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
 
+            formatedLog(
+              'Utente vacinado com sucesso, mas recebeu vacina de reforço errada ',
+              LogType.warning
+            )
+
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
               code: HttpStatusCode.CREATED,
@@ -722,7 +779,11 @@ export default class VaccinationsController {
           // Verifica se o número de dias passados é inferior a 15 dias
 
           if (Math.abs(boosterInfo.NumDias - boosterInfo.NumDias2) < 15) {
-            console.log('O intervalo entre as vacinas não permite adicionar uma nova!')
+            formatedLog(
+              'O intervalo entre as vacinas não permite adicionar uma nova!',
+              LogType.warning
+            )
+
             return response.status(HttpStatusCode.OK).send({
               message: 'Já recebeu vacina!',
               code: HttpStatusCode.OK,
@@ -757,7 +818,11 @@ export default class VaccinationsController {
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
 
-            console.log('Vacinando utente fora do tempo estimado com vacina correcta')
+            formatedLog(
+              'Vacinando utente fora do tempo estimado com vacina correcta!',
+              LogType.warning
+            )
+
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
               code: HttpStatusCode.CREATED,
@@ -792,7 +857,10 @@ export default class VaccinationsController {
             vaccinationData.lotId = wrongVaccineLote[0].Id_LoteVacina
             vaccinationData.numLot = wrongVaccineLote[0].NumLote
 
-            console.log('Recebendo dose de reforço da vacina errada antes do tempo estipulado')
+            formatedLog(
+              'Recebendo dose de reforço da vacina errada antes do tempo estipulado!',
+              LogType.warning
+            )
 
             //Não se atribui um status especifico para vacina de reforço incorrecta
 
@@ -818,7 +886,11 @@ export default class VaccinationsController {
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
 
-            console.log('Vacinando utente fora do tempo estimado com vacina errada')
+            formatedLog(
+              'Vacinando utente fora do tempo estimado com vacina errada!',
+              LogType.warning
+            )
+
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
               code: HttpStatusCode.CREATED,
@@ -829,7 +901,8 @@ export default class VaccinationsController {
 
         //unreached
       } else {
-        console.log('Já recebeu vacina , não tem próxima dose')
+        formatedLog('Já recebeu vacina , não tem próxima dose!', LogType.warning)
+
         return response.status(HttpStatusCode.OK).send({
           message: 'Já recebeu vacina!',
           code: HttpStatusCode.OK,
@@ -837,7 +910,7 @@ export default class VaccinationsController {
         })
       }
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))

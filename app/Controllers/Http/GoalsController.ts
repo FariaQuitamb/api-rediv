@@ -55,7 +55,7 @@ export default class GoalsController {
         data,
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const searchInfo = JSON.stringify(searchData)
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))

@@ -81,7 +81,7 @@ export default class PreloadsController {
         data: { provinces, nationalities, docTypes, vaccines },
       })
     } catch (error) {
-      console.log(error)
+      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
