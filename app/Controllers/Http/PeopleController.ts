@@ -140,6 +140,7 @@ export default class PeopleController {
 
       //Caso não tenha inserido o utente
       if (!person) {
+        formatedLog('Não foi possível registrar o utente!', LogType.error)
         return response.status(HttpStatusCode.OK).send({
           message: 'Não foi possível registrar o utente!',
           code: HttpStatusCode.OK,
@@ -173,6 +174,7 @@ export default class PeopleController {
         actionId: `V:${version}-ID:${person.id.toString()}`,
       })
 
+      formatedLog('Novo utente registrado com sucesso!', LogType.success)
       //Utente inserido com sucesso
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Utente registrado com sucesso!',

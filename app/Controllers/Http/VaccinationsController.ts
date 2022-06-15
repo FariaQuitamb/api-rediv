@@ -162,6 +162,7 @@ export default class VaccinationsController {
           userPostoVaccination: vaccinationData.vaccinationPostId,
         })
 
+        formatedLog('Utente vacinado com sucesso 1ª Dose!', LogType.success)
         return response.status(HttpStatusCode.CREATED).send({
           message: 'Utente vacinado com sucesso!',
           code: HttpStatusCode.CREATED,
@@ -213,6 +214,8 @@ export default class VaccinationsController {
                 observation: '2ª Dose',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog('Utente vacinado com sucesso  2ª Dose!', LogType.success)
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -276,6 +279,8 @@ export default class VaccinationsController {
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
 
+              formatedLog('Utente vacinado com sucesso 2ª Dose Vacina Errada !', LogType.warning)
+
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
                 code: HttpStatusCode.CREATED,
@@ -332,6 +337,8 @@ export default class VaccinationsController {
                 observation: '2ª Dose Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog('Utente vacinado com sucesso 2ª Dose Antecipada!', LogType.warning)
 
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
@@ -394,6 +401,12 @@ export default class VaccinationsController {
                 observation: '2ª Dose Vacina Errada-Antecipada',
                 userPostoVaccination: vaccinationData.vaccinationPostId,
               })
+
+              formatedLog(
+                'Utente vacinado com sucesso 2ª Dose Vacina Errada-Antecipada!',
+                LogType.warning
+              )
+
               return response.status(HttpStatusCode.CREATED).send({
                 message: 'Utente vacinado com sucesso!',
                 code: HttpStatusCode.CREATED,
@@ -616,6 +629,8 @@ export default class VaccinationsController {
 
           // await regVaccinationLog(fields)
 
+          formatedLog('Utente vacinado com sucesso Vacina de reforço!', LogType.success)
+
           return response.status(HttpStatusCode.CREATED).send({
             message: 'Utente vacinado com sucesso!',
             code: HttpStatusCode.CREATED,
@@ -683,6 +698,11 @@ export default class VaccinationsController {
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
 
+            formatedLog(
+              'Adição de mais uma vacina de reforço do utente realizada com sucesso!',
+              LogType.success
+            )
+
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
               code: HttpStatusCode.CREATED,
@@ -742,6 +762,11 @@ export default class VaccinationsController {
               observation: 'Recebeu vacina de reforço errada',
               userPostoVaccination: vaccinationData.vaccinationPostId,
             })
+
+            formatedLog(
+              'Utente vacinado com sucesso, mas recebeu vacina de reforço errada ',
+              LogType.warning
+            )
 
             return response.status(HttpStatusCode.CREATED).send({
               message: 'Utente vacinado com sucesso!',
