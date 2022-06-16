@@ -1,16 +1,15 @@
 export enum LogType {
-  success = 'SUCCESS::: ',
-  warning = 'WARNING::: ',
-  error = 'ERROR::: ',
+  success = 'SUCCESS',
+  warning = 'WARNING',
+  error = 'ERROR',
 }
 
 const formatedLog = (text: string, type: LogType) => {
   if (type === LogType.success) {
     console.log(
       '\x1b[1m' /**Bold */,
-      '\x1b[102m' /**BackGround */,
-      '\x1b[37m' /**Text Color */,
-      `${LogType.success} ${text}\x1b[0m`
+      '\x1b[92m' /**Text Color */,
+      `\u2714 ${LogType.success} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
     )
     return
   }
@@ -19,7 +18,7 @@ const formatedLog = (text: string, type: LogType) => {
       '\x1b[1m' /**Bold */,
       '\x1b[103m' /**BackGround */,
       '\x1b[37m' /**Text Color */,
-      `${LogType.warning} ${text}\x1b[0m`
+      `  ${LogType.warning} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
     )
     return
   }
@@ -27,14 +26,13 @@ const formatedLog = (text: string, type: LogType) => {
   if (type === LogType.error) {
     console.log(
       '\x1b[1m' /**Bold */,
-      '\x1b[101m' /**BackGround */,
-      '\x1b[37m' /**Text Color */,
-      `${LogType.error} ${text}\x1b[0m`
+      '\x1b[91m' /**Text Color */,
+      `\u274C ${LogType.error} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
     )
     return
   }
 
-  console.log(`${text}`)
+  console.log(`${text} \n`)
   return
 }
 
