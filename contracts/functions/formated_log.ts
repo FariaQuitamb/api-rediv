@@ -16,9 +16,8 @@ const formatedLog = (text: string, type: LogType) => {
   if (type === LogType.warning) {
     console.log(
       '\x1b[1m' /**Bold */,
-      '\x1b[103m' /**BackGround */,
-      '\x1b[37m' /**Text Color */,
-      `  ${LogType.warning} \u2551\u2551\u2560\u00BB\u00BB\u00BB  ${text}\x1b[0m \n`
+      '\x1b[93m' /**Text Color */,
+      `\u26A0 ${LogType.warning} \u2551\u2551\u2560\u00BB\u00BB\u00BB  ${text}\x1b[0m \n`
     )
     return
   }

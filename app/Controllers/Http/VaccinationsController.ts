@@ -18,6 +18,8 @@ import Env from '@ioc:Adonis/Core/Env'
 import getGeoLocation from 'Contracts/functions/get_geolocation'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
+import isAfterToday from 'Contracts/functions/isafter_today'
+
 interface DoseInfo {
   Id_regVacinacao: number
   Id_Dose: number
@@ -37,6 +39,21 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Vacination Date verification  , cannot be after today (future)
+
+      if (isAfterToday(vaccinationData.createdAt)) {
+        formatedLog(
+          'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.OK).send({
+          message: 'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
       //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita
       //Fix abaixo
@@ -415,6 +432,7 @@ export default class VaccinationsController {
             }
           }
         } else {
+          formatedLog('Já recebeu Vacina!', LogType.warning)
           return response.status(HttpStatusCode.OK).send({
             message: 'Já recebeu Vacina!',
             code: HttpStatusCode.OK,
@@ -422,6 +440,7 @@ export default class VaccinationsController {
           })
         }
       } else {
+        formatedLog('O utente não tem próxima dose a tomar!', LogType.warning)
         return response.status(HttpStatusCode.OK).send({
           message: 'O utente não tem próxima dose a tomar!',
           code: HttpStatusCode.OK,
@@ -452,6 +471,21 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Vacination Date verification  , cannot be after today (future)
+
+      if (isAfterToday(vaccinationData.createdAt)) {
+        formatedLog(
+          'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.OK).send({
+          message: 'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
 
       //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita

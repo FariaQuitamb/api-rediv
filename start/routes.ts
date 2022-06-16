@@ -20,9 +20,17 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import moment from 'moment'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  const dataCad = '2022-06-16'
+
+  const today = moment().format('YYYY-MM-DD')
+  const isAfterToday = moment(dataCad).isAfter(today)
+
+  const before = moment('2010-10-20').isBefore('2011-01-01')
+
+  return { hello: 'world', title: 'It Works!', today, before, isAfterToday, dataCad }
 })
 
 Route.get('/health', async ({ response }) => {
