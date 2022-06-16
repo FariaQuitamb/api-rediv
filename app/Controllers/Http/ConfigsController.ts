@@ -15,8 +15,6 @@ export default class ConfigsController {
     try {
       const fileName = path.resolve(__dirname, '../../../', 'json', 'mobile_version.json')
 
-      const changeList: string[] = []
-
       const content = {
         mobile_app_version: versionData.mobileVersion,
         changes: versionData.changes,
