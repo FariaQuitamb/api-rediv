@@ -9,7 +9,7 @@ const formatedLog = (text: string, type: LogType) => {
     console.log(
       '\x1b[1m' /**Bold */,
       '\x1b[92m' /**Text Color */,
-      `\u2714 ${LogType.success} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
+      `\u2714 ${LogType.success} \u2551\u2551\u2560\u00BB\u00BB\u00BB ${text}\x1b[0m \n`
     )
     return
   }
@@ -18,7 +18,7 @@ const formatedLog = (text: string, type: LogType) => {
       '\x1b[1m' /**Bold */,
       '\x1b[103m' /**BackGround */,
       '\x1b[37m' /**Text Color */,
-      `  ${LogType.warning} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
+      `  ${LogType.warning} \u2551\u2551\u2560\u00BB\u00BB\u00BB  ${text}\x1b[0m \n`
     )
     return
   }
@@ -27,7 +27,7 @@ const formatedLog = (text: string, type: LogType) => {
     console.log(
       '\x1b[1m' /**Bold */,
       '\x1b[91m' /**Text Color */,
-      `\u274C ${LogType.error} \u2592\u2592\u2592\u2592 ${text}\x1b[0m \n`
+      `\u274C ${LogType.error} \u2551\u2551\u2560\u00BB\u00BB\u00BB ${text}\x1b[0m \n`
     )
     return
   }
