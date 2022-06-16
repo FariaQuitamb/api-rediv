@@ -29,6 +29,7 @@ export default class MobileVersionValidator {
    */
   public schema = schema.create({
     mobileVersion: schema.string({ escape: true, trim: true }),
+    changes: schema.array().members(schema.string()),
   })
 
   /**
