@@ -43,7 +43,7 @@ export default class PeopleController {
 
         //console.log('DATE WAS CHANGED TO: ' + personData.birthday)
         formatedLog(
-          'Data de nascimento erra foi modificada para: ' + personData.birthday,
+          'Data de nascimento errada foi modificada para: ' + personData.birthday,
           LogType.warning
         )
       }
