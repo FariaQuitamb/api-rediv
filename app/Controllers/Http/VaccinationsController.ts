@@ -42,15 +42,12 @@ export default class VaccinationsController {
       //Vacination Date verification  , cannot be after today (future)
 
       if (isAfterToday(vaccinationData.createdAt)) {
+        const previewsDate = vaccinationData.createdAt
+        vaccinationData.createdAt = moment().toISOString()
         formatedLog(
-          'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          `Registo de vacinação modificado para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           LogType.warning
         )
-        return response.status(HttpStatusCode.OK).send({
-          message: 'A data de registo de vacinação não pode ser superior ao dia de hoje!',
-          code: HttpStatusCode.OK,
-          data: [],
-        })
       }
 
       //Default regMB set to S = Yes to Mobile Register
@@ -474,15 +471,12 @@ export default class VaccinationsController {
       //Vacination Date verification  , cannot be after today (future)
 
       if (isAfterToday(vaccinationData.createdAt)) {
+        const previewsDate = vaccinationData.createdAt
+        vaccinationData.createdAt = moment().toISOString()
         formatedLog(
-          'A data de registo de vacinação não pode ser superior ao dia de hoje!',
+          `Registo de vacinação de reforço modificado para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           LogType.warning
         )
-        return response.status(HttpStatusCode.OK).send({
-          message: 'A data de registo de vacinação não pode ser superior ao dia de hoje!',
-          code: HttpStatusCode.OK,
-          data: [],
-        })
       }
 
       //Default regMB set to S = Yes to Mobile Register
