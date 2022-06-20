@@ -35,7 +35,7 @@ let isTrustPartner =
   "SELECT TOP (1) [Id_regInstituicao], [Nome], [Morada], [Telefone]  [Email], [NomeR], [docNum] , [TelefoneR], [EmailR],[Codigo], [Status], [DataCad], [TipoInst] FROM [SIGIS].[dbo].[vac_regInstituicao] where TipoInst = 'R' and Codigo = ?"
 
 let vaccinationPostLocation =
-  "SELECT TOP (1000) [Id_postoVacinacao], concat([NomePVAR], ' ', [NomeEA], ' ', [NomeEM]) as Posto, [TipoPosto], [Latitude], [Longitude], [Status] FROM [SIGIS].[dbo].[vac_postoVacinacao]"
+  "SELECT  [Id_postoVacinacao], concat([NomePVAR], ' ', [NomeEA], ' ', [NomeEM]) as Posto, [TipoPosto], [Latitude], [Longitude], [Status] FROM [SIGIS].[dbo].[vac_postoVacinacao]"
 
 let vaccinationPlaces =
   "SELECT [Id_regVacinacaoLog],  rv.[Id_regVacinacao], [Mac_address], rvl.[Latitude],  rvl.[Longitude],  [Tipo],  rv.Id_Vacina,  CASE  WHEN [Tipo] = 'P' AND d.Nome = 'Dose Única' THEN 'Dose Única' WHEN [Tipo] = 'P' THEN '1ª Dose' WHEN [Tipo] = 'S' THEN '2ª Dose'"
