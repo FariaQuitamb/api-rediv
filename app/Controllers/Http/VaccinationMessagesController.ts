@@ -12,6 +12,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import ViewedMessageValidator from 'App/Validators/viewedValidator'
 import ViewedMessage from 'App/Models/ViewedMessage'
 import orderNotifications from 'Contracts/functions/order_notifications'
+import moment from 'moment'
 
 export default class VaccinationMessagesController {
   public async getMessage({ auth, response, request }: HttpContextContract) {
@@ -51,10 +52,12 @@ export default class VaccinationMessagesController {
 
       const notifications = orderNotifications(notificationList)
 
+      const currentDate = moment()
+
       return response.status(HttpStatusCode.OK).send({
         message: 'Notificações do utilizador',
         code: HttpStatusCode.OK,
-        data: { total, notifications },
+        data: { currentDate, total, notifications },
       })
     } catch (error) {
       //console.log(error)
