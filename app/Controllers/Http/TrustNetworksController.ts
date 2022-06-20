@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
+import IsPartnerValidator from 'App/Validators/IsPartnerValidator'
 import trustNetworkQueries from 'Contracts/constants/trust_network_query'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
@@ -57,14 +58,14 @@ export default class TrustNetworksController {
 
   public async inGeneral({ auth, response, request }: HttpContextContract) {
     try {
-      const topTenPartners = await Database.rawQuery(trustNetworkQueries.queryTop10Today)
+      const topTenPartners = await Database.rawQuery(trustNetworkQueries.queryTop10General)
 
-      const todayTotal = await Database.rawQuery(trustNetworkQueries.todayTotal)
+      const generalTotal = await Database.rawQuery(trustNetworkQueries.generalTotal)
 
       return response.status(HttpStatusCode.OK).send({
-        message: 'Top 10 Instituições com mais registos hoje',
+        message: 'Top 10 Instituições com mais registos em geral',
         code: HttpStatusCode.OK,
-        data: { total: todayTotal[0].total, top_partners: topTenPartners },
+        data: { total: generalTotal[0].total, top_partners: topTenPartners },
       })
     } catch (error) {
       //Log de erro
@@ -75,7 +76,111 @@ export default class TrustNetworksController {
 
       await logError({
         type: 'MB',
-        page: 'TrustNetworksController/topTenToday',
+        page: 'TrustNetworksController/inGeneral',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async withOneOrMoreRecord({ auth, response, request }: HttpContextContract) {
+    try {
+      const thisWeek = await Database.rawQuery(trustNetworkQueries.weekQuery)
+
+      const thisMonth = await Database.rawQuery(trustNetworkQueries.weekQuery)
+
+      const general = await Database.rawQuery(trustNetworkQueries.overtimeGeneral)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Top 10 Instituições com mais registos em geral',
+        code: HttpStatusCode.OK,
+        data: { general, thisWeek, thisMonth },
+      })
+    } catch (error) {
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/withOneOrMoreRecord',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async isTrustPartner({ auth, response, request }: HttpContextContract) {
+    const partnerInfo = await request.validate(IsPartnerValidator)
+    try {
+      const partner = await Database.rawQuery(trustNetworkQueries.isTrustPartner, [
+        partnerInfo.partnerCode,
+      ])
+
+      if (partner.length === 0) {
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Ainda não é um parceiro da Rede de Confiança',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      const partnerData = partner[0]
+      return response.status(HttpStatusCode.OK).send({
+        message: 'A Instituição é parceira da Rede de Confiança!',
+        code: HttpStatusCode.OK,
+        data: { partner: partnerData },
+      })
+    } catch (error) {
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/isTrustPartner',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
       })
 

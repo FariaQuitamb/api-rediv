@@ -23,14 +23,7 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import moment from 'moment'
 
 Route.get('/', async () => {
-  const dataCad = '2022-06-16'
-
-  const today = moment().format('YYYY-MM-DD')
-  const isAfterToday = moment(dataCad).isAfter(today)
-
-  const before = moment('2010-10-20').isBefore('2011-01-01')
-
-  return { hello: 'world', title: 'It Works!', today, before, isAfterToday, dataCad }
+  return { hello: 'world', title: 'It Works!' }
 })
 
 Route.get('/health', async ({ response }) => {
@@ -86,8 +79,12 @@ Route.group(() => {
 Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
 //Rede de Confiança
+
 Route.group(() => {
-  Route.post('today', 'TrustNetworksController.today')
+  Route.get('today', 'TrustNetworksController.today')
+  Route.get('general', 'TrustNetworksController.inGeneral')
+  Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
+  Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
 })
   .prefix('trust')
   .middleware('auth:api')
