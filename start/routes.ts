@@ -20,7 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import moment from 'moment'
 
 Route.get('/', async () => {
   return { hello: 'world', title: 'It Works!' }
