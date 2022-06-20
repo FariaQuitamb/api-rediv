@@ -18,6 +18,8 @@ import Env from '@ioc:Adonis/Core/Env'
 import getGeoLocation from 'Contracts/functions/get_geolocation'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
+import isAfterToday from 'Contracts/functions/isafter_today'
+
 interface DoseInfo {
   Id_regVacinacao: number
   Id_Dose: number
@@ -37,6 +39,18 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Vacination Date verification  , cannot be after today (future)
+
+      if (isAfterToday(vaccinationData.createdAt)) {
+        const previewsDate = vaccinationData.createdAt
+        vaccinationData.createdAt = moment().toISOString()
+        formatedLog(
+          `Registo de vacinação modificado para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          LogType.warning
+        )
+      }
+
+      //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
       //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita
       //Fix abaixo
@@ -415,6 +429,7 @@ export default class VaccinationsController {
             }
           }
         } else {
+          formatedLog('Já recebeu Vacina!', LogType.warning)
           return response.status(HttpStatusCode.OK).send({
             message: 'Já recebeu Vacina!',
             code: HttpStatusCode.OK,
@@ -422,6 +437,7 @@ export default class VaccinationsController {
           })
         }
       } else {
+        formatedLog('O utente não tem próxima dose a tomar!', LogType.warning)
         return response.status(HttpStatusCode.OK).send({
           message: 'O utente não tem próxima dose a tomar!',
           code: HttpStatusCode.OK,
@@ -452,6 +468,18 @@ export default class VaccinationsController {
     const vaccinationData = await request.validate(VaccinationValidator)
 
     try {
+      //Vacination Date verification  , cannot be after today (future)
+
+      if (isAfterToday(vaccinationData.createdAt)) {
+        const previewsDate = vaccinationData.createdAt
+        vaccinationData.createdAt = moment().toISOString()
+        formatedLog(
+          `Registo de vacinação de reforço modificado para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          LogType.warning
+        )
+      }
+
+      //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
 
       //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita

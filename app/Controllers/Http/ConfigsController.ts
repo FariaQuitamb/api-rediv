@@ -14,7 +14,12 @@ export default class ConfigsController {
     const versionData = await request.validate(MobileVersionValidator)
     try {
       const fileName = path.resolve(__dirname, '../../../', 'json', 'mobile_version.json')
-      const content = { mobile_app_version: versionData.mobileVersion }
+
+      const content = {
+        mobile_app_version: versionData.mobileVersion,
+        changes: versionData.changes,
+      }
+
       const str = JSON.stringify(content)
 
       await fs.writeFile(fileName, str)
@@ -27,7 +32,7 @@ export default class ConfigsController {
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Versão actual da aplicação mobile modificada!',
         code: HttpStatusCode.CREATED,
-        data: { version: version?.mobile_app_version },
+        data: { version: version?.mobile_app_version, changes: version?.changes },
       })
     } catch (error) {
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
@@ -63,7 +68,7 @@ export default class ConfigsController {
       return response.status(HttpStatusCode.OK).send({
         message: 'Versão actual da aplicação mobile : ' + version?.mobile_app_version,
         code: HttpStatusCode.OK,
-        data: { version: version?.mobile_app_version },
+        data: { version: version?.mobile_app_version, changes: version?.changes },
       })
     } catch (error) {
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
@@ -75,6 +80,21 @@ export default class ConfigsController {
         page: 'ConfigsController/getMobileVersion',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
       })
+
+      const substring = 'no such file or directory'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.OK).send({
+          message:
+            'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Não foi possível obter a versão actual da aplicação mobile!',

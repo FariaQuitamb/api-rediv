@@ -54,4 +54,50 @@ export default class TrustNetworksController {
       })
     }
   }
+
+  public async inGeneral({ auth, response, request }: HttpContextContract) {
+    try {
+      const topTenPartners = await Database.rawQuery(trustNetworkQueries.queryTop10Today)
+
+      const todayTotal = await Database.rawQuery(trustNetworkQueries.todayTotal)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Top 10 Instituições com mais registos hoje',
+        code: HttpStatusCode.OK,
+        data: { total: todayTotal[0].total, top_partners: topTenPartners },
+      })
+    } catch (error) {
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/topTenToday',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
 }
