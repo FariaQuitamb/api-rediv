@@ -205,4 +205,92 @@ export default class TrustNetworksController {
       })
     }
   }
+
+  public async vaccinationPostLocations({ auth, response, request }: HttpContextContract) {
+    try {
+      const vaccinationPosts = await Database.rawQuery(trustNetworkQueries.vaccinationPostLocation)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Postos de vacinação e suas coordenadas!',
+        code: HttpStatusCode.OK,
+        data: { vaccinationPosts },
+      })
+    } catch (error) {
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/vaccinationPostLocations',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async vaccinationPlaces({ auth, response, request }: HttpContextContract) {
+    try {
+      const vaccinationPlaces = await Database.rawQuery(trustNetworkQueries.vaccinationPlaces)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Coordenadas dos locais com registos de vacinação!',
+        code: HttpStatusCode.OK,
+        data: { vaccinationPlaces },
+      })
+    } catch (error) {
+      //Log de erro
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/vaccinationPlaces',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog(
+          'Não foi possível completar a operação dentro do tempo esperado!',
+          LogType.warning
+        )
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor!',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
 }

@@ -85,6 +85,8 @@ Route.group(() => {
   Route.get('general', 'TrustNetworksController.inGeneral')
   Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
   Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
+  Route.get('vaccination_post', 'TrustNetworksController.vaccinationPostLocations')
+  Route.get('vaccination_places', 'TrustNetworksController.vaccinationPlaces')
 })
   .prefix('trust')
   .middleware('auth:api')
