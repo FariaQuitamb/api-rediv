@@ -9,7 +9,6 @@ import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
-import generateCode from 'Contracts/functions/generate_code'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
@@ -136,29 +135,21 @@ export default class PeopleController {
         })
       }
 
-      const person = await Person.create(personData)
+      const person = new Person()
+      //Adiciona utente usando transação para garantir que o registo suba e que tenha codigo associado
+      //A inserção possuí um timeout de 60000 ms
+      const insertedPerson = await person.transactionInsert(hasDocNumber, personData, 60000)
+
+      const personInfo = insertedPerson[0]
 
       //Caso não tenha inserido o utente
-      if (!person) {
+      if (insertedPerson.length === 0) {
         formatedLog('Não foi possível registrar o utente!', LogType.error)
         return response.status(HttpStatusCode.OK).send({
           message: 'Não foi possível registrar o utente!',
           code: HttpStatusCode.OK,
           data: [],
         })
-      }
-
-      //Gerar a referência - codigo
-      //Para o caso de utente sem BI gerar  PM-Referência
-      const code = generateCode(person.id.toString())
-
-      //Verifica se possui documento , caso tenha actualiza apenas o codigo ,
-      // caso não tenha actualiza o codigo e o docNum
-      if (hasDocNumber) {
-        person.merge({ code: code }).save()
-      } else {
-        //Caso não tenha documento de identificação
-        person.merge({ code: code, docNumber: 'PM' + code }).save()
       }
 
       const version = Env.get('API_VERSION')
@@ -169,9 +160,9 @@ export default class PeopleController {
         screen: 'PeopleController/store',
         table: 'regIndividual',
         job: 'Cadastrar',
-        tableId: person.id,
+        tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
-        actionId: `V:${version}-ID:${person.id.toString()}`,
+        actionId: `V:${version}-ID:${personInfo.Id_regIndividual.toString()}`,
       })
 
       formatedLog('Novo utente registrado com sucesso!', LogType.success)
@@ -179,7 +170,7 @@ export default class PeopleController {
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Utente registrado com sucesso!',
         code: HttpStatusCode.CREATED,
-        data: { utente: person },
+        data: { utente: personInfo },
       })
     } catch (error) {
       //console.log(error)
