@@ -1,4 +1,6 @@
+import Database from '@ioc:Adonis/Lucid/Database'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import generateCode from 'Contracts/functions/generate_code'
 
 export default class Person extends BaseModel {
   public static table = 'vac_regIndividual'
@@ -76,4 +78,64 @@ export default class Person extends BaseModel {
   public certification: string
   @column({ columnName: 'CodigoNum' })
   public codeNumber: string
+
+  public async transactionInsert(hasDocNumber, personData, timeout) {
+    let newPerson
+    await Database.transaction(async (trx) => {
+      newPerson = await trx
+        .table('vac_regIndividual')
+        .returning(['Id_regIndividual', 'Nome', 'Telefone', 'dtNascimento', 'NomePai', 'NomeMae'])
+        .insert({
+          Id_regInstituicao: personData.institutionId,
+          Nome: personData.name,
+          NomePai: personData.fatherName,
+          NomeMae: personData.motherName,
+          Telefone: personData.phone,
+          Email: personData.email,
+          Genero: personData.genre,
+          dtNascimento: personData.birthday,
+          Id_tipoDocumento: personData.doctypeId,
+          docNum: personData.docNumber,
+          Id_Nacionalidade: personData.nationalityId,
+          Id_provincia: personData.provinceId,
+          Id_Municipio: personData.municipalityId,
+          Id_Categoria: personData.categoryId,
+          Status: personData.status,
+          DataCad: personData.dataCad,
+          FlagRegSimp: personData.flagRegSimp,
+          Id_Setor: personData.sectorId,
+          Comorbilidade: personData.coMorbidity,
+          Observacao: personData.observation,
+          CodigoNum: personData.codeNumber,
+        })
+        .timeout(timeout)
+
+      if (newPerson.length > 0) {
+        const id = newPerson[0].Id_regIndividual
+
+        //Gerar a referência - codigo
+        //Para o caso de utente sem BI gerar  PM-Referência
+        const code = generateCode(id.toString())
+
+        //Verifica se possui documento , caso tenha actualiza apenas o codigo ,
+        // caso não tenha actualiza o codigo e o docNum
+        if (hasDocNumber) {
+          await trx
+            .from('vac_regIndividual')
+            .where('Id_regIndividual', id)
+            .update({ Codigo: code })
+            .timeout(timeout)
+        } else {
+          //Caso não tenha documento de identificação
+          await trx
+            .from('vac_regIndividual')
+            .where('Id_regIndividual', id)
+            .update({ Codigo: code, docNum: 'PM' + code })
+            .timeout(timeout)
+        }
+      }
+    })
+
+    return newPerson
+  }
 }
