@@ -110,7 +110,7 @@ export default class LogsController {
     }
   }
 
-  public async getErrorLogs({ response, request }: HttpContextContract) {
+  public async getErrorLogs({ response, request, auth }: HttpContextContract) {
     const logData = await request.validate(GetErrorLogValidator)
     try {
       const filters: Array<{ field: string; value: any }> = []
@@ -165,7 +165,13 @@ export default class LogsController {
       //Log de erro-
       //console.log(error)
 
-      formatedLog(error, LogType.error)
+      formatedLog({
+        text: error,
+        data: {},
+        auth: auth,
+        request: request,
+        type: LogType.error,
+      })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

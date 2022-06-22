@@ -84,7 +84,15 @@ export default class Person extends BaseModel {
     await Database.transaction(async (trx) => {
       newPerson = await trx
         .table('vac_regIndividual')
-        .returning(['Id_regIndividual', 'Nome', 'Telefone', 'dtNascimento', 'NomePai', 'NomeMae'])
+        .returning([
+          'Id_regIndividual',
+          'Id_regInstituicao',
+          'Nome',
+          'Telefone',
+          'dtNascimento',
+          'NomePai',
+          'NomeMae',
+        ])
         .insert({
           Id_regInstituicao: personData.institutionId,
           Nome: personData.name,

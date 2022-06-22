@@ -17,6 +17,7 @@ import GetUserRank from 'App/Validators/getUserRank'
 import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
+import BusinessCode from 'Contracts/enums/BusinessCode'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -27,10 +28,13 @@ export default class PeopleController {
       if (isAfterToday(personData.dataCad)) {
         const previewsDate = personData.dataCad
         personData.dataCad = moment().toISOString()
-        formatedLog(
-          `A data do registo individual foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-          LogType.warning
-        )
+        formatedLog({
+          text: `A data do registo individual foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          data: personData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
       }
 
       //START - CORRECÇÃO PARA DATA ERRADA
@@ -54,10 +58,17 @@ export default class PeopleController {
 
         personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
 
-        formatedLog(
-          'Data de nascimento errada foi modificada : ' + sentDate + ' ==> ' + personData.birthday,
-          LogType.warning
-        )
+        formatedLog({
+          text:
+            'Data de nascimento errada foi modificada : ' +
+            sentDate +
+            ' ==> ' +
+            personData.birthday,
+          data: personData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
       }
 
       //END-CORRECÇÃO PARA DATA ERRADA
@@ -92,13 +103,13 @@ export default class PeopleController {
         const exists = await Person.query()
           .where('docNum', personData.docNumber as string)
           .timeout(60000)
-          .limit(1)
+          .first()
 
-        if (exists.length > 0) {
+        if (exists) {
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse número de documento!',
-            code: HttpStatusCode.OK,
-            data: [],
+            code: BusinessCode.FOUND_INDIVIDUAL,
+            data: exists,
           })
         }
       } else {
@@ -115,14 +126,18 @@ export default class PeopleController {
           .first()
 
         if (exists) {
-          formatedLog(
-            'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!: ',
-            LogType.warning
-          )
+          formatedLog({
+            text: 'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
-            code: HttpStatusCode.OK,
+            code: BusinessCode.FOUND_INDIVIDUAL,
             data: exists,
           })
         }
@@ -156,16 +171,32 @@ export default class PeopleController {
       //A inserção possuí um timeout de 60000 ms
       const insertedPerson = await person.transactionInsert(hasDocNumber, personData, 60000)
 
-      const personInfo = insertedPerson[0]
-
       //Caso não tenha inserido o utente
       if (insertedPerson.length === 0) {
-        formatedLog('Não foi possível registrar o utente!', LogType.error)
+        formatedLog({
+          text: 'Não foi possível registrar o utente!',
+          type: LogType.error,
+          data: personData,
+          auth: auth,
+          request: request,
+        })
         return response.status(HttpStatusCode.OK).send({
           message: 'Não foi possível registrar o utente!',
           code: HttpStatusCode.OK,
           data: [],
         })
+      }
+
+      const personInfo = insertedPerson[0]
+
+      const finalFormatedPerson = {
+        id: personInfo.Id_regIndividual,
+        institution_id: personInfo.Id_regInstituicao,
+        name: personInfo.Nome,
+        phone: personInfo.Telefone,
+        birthday: personInfo.dtNascimento,
+        father_name: personInfo.NomePai,
+        mother_name: personInfo.omeMae,
       }
 
       const version = Env.get('API_VERSION')
@@ -181,12 +212,18 @@ export default class PeopleController {
         actionId: `V:${version}-ID:${personInfo.Id_regIndividual.toString()}`,
       })
 
-      formatedLog('Novo utente registrado com sucesso!', LogType.success)
+      formatedLog({
+        text: 'Novo utente registrado com sucesso!',
+        type: LogType.success,
+        data: personData,
+        auth: auth,
+        request: request,
+      })
       //Utente inserido com sucesso
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Utente registrado com sucesso!',
         code: HttpStatusCode.CREATED,
-        data: { utente: personInfo },
+        data: { utente: finalFormatedPerson },
       })
     } catch (error) {
       //console.log(error)
@@ -208,12 +245,13 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
-
-        formatedLog(
-          'Não foi possível completar a operação dentro do tempo esperado!',
-          LogType.warning
-        )
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          type: LogType.warning,
+          data: personData,
+          auth: auth,
+          request: request,
+        })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
@@ -357,10 +395,13 @@ export default class PeopleController {
       if (errorInfo.includes(substring)) {
         //console.log('Não foi possível completar a operação dentro do tempo esperado!')
 
-        formatedLog(
-          'Não foi possível completar a operação dentro do tempo esperado!',
-          LogType.warning
-        )
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          type: LogType.warning,
+          data: searchData,
+          auth: auth,
+          request: request,
+        })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
@@ -469,7 +510,7 @@ export default class PeopleController {
         if (person) {
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse número de documento!',
-            code: HttpStatusCode.OK,
+            code: BusinessCode.FOUND_INDIVIDUAL,
             data: person,
           })
         }
@@ -487,10 +528,13 @@ export default class PeopleController {
         if (personData.birthday === null) {
           const userInfo = formatUserInfo(auth.user)
 
-          formatedLog(
-            `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`,
-            LogType.warning
-          )
+          formatedLog({
+            text: `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           /*  return response.status(HttpStatusCode.CONFLICT).send({
             message: 'Data de nascimento mal formada!',
             code: HttpStatusCode.OK,
@@ -510,7 +554,7 @@ export default class PeopleController {
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
-            code: HttpStatusCode.OK,
+            code: BusinessCode.FOUND_INDIVIDUAL,
             data: person,
           })
         }
@@ -542,10 +586,13 @@ export default class PeopleController {
       if (errorInfo.includes(substring)) {
         //console.log('Não foi possível completar a operação dentro do tempo esperado!')
 
-        formatedLog(
-          'Não foi possível completar a operação dentro do tempo esperado!',
-          LogType.warning
-        )
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          data: personData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado!',
@@ -590,7 +637,13 @@ export default class PeopleController {
       //console.log(error)
       //Log de erro
 
-      formatedLog(error, LogType.error)
+      formatedLog({
+        text: error,
+        data: {},
+        auth: auth,
+        request: request,
+        type: LogType.error,
+      })
 
       const errorInfo = formatError(error)
 
