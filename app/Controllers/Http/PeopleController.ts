@@ -16,12 +16,22 @@ import Env from '@ioc:Adonis/Core/Env'
 import GetUserRank from 'App/Validators/getUserRank'
 import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
+import isAfterToday from 'Contracts/functions/isafter_today'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
     try {
       let hasDocNumber = true
+
+      if (isAfterToday(personData.dataCad)) {
+        const previewsDate = personData.dataCad
+        personData.dataCad = moment().toISOString()
+        formatedLog(
+          `A data do registo individual foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          LogType.warning
+        )
+      }
 
       //START - CORRECÇÃO PARA DATA ERRADA
       const dateParts = personData.birthday.split('-')
@@ -33,6 +43,8 @@ export default class PeopleController {
       let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true)
 
       if (receivedDate.toISOString() === null) {
+        const sentDate = personData.birthday
+
         const month = hasMonthError ? '01' : dateParts[1]
         const day = hasDayError ? '01' : dateParts[2]
 
@@ -40,14 +52,13 @@ export default class PeopleController {
 
         receivedDate = moment(new Date(changedDate), moment.ISO_8601, true)
 
-        //console.log('DATE WAS CHANGED TO: ' + personData.birthday)
+        personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
+
         formatedLog(
-          'Data de nascimento errada foi modificada para: ' + personData.birthday,
+          'Data de nascimento errada foi modificada : ' + sentDate + ' ==> ' + personData.birthday,
           LogType.warning
         )
       }
-
-      personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
 
       //END-CORRECÇÃO PARA DATA ERRADA
 
@@ -80,6 +91,7 @@ export default class PeopleController {
         //Verifica se existe um utente com o número de documento enviado
         const exists = await Person.query()
           .where('docNum', personData.docNumber as string)
+          .timeout(60000)
           .limit(1)
 
         if (exists.length > 0) {
@@ -103,6 +115,10 @@ export default class PeopleController {
           .first()
 
         if (exists) {
+          formatedLog(
+            'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!: ',
+            LogType.warning
+          )
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
@@ -369,10 +385,11 @@ export default class PeopleController {
       if (personData.code !== undefined && personData.code !== '') {
         const person = await Person.query()
           .where('Codigo', personData.code as string)
+          .timeout(60000)
           .first()
 
         if (person) {
-          const numDose = await Database.rawQuery(constants.getNumDoses, [person.id])
+          const numDose = await Database.rawQuery(constants.getNumDoses, [person.id]).timeout(60000)
 
           let vacinationCicle = 'N'
 
@@ -474,11 +491,11 @@ export default class PeopleController {
             `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`,
             LogType.warning
           )
-          return response.status(HttpStatusCode.CONFLICT).send({
+          /*  return response.status(HttpStatusCode.CONFLICT).send({
             message: 'Data de nascimento mal formada!',
             code: HttpStatusCode.OK,
             data: [],
-          })
+          })*/
         }
 
         const person = await Person.query()
@@ -486,6 +503,7 @@ export default class PeopleController {
           .where('NomePai', personData.fatherName as string)
           .where('NomeMae', personData.motherName as string)
           .where('dtNascimento', personData.birthday as string)
+          .timeout(60000)
           .first()
 
         if (person) {
