@@ -65,6 +65,7 @@ export default class GoalsController {
         type: 'MB',
         page: 'v2:GoalsController/getVaccinationPostGoal',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

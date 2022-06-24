@@ -521,6 +521,7 @@ export default class VaccinationsController {
         type: 'MB',
         page: 'VaccinationController/store',
         error: `User: ${userInfo}  Device: ${deviceInfo}  Dados: ${data}  ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',
@@ -1096,6 +1097,7 @@ export default class VaccinationsController {
         type: 'MB',
         page: 'VaccinationController/booster',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${data} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor ao vacinar utente!',

@@ -17,7 +17,12 @@ type LogFields = {
 
 const formatedLog = ({ text, type, auth, data, request }: LogFields) => {
   const dataJson = JSON.stringify(data)
-  const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+
+  let deviceInfo = ''
+  if (request.headers() !== undefined) {
+    deviceInfo = JSON.stringify(formatHeaderInfo(request))
+  }
+
   const userInfo = formatUserInfo(auth.user)
 
   if (type === LogType.success) {

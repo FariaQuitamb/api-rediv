@@ -49,6 +49,7 @@ export default class ConfigsController {
         type: 'MB',
         page: 'ConfigsController/changeAppVersion',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -88,6 +89,7 @@ export default class ConfigsController {
         type: 'MB',
         page: 'ConfigsController/getMobileVersion',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'no such file or directory'
@@ -115,14 +117,4 @@ export default class ConfigsController {
       })
     }
   }
-
-  public async store({}: HttpContextContract) {}
-
-  public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }

@@ -122,6 +122,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/login',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+        request: request,
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -173,6 +174,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/logout',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -238,6 +240,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/loggedUsers',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -307,6 +310,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/loggedUsers',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

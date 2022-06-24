@@ -101,6 +101,7 @@ export default class LogsController {
         type: 'MB',
         page: 'LogsController/getLogs',
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -220,6 +221,7 @@ export default class LogsController {
         type: 'MB',
         page: 'LogsController/getVaccineLogs',
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -268,6 +270,7 @@ export default class LogsController {
         type: 'MB',
         page: 'LogsController/getLogs',
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

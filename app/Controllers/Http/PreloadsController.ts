@@ -99,6 +99,7 @@ export default class PreloadsController {
         type: 'MB',
         page: 'PreloadController/index',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

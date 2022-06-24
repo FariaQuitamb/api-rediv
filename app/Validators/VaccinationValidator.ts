@@ -25,7 +25,6 @@ export default class VaccinationValidator {
    */
   public schema = schema.create({
     personId: schema.number(),
-
     institutionId: schema.number(),
     vaccineId: schema.number(),
     doseId: schema.number(),

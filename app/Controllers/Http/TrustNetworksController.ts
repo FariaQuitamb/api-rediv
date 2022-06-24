@@ -32,6 +32,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/topTenToday',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -81,6 +82,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/inGeneral',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -132,6 +134,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/withOneOrMoreRecord',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -191,6 +194,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/isTrustPartner',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -238,6 +242,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/vaccinationPostLocations',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -285,6 +290,7 @@ export default class TrustNetworksController {
         type: 'MB',
         page: 'TrustNetworksController/vaccinationPlaces',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -303,6 +309,14 @@ export default class TrustNetworksController {
           data: [],
         })
       }
+
+      formatedLog({
+        text: 'Ocorreu um erro no servidor!',
+        data: {},
+        auth: auth,
+        request: request,
+        type: LogType.error,
+      })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

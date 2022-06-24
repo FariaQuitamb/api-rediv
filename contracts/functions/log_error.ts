@@ -3,14 +3,14 @@
 
 import formatedLog, { LogType } from './formated_log'
 
-const logError = async (args: { type: string; page: string; error: string }) => {
+const logError = async (args: { type: string; page: string; error: string; request: any }) => {
   // formatedLog(`Controller:${args.page} -- ${args.error}`, LogType.error)
 
   formatedLog({
     text: `Controller:${args.page} -- ${args.error}`,
     data: {},
     auth: {},
-    request: {},
+    request: args.request,
     type: LogType.error,
   })
 

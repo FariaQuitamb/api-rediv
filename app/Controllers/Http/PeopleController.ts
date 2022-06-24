@@ -158,6 +158,7 @@ export default class PeopleController {
           type: 'MB',
           page: 'PeopleController/store',
           error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
+          request: request,
         })
         return response.status(HttpStatusCode.OK).send({
           message: 'Data de  cadastro inválida!',
@@ -240,6 +241,7 @@ export default class PeopleController {
         type: 'MB',
         page: 'PeopleController/store',
         error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -388,6 +390,7 @@ export default class PeopleController {
         type: 'MB',
         page: 'v2:PeopleController/list',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -579,6 +582,7 @@ export default class PeopleController {
         type: 'MB',
         page: 'PeopleController/checkPerson',
         error: `User: ${userInfo} Device: ${deviceInfo}  Dados: ${data} ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'Timeout: Request failed to complete in'
@@ -654,6 +658,7 @@ export default class PeopleController {
         type: 'MB',
         page: 'PeopleController/rankUser',
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
