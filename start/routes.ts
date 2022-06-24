@@ -20,9 +20,12 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
+import AppInstallation from 'App/Models/AppInstallation'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  const test = await AppInstallation.all()
+
+  return { hello: 'world', title: 'It Works!', test }
 })
 
 Route.get('/health', async ({ response }) => {
@@ -72,8 +75,10 @@ Route.group(() => {
   Route.post('usermessages', 'VaccinationMessagesController.getMessage')
   Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
 
-  //MOBILE APP VERSION
+  //MOBILE APP VERSION AND INSTALLATION
   Route.post('mobile_version', 'ConfigsController.changeAppVersion')
+  Route.post('install', 'AppInstallationsController.store')
+  Route.post('installations', 'AppInstallationsController.index')
 }).middleware('auth:api')
 Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
