@@ -10,6 +10,7 @@ import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 import Env from '@ioc:Adonis/Core/Env'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 export default class PreloadsController {
   public async index({ auth, request, response }: HttpContextContract) {
@@ -75,6 +76,14 @@ export default class PreloadsController {
         actionId: `V:${version}`,
       })
 
+      formatedLog({
+        text: 'Carregamento inicial  de dados para o dispositivo  ',
+        data: {},
+        auth: auth,
+        request: request,
+        type: LogType.success,
+      })
+
       return response.status(HttpStatusCode.ACCEPTED).send({
         message: 'Dados de pré-carregamento!',
         code: HttpStatusCode.ACCEPTED,
@@ -90,6 +99,7 @@ export default class PreloadsController {
         type: 'MB',
         page: 'PreloadController/index',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

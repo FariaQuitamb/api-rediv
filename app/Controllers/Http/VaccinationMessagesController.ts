@@ -72,6 +72,7 @@ export default class VaccinationMessagesController {
         type: 'MB',
         page: `V:${version} VaccinationMessagesController/getMessage`,
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -105,6 +106,7 @@ export default class VaccinationMessagesController {
         type: 'MB',
         page: `V:${version} VaccinationMessagesController/viewMessage`,
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

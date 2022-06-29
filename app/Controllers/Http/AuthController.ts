@@ -51,7 +51,13 @@ export default class AuthController {
           actionId: `V:${version}-U:${username}-P:${data.password}`,
         })
 
-        formatedLog('Login incorrecto', LogType.error)
+        formatedLog({
+          text: 'Login incorrecto',
+          data: data,
+          auth: auth,
+          request: request,
+          type: LogType.error,
+        })
 
         return response.status(HttpStatusCode.OK).send({
           code: HttpStatusCode.OK,
@@ -116,6 +122,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/login',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+        request: request,
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -167,6 +174,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/logout',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -232,6 +240,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/loggedUsers',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -301,6 +310,7 @@ export default class AuthController {
         type: 'MB',
         page: 'AuthController/loggedUsers',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,

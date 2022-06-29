@@ -43,6 +43,7 @@ export default class ApiAcessesController {
         type: 'MB',
         page: 'ApiAcessesController/store',
         error: `User:${userInfo} - ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -105,6 +106,7 @@ export default class ApiAcessesController {
         type: 'MB',
         page: 'ApiAcessesController/store',
         error: `User:${userInfo} - ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -148,6 +150,7 @@ export default class ApiAcessesController {
         type: 'MB',
         page: 'ApiAcessesController/store',
         error: `User:${userInfo} - ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',
@@ -189,6 +192,7 @@ export default class ApiAcessesController {
         type: 'MB',
         page: 'ApiAcessesController/store',
         error: `User:${userInfo} - ${errorInfo}`,
+        request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor!',

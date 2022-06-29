@@ -20,17 +20,12 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import moment from 'moment'
+import AppInstallation from 'App/Models/AppInstallation'
 
 Route.get('/', async () => {
-  const dataCad = '2022-06-16'
+  const test = await AppInstallation.all()
 
-  const today = moment().format('YYYY-MM-DD')
-  const isAfterToday = moment(dataCad).isAfter(today)
-
-  const before = moment('2010-10-20').isBefore('2011-01-01')
-
-  return { hello: 'world', title: 'It Works!', today, before, isAfterToday, dataCad }
+  return { hello: 'world', title: 'It Works!', test }
 })
 
 Route.get('/health', async ({ response }) => {
@@ -80,14 +75,22 @@ Route.group(() => {
   Route.post('usermessages', 'VaccinationMessagesController.getMessage')
   Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
 
-  //MOBILE APP VERSION
+  //MOBILE APP VERSION AND INSTALLATION
   Route.post('mobile_version', 'ConfigsController.changeAppVersion')
+  Route.post('install', 'AppInstallationsController.store')
+  Route.post('installations', 'AppInstallationsController.index')
 }).middleware('auth:api')
 Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
 //Rede de Confiança
+
 Route.group(() => {
-  Route.post('today', 'TrustNetworksController.today')
+  Route.get('today', 'TrustNetworksController.today')
+  Route.get('general', 'TrustNetworksController.inGeneral')
+  Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
+  Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
+  Route.get('vaccination_post', 'TrustNetworksController.vaccinationPostLocations')
+  Route.get('vaccination_places', 'TrustNetworksController.vaccinationPlaces')
 })
   .prefix('trust')
   .middleware('auth:api')

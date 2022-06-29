@@ -27,7 +27,13 @@ export default class ConfigsController {
       const newData = await fs.readFile(fileName, 'utf8')
       const version = JSON.parse(newData)
 
-      formatedLog('Versão actual da aplicação mobile modificada!', LogType.success)
+      formatedLog({
+        text: 'Versão actual da aplicação mobile modificada!',
+        data: versionData,
+        auth: auth,
+        request: request,
+        type: LogType.success,
+      })
 
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Versão actual da aplicação mobile modificada!',
@@ -43,6 +49,7 @@ export default class ConfigsController {
         type: 'MB',
         page: 'ConfigsController/changeAppVersion',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -60,10 +67,13 @@ export default class ConfigsController {
       const newData = await fs.readFile(fileName, 'utf8')
       const version = JSON.parse(newData)
 
-      formatedLog(
-        'Versão actual da aplicação mobile : ' + version?.mobile_app_version,
-        LogType.success
-      )
+      formatedLog({
+        text: 'Versão actual da aplicação mobile : ' + version?.mobile_app_version,
+        data: { version: version?.mobile_app_version, changes: version?.changes },
+        auth: auth,
+        request: request,
+        type: LogType.success,
+      })
 
       return response.status(HttpStatusCode.OK).send({
         message: 'Versão actual da aplicação mobile : ' + version?.mobile_app_version,
@@ -79,15 +89,19 @@ export default class ConfigsController {
         type: 'MB',
         page: 'ConfigsController/getMobileVersion',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
       })
 
       const substring = 'no such file or directory'
 
       if (errorInfo.includes(substring)) {
-        formatedLog(
-          'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
-          LogType.warning
-        )
+        formatedLog({
+          text: 'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
+          data: {},
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
         return response.status(HttpStatusCode.OK).send({
           message:
             'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
@@ -103,14 +117,4 @@ export default class ConfigsController {
       })
     }
   }
-
-  public async store({}: HttpContextContract) {}
-
-  public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }
