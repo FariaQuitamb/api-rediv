@@ -6,7 +6,7 @@ export default class AppInstallation extends BaseModel {
   public id: number
 
   @column()
-  public macAddress: string
+  public deviceId: string
 
   @column()
   public latitude: string
