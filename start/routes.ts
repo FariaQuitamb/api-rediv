@@ -77,9 +77,12 @@ Route.group(() => {
 
   //MOBILE APP VERSION AND INSTALLATION
   Route.post('mobile_version', 'ConfigsController.changeAppVersion')
-  Route.post('install', 'AppInstallationsController.store')
   Route.post('installations', 'AppInstallationsController.index')
 }).middleware('auth:api')
+
+Route.post('install', 'AppInstallationsController.store')
+
+//Rota para obter versão actual da aplicação
 Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
 //Rede de Confiança
@@ -94,3 +97,8 @@ Route.group(() => {
 })
   .prefix('trust')
   .middleware('auth:api')
+
+Route.group(() => {
+  Route.get('sarampo', 'MainController.index')
+  Route.get('illnesses', 'IllnessesController.index')
+}).namespace('App/Modules/Vaccination/Controllers/http')
