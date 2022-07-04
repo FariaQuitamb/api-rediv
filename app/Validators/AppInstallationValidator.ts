@@ -24,7 +24,7 @@ export default class AppInstallationValidator {
    *    ```
    */
   public schema = schema.create({
-    macAddress: schema.string({ trim: true, escape: true }),
+    deviceId: schema.string({ trim: true, escape: true }),
     latitude: schema.string({ trim: true, escape: true }),
     longitude: schema.string({ trim: true, escape: true }),
     version: schema.string({ trim: true, escape: true }),
