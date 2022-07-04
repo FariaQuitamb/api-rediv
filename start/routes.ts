@@ -22,83 +22,88 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import AppInstallation from 'App/Models/AppInstallation'
 
+import Env from '@ioc:Adonis/Core/Env'
+
 Route.get('/', async () => {
   const test = await AppInstallation.all()
 
   return { hello: 'world', title: 'It Works!', test }
 })
 
-Route.get('/health', async ({ response }) => {
-  const report = await HealthCheck.getReport()
-  return report.healthy ? response.ok(report) : response.badRequest(report)
-})
-
-//Auth Login
-Route.post('auth/login', 'AuthController.login')
-
+//MAIN WRAPPER
 Route.group(() => {
-  //Auth
-  Route.get('auth/logout', 'AuthController.logout')
-  Route.post('auth/logged', 'AuthController.loggedUsers')
-  Route.post('auth/logged_users', 'AuthController.loggedUsersView')
-  //Preload Route
-  Route.get('preload', 'PreloadsController.index')
-  //Person
-  Route.post('people', 'PeopleController.store')
-  Route.post('people/search', 'PeopleController.list')
-  Route.post('people/check', 'PeopleController.checkPerson')
+  Route.get('/health', async ({ response }) => {
+    const report = await HealthCheck.getReport()
+    return report.healthy ? response.ok(report) : response.badRequest(report)
+  })
 
-  //RANKING
-  Route.post('ranking', 'PeopleController.rankUser')
+  //Auth Login
+  Route.post('auth/login', 'AuthController.login')
 
-  //Vaccination
-  Route.post('vaccination/', 'VaccinationsController.store')
-  Route.post('vaccination/booster', 'VaccinationsController.booster')
+  Route.group(() => {
+    //Auth
+    Route.get('auth/logout', 'AuthController.logout')
+    Route.post('auth/logged', 'AuthController.loggedUsers')
+    Route.post('auth/logged_users', 'AuthController.loggedUsersView')
+    //Preload Route
+    Route.get('preload', 'PreloadsController.index')
+    //Person
+    Route.post('people', 'PeopleController.store')
+    Route.post('people/search', 'PeopleController.list')
+    Route.post('people/check', 'PeopleController.checkPerson')
 
-  //Goals
-  Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')
+    //RANKING
+    Route.post('ranking', 'PeopleController.rankUser')
 
-  //Logs
-  Route.post('logs/error', 'LogsController.getErrorLogs')
-  Route.post('logs/activity', 'LogsController.getLogs')
-  Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
-  Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
+    //Vaccination
+    Route.post('vaccination/', 'VaccinationsController.store')
+    Route.post('vaccination/booster', 'VaccinationsController.booster')
 
-  //API ACCESS ROUTE
-  Route.post('accesses/list', 'ApiAcessesController.index')
-  Route.post('accesses', 'ApiAcessesController.store')
-  Route.post('accesses/state', 'ApiAcessesController.changeState')
-  Route.post('accesses/search', 'ApiAcessesController.search')
+    //Goals
+    Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')
 
-  //MESSAGE ROUTES
+    //Logs
+    Route.post('logs/error', 'LogsController.getErrorLogs')
+    Route.post('logs/activity', 'LogsController.getLogs')
+    Route.post('logs/vaccine', 'LogsController.getVaccineLogs')
+    Route.post('logs/vaccine/geo', 'LogsController.getVaccineGeoLogs')
 
-  Route.post('usermessages', 'VaccinationMessagesController.getMessage')
-  Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
+    //API ACCESS ROUTE
+    Route.post('accesses/list', 'ApiAcessesController.index')
+    Route.post('accesses', 'ApiAcessesController.store')
+    Route.post('accesses/state', 'ApiAcessesController.changeState')
+    Route.post('accesses/search', 'ApiAcessesController.search')
 
-  //MOBILE APP VERSION AND INSTALLATION
-  Route.post('mobile_version', 'ConfigsController.changeAppVersion')
-  Route.post('installations', 'AppInstallationsController.index')
-}).middleware('auth:api')
+    //MESSAGE ROUTES
 
-Route.post('install', 'AppInstallationsController.store')
+    Route.post('usermessages', 'VaccinationMessagesController.getMessage')
+    Route.post('viewmessage', 'VaccinationMessagesController.viewMessage')
 
-//Rota para obter versão actual da aplicação
-Route.get('mobile_version', 'ConfigsController.getMobileVersion')
+    //MOBILE APP VERSION AND INSTALLATION
+    Route.post('mobile_version', 'ConfigsController.changeAppVersion')
+    Route.post('installations', 'AppInstallationsController.index')
+  }).middleware('auth:api')
 
-//Rede de Confiança
+  Route.post('install', 'AppInstallationsController.store')
 
-Route.group(() => {
-  Route.get('today', 'TrustNetworksController.today')
-  Route.get('general', 'TrustNetworksController.inGeneral')
-  Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
-  Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
-  Route.get('vaccination_post', 'TrustNetworksController.vaccinationPostLocations')
-  Route.get('vaccination_places', 'TrustNetworksController.vaccinationPlaces')
-})
-  .prefix('trust')
-  .middleware('auth:api')
+  //Rota para obter versão actual da aplicação
+  Route.get('mobile_version', 'ConfigsController.getMobileVersion')
 
-Route.group(() => {
-  Route.get('sarampo', 'MainController.index')
-  Route.get('illnesses', 'IllnessesController.index')
-}).namespace('App/Modules/Vaccination/Controllers/http')
+  //Rede de Confiança
+
+  Route.group(() => {
+    Route.get('today', 'TrustNetworksController.today')
+    Route.get('general', 'TrustNetworksController.inGeneral')
+    Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
+    Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
+    Route.get('vaccination_post', 'TrustNetworksController.vaccinationPostLocations')
+    Route.get('vaccination_places', 'TrustNetworksController.vaccinationPlaces')
+  })
+    .prefix('trust')
+    .middleware('auth:api')
+
+  Route.group(() => {
+    Route.get('sarampo', 'MainController.index')
+    Route.get('illnesses', 'IllnessesController.index')
+  }).namespace('App/Modules/Vaccination/Controllers/http')
+}).prefix(Env.get('API_VERSION'))
