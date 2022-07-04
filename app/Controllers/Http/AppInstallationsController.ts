@@ -23,7 +23,7 @@ export default class AppInstallationsController {
         type: LogType.success,
       })
 
-      return response.status(HttpStatusCode.OK).send({
+      return response.status(HttpStatusCode.CREATED).send({
         message: 'Registo de instalação feito com sucesso',
         code: HttpStatusCode.OK,
         data: { appInstallation },
