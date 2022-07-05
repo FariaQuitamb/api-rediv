@@ -17,7 +17,8 @@
   "preloads": [
     "./start/routes",
     "./start/kernel",
-    "./start/bouncer"
+    "./start/bouncer",
+    "./app/Modules/Treatment/routes/routes"
   ],
   "providers": [
     "./providers/AppProvider",
