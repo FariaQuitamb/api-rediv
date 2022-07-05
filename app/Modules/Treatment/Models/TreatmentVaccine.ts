@@ -6,6 +6,8 @@ export default class TreatmentVaccine extends BaseModel {
   public id: number
   @column({ columnName: 'Nome' })
   public name: string
+  @column({ columnName: 'CorBt' })
+  public color: string
   @column({ columnName: 'Status' })
   public status: string
 }
