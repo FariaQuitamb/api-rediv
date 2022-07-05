@@ -22,6 +22,7 @@ import BusinessCode from 'Contracts/enums/BusinessCode'
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
+
     try {
       let hasDocNumber = true
 
@@ -298,6 +299,7 @@ export default class PeopleController {
           .where('Id_Municipio', searchData.municipalityId as number)
           .select(constants.searchPeopleFields)
           .limit(searchData.limit)
+
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta geral',
           code: HttpStatusCode.ACCEPTED,
