@@ -102,8 +102,5 @@ Route.group(() => {
     .prefix('trust')
     .middleware('auth:api')
 
-  Route.group(() => {
-    Route.get('sarampo', 'MainController.index')
-    Route.get('illnesses', 'IllnessesController.index')
-  }).namespace('App/Modules/Vaccination/Controllers/http')
+  //////////////
 }).prefix(Env.get('API_VERSION'))
