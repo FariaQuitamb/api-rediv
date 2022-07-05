@@ -8,7 +8,7 @@ import logError from 'Contracts/functions/log_error'
 import Illness from '../../Models/Illness'
 
 export default class RoutinesController {
-  public async routinePreload({ auth, response, request }: HttpContextContract) {
+  public async index({ auth, response, request }: HttpContextContract) {
     try {
       const illnesses = await Illness.query().preload('treatments', (query) => {
         query.preload('vaccine').preload('prevention')
@@ -28,7 +28,7 @@ export default class RoutinesController {
 
       await logError({
         type: 'MB',
-        page: 'RoutinesController/routinePreload',
+        page: 'RoutinesController/index',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
         request: request,
       })
@@ -37,9 +37,9 @@ export default class RoutinesController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível obter a lista de doenças e tratamentos',
+          text: 'Não foi possível obter a lista de doenças e tratamentos dentro do tempo esperado',
           type: LogType.warning,
-          data: {},
+          data: error,
           auth: auth,
           request: request,
         })
