@@ -26,7 +26,11 @@ import Env from '@ioc:Adonis/Core/Env'
 
 Route.group(() => {
   Route.group(() => {
-    Route.get('load_routine', 'RoutinesController.routinePreload')
+    //Routine Stuffs
+    Route.get('routines', 'RoutinesController.index')
+
+    //Campaign
+    Route.get('campaigns', 'CampaignsController.index')
 
     //Children stuffs
     Route.post('children', 'ChildrenController.store')
