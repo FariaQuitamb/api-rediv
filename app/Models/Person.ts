@@ -79,6 +79,9 @@ export default class Person extends BaseModel {
   @column({ columnName: 'CodigoNum' })
   public codeNumber: string
 
+  @column({ columnName: 'NCartao' })
+  public cardNumber: string
+
   public async transactionInsert(hasDocNumber, personData, timeout) {
     let newPerson
     await Database.transaction(async (trx) => {
