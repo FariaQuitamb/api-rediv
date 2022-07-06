@@ -1,29 +1,42 @@
-build-job:
-  stage: build
-  script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
+stages:
+  - build_stage
+  - deploy_stage
 
-test-job1:
-  stage: test
-  script:
-    - echo "Now we are testing something"
+.base-rules:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
 
+cache: &global_cache
+  key: $CI_COMMIT_REF_SLUG
+  policy: pull-push
+  paths:
+    - node_modules/
+    - package-lock.json
 
-deploy-test:
-  stage: deploy
+build:
+  stage: build_stage
+  extends: .base-rules
   script:
-    - echo "Now we are deploy in test enviroment"
-    - echo "Enter in root directory"
-    - cd /var/www/html/
-    - echo "Remove current project"
-    - cp -r api-rediv api-rediv-old
-    - echo "Clone new projecto"
-    - git clone git@gitlab.com:saude-digital1/api-rediv.git
-    - echo "Enter in app folder"
-    - cd api-rediv
-    - echo "install dependencies"
-    - npm install
-    - "echo Build project"
-    - node ace build --ignore-ts-errors
-    - cd build; sudo ln -s ../../shares/.env .env
-    - pm2 restart server.js
+    - "node --version"
+    - npm i
+  cache:
+    <<: *global_cache
+    policy: push
+  tags:
+    - local_runner
+
+deploy:
+  stage: deploy_stage
+  extends: .base-rules
+  script:
+    - "pm2 start ecosystem.config.js"
+  cache:
+    <<: *global_cache
+    policy: pull
+  tags:
+    - local_runner
