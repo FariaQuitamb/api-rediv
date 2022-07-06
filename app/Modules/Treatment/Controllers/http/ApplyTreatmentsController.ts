@@ -44,6 +44,8 @@ export default class ApplyTreatmentsController {
         })
       }
 
+      treatmentData.treatmentDoseId = 1001
+
       const appliedTreatment = await AppliedTreatment.create(treatmentData)
 
       const version = Env.get('API_VERSION')
