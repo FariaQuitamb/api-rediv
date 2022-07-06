@@ -22,6 +22,33 @@ export default class ChildrenController {
       //Valor padrão para comorbilidade
 
       childData.coMorbidity = 'NÃO'
+
+      if (childData.cardNumber.length > 10) {
+        formatedLog({
+          text: 'Número do cartão muito longo',
+          data: childData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Número do cartão muito longo',
+          code: HttpStatusCode.CREATED,
+          data: [],
+        })
+      }
+
+      if (childData.name === undefined || childData.name === ' ') {
+        childData.name = childData.cardNumber
+        formatedLog({
+          text: 'Registo de utente sem nome',
+          data: childData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+      }
+
       //Verify future date
 
       if (isAfterToday(childData.dataCad)) {
