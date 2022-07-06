@@ -10,7 +10,7 @@ export default class AppInstallations extends BaseSchema {
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
-      table.string('mac_address')
+      table.string('device_id')
       table.string('latitude')
       table.string('longitude')
       table.string('version')
