@@ -13,3 +13,17 @@ deploy-test:
   stage: deploy
   script:
     - echo "Now we are deploy in test enviroment"
+    - echo "Enter in root directory"
+    - cd /var/www/html/
+    - echo "Remove current project"
+    - cp -r api-rediv api-rediv-old
+    - echo "Clone new projecto"
+    - git clone git@gitlab.com:saude-digital1/api-rediv.git
+    - echo "Enter in app folder"
+    - cd api-rediv
+    - echo "install dependencies"
+    - npm install
+    - "echo Build project"
+    - node ace build --ignore-ts-errors
+    - cd build; sudo ln -s ../../shares/.env .env
+    - pm2 restart server.js
