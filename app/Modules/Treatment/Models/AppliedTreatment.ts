@@ -4,6 +4,9 @@ export default class AppliedTreatment extends BaseModel {
   public static table = 'vac_vacTratamento]'
   @column({ isPrimary: true, columnName: 'Id_vacTratamento' })
   public id: number
+
+  @column({ columnName: 'Id_CampTratVac' })
+  public campaignId: number
   @column({ columnName: 'Id_regIndividual' })
   public personId: number
 

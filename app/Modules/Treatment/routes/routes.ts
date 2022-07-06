@@ -29,11 +29,16 @@ Route.group(() => {
     //Routine Stuffs
     Route.get('routines', 'RoutinesController.index')
 
-    //Campaign
+    //Campaign Stuffs
     Route.get('campaigns', 'CampaignsController.index')
 
-    //Children stuffs
+    //Children Stuffs
     Route.post('children', 'ChildrenController.store')
+
+    //Treatment Stuffs
+    Route.post('apply_treatments', 'ApplyTreatmentsController.store')
+
+    //
   }).namespace('App/Modules/Treatment/Controllers/http')
 
   //////////////

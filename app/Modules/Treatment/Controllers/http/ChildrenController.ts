@@ -24,7 +24,7 @@ export default class ChildrenController {
       childData.coMorbidity = 'NÃO'
       //Verify future date
 
-      if (isAfterToday(childData.dataCad) || childData.dataCad === null) {
+      if (isAfterToday(childData.dataCad)) {
         const previewsDate = childData.dataCad
         childData.dataCad = moment().toISOString()
         formatedLog({
@@ -82,7 +82,7 @@ export default class ChildrenController {
       formatedLog({
         text: 'Novo utente registrado com sucesso!',
         type: LogType.success,
-        data: childData,
+        data: child,
         auth: auth,
         request: request,
       })
@@ -94,7 +94,7 @@ export default class ChildrenController {
         data: child,
       })
     } catch (error) {
-      const childJson = JSON.stringify(childData)
+      const childStr = JSON.stringify(childData)
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -103,7 +103,7 @@ export default class ChildrenController {
       await logError({
         type: 'MB',
         page: ' ChildrenController/store',
-        error: `User:${userInfo} Device: ${deviceInfo} Dados : ${childJson} - ${errorInfo}`,
+        error: `User:${userInfo} Device: ${deviceInfo} Dados : ${childStr} - ${errorInfo}`,
         request: request,
       })
 
