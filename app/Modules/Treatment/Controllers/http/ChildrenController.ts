@@ -64,7 +64,7 @@ export default class ChildrenController {
       }
 
       const prevDate = childData.dataCad
-      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).toISOString()
+      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
       //Caso tenha inserido data que não seja possível converter
       if (childData.dataCad === null) {
         childData.dataCad = moment().toISOString()
