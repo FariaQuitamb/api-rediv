@@ -1,7 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
-import isAfterToday from 'Contracts/functions/isafter_today'
-import moment from 'moment'
 import AppliedTreatment from '../../Models/AppliedTreatment'
 import ApplyTreatmentValidator from '../../Validators/ApplyTreatmentValidator'
 import Env from '@ioc:Adonis/Core/Env'
@@ -20,14 +18,57 @@ export default class ApplyTreatmentsController {
     const treatmentsData = await request.validate(ApplyTreatmentValidator)
 
     try {
+      if (treatmentsData.treatments.length === 0) {
+        formatedLog({
+          text: 'Foi enviada uma lista de tratamento vazia',
+          type: LogType.warning,
+          data: [],
+          auth: auth,
+          request: request,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Lista de tratamento está vazia',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
       const treatments = resolveTreatment(request, auth, treatmentsData.treatments)
 
-      return treatments
+      const appliedTreatments = await AppliedTreatment.createMany(treatments)
+
+      const version = Env.get('API_VERSION')
+
+      await logRegister({
+        id: auth.user?.id ?? 0,
+        system: 'MB',
+        screen: 'ApplyTreatmentsController/store',
+        table: 'vac_vacTratamento',
+        job: 'Cadastrar',
+        tableId: appliedTreatments[0].id,
+        action: 'Aplicação de tratamento',
+        actionId: `V:${version}-ID:${appliedTreatments[0].id.toString()}`,
+      })
+
+      formatedLog({
+        text: 'Tratamento aplicado com sucesso!',
+        type: LogType.success,
+        data: appliedTreatments,
+        auth: auth,
+        request: request,
+      })
+
+      //Utente registado com sucesso
+      return response.status(HttpStatusCode.CREATED).send({
+        message: 'Tratamento aplicado com sucesso',
+        code: HttpStatusCode.CREATED,
+        data: appliedTreatments,
+      })
     } catch (error) {
+      const userInfo = formatUserInfo(auth.user)
       const treatmentStr = JSON.stringify(treatmentsData)
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
-      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
 
       await logError({

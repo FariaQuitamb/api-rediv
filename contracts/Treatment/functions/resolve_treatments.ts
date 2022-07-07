@@ -20,7 +20,7 @@ const resolveTreatment = (request, auth, treatments: Treatment[]) => {
       const previewsDate = treatments[i].createdAt
       treatments[i].createdAt = moment().toISOString()
       formatedLog({
-        text: `A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+        text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
         data: treatments[i],
         auth: auth,
         request: request,
@@ -30,13 +30,16 @@ const resolveTreatment = (request, auth, treatments: Treatment[]) => {
 
     const prevDate = treatments[i].createdAt
 
-    treatments[i].createdAt = moment(treatments[i].createdAt, moment.ISO_8601, true).toISOString()
+    treatments[i].createdAt = moment(treatments[i].createdAt, moment.ISO_8601, true)
+      .utc(true)
+      .toISOString()
     //Caso tenha inserido data que não seja possível converter
+
     if (treatments[i].createdAt === null) {
       treatments[i].createdAt = moment().toISOString()
 
       formatedLog({
-        text: `A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${prevDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+        text: `Data inválida: A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${prevDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
         data: treatments[i],
         auth: auth,
         request: request,
@@ -44,9 +47,7 @@ const resolveTreatment = (request, auth, treatments: Treatment[]) => {
       })
     }
 
-    console.log(treatments[i])
     treatments[i].treatmentDoseId = 10101 * i
-    console.log(treatments[i])
   }
   return treatments
 }
