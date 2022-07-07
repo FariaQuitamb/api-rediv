@@ -65,11 +65,9 @@ export default class VaccinationsController {
       vaccinationData.longitude = geo.longitude
 
       //Mudança : formatação da data para ISO 8601
-      vaccinationData.createdAt = moment(
-        vaccinationData.createdAt,
-        moment.ISO_8601,
-        true
-      ).toISOString()
+      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
+        .utc(true)
+        .toISOString()
       const person = await Person.find(vaccinationData.personId)
       //
       //Verificar se o registro individual está habilitado a receber a vacina
@@ -562,11 +560,9 @@ export default class VaccinationsController {
       vaccinationData.longitude = geo.longitude
 
       //Mudança : formatação da data para ISO 8601
-      vaccinationData.createdAt = moment(
-        vaccinationData.createdAt,
-        moment.ISO_8601,
-        true
-      ).toISOString()
+      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
+        .utc(true)
+        .toISOString()
 
       //Verificar o status enviado
 

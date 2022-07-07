@@ -1,7 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
-import isAfterToday from 'Contracts/functions/isafter_today'
-import moment from 'moment'
 import AppliedTreatment from '../../Models/AppliedTreatment'
 import ApplyTreatmentValidator from '../../Validators/ApplyTreatmentValidator'
 import Env from '@ioc:Adonis/Core/Env'
@@ -11,42 +9,33 @@ import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
+import resolveTreatment from 'Contracts/Treatment/functions/resolve_treatments'
 
 export default class ApplyTreatmentsController {
   public async index({}: HttpContextContract) {}
 
   public async store({ auth, response, request }: HttpContextContract) {
-    const treatmentData = await request.validate(ApplyTreatmentValidator)
+    const treatmentsData = await request.validate(ApplyTreatmentValidator)
+
     try {
-      if (isAfterToday(treatmentData.createdAt)) {
-        const previewsDate = treatmentData.createdAt
-        treatmentData.createdAt = moment().toISOString()
+      if (treatmentsData.treatments.length === 0) {
         formatedLog({
-          text: `A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-          data: treatmentData,
+          text: 'Foi enviada uma lista de tratamento vazia',
+          type: LogType.warning,
+          data: [],
           auth: auth,
           request: request,
-          type: LogType.warning,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Lista de tratamento está vazia',
+          code: HttpStatusCode.OK,
+          data: [],
         })
       }
 
-      const prevDate = treatmentData.createdAt
-      treatmentData.createdAt = moment(treatmentData.createdAt, moment.ISO_8601, true).toISOString()
-      //Caso tenha inserido data que não seja possível converter
-      if (treatmentData.createdAt === null) {
-        treatmentData.createdAt = moment().toISOString()
-        formatedLog({
-          text: `A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${prevDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-          data: treatmentData,
-          auth: auth,
-          request: request,
-          type: LogType.warning,
-        })
-      }
+      const treatments = resolveTreatment(request, auth, treatmentsData.treatments)
 
-      treatmentData.treatmentDoseId = 1001
-
-      const appliedTreatment = await AppliedTreatment.create(treatmentData)
+      const appliedTreatments = await AppliedTreatment.createMany(treatments)
 
       const version = Env.get('API_VERSION')
 
@@ -56,15 +45,15 @@ export default class ApplyTreatmentsController {
         screen: 'ApplyTreatmentsController/store',
         table: 'vac_vacTratamento',
         job: 'Cadastrar',
-        tableId: appliedTreatment.id,
+        tableId: appliedTreatments[0].id,
         action: 'Aplicação de tratamento',
-        actionId: `V:${version}-ID:${appliedTreatment.id.toString()}`,
+        actionId: `V:${version}-ID:${appliedTreatments[0].id.toString()}`,
       })
 
       formatedLog({
         text: 'Tratamento aplicado com sucesso!',
         type: LogType.success,
-        data: appliedTreatment,
+        data: appliedTreatments,
         auth: auth,
         request: request,
       })
@@ -73,13 +62,13 @@ export default class ApplyTreatmentsController {
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Tratamento aplicado com sucesso',
         code: HttpStatusCode.CREATED,
-        data: appliedTreatment,
+        data: appliedTreatments,
       })
     } catch (error) {
-      const treatmentStr = JSON.stringify(treatmentData)
+      const userInfo = formatUserInfo(auth.user)
+      const treatmentStr = JSON.stringify(treatmentsData)
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
-      const userInfo = formatUserInfo(auth.user)
       const errorInfo = formatError(error)
 
       await logError({
@@ -95,7 +84,7 @@ export default class ApplyTreatmentsController {
         formatedLog({
           text: 'Não foi possível realizar a operação de registo de tratamento dentro do tempo esperado!',
           type: LogType.warning,
-          data: treatmentData,
+          data: treatmentsData,
           auth: auth,
           request: request,
         })

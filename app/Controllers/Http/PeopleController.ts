@@ -45,7 +45,7 @@ export default class PeopleController {
 
       const hasDayError = parseInt(dateParts[2]) < 1 || parseInt(dateParts[2]) > 31
 
-      let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true)
+      let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true).utc(true)
 
       if (receivedDate.toISOString() === null) {
         const sentDate = personData.birthday
@@ -55,7 +55,7 @@ export default class PeopleController {
 
         const changedDate = `${dateParts[0]}-${month}-${day}`
 
-        receivedDate = moment(new Date(changedDate), moment.ISO_8601, true)
+        receivedDate = moment(new Date(changedDate), moment.ISO_8601, true).utc(true)
 
         personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
 
@@ -146,7 +146,7 @@ export default class PeopleController {
 
       //Mudança : formatação da data
       //const dateBefore = personData.dataCad
-      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
       //const dateAfter = personData.dataCad
 
       if (personData.dataCad === null) {
@@ -528,7 +528,9 @@ export default class PeopleController {
 
         const previousDate = personData.birthday
 
-        personData.birthday = moment(personData.birthday, moment.ISO_8601, true).toISOString()
+        personData.birthday = moment(personData.birthday, moment.ISO_8601, true)
+          .utc(true)
+          .toISOString()
 
         if (personData.birthday === null) {
           const userInfo = formatUserInfo(auth.user)
