@@ -85,7 +85,7 @@ export default class ChildrenController {
 
       if (childExists) {
         return response.status(HttpStatusCode.OK).send({
-          message: 'Já existe um utente registrado com esse número de cartão.',
+          message: 'Já existe um utente registrado com esse número de cartão',
           code: BusinessCode.FOUND_INDIVIDUAL,
           data: childExists,
         })
