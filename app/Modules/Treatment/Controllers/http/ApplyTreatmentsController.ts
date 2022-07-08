@@ -33,7 +33,7 @@ export default class ApplyTreatmentsController {
         })
       }
 
-      const treatments = resolveTreatment(request, auth, treatmentsData.treatments)
+      const treatments = resolveTreatment(request, auth, treatmentsData)
 
       const appliedTreatments = await AppliedTreatment.createMany(treatments)
 
