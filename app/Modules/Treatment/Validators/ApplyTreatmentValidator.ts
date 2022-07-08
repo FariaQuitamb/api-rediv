@@ -24,18 +24,31 @@ export default class ApplyTreatmentValidator {
    *
    *
    *    ```
+   * 
+   * "personId":1951516,
+"campaignId":2,
+"vaccinationPostUserId":345,
+"latitude":"25367383883",
+"longitude":"67383893903",
    */
   public schema = schema.create({
+    campaignId: schema.number(),
+    personId: schema.number(),
+    vaccinationPostUserId: schema.number(),
+    latitude: schema.string({ escape: true, trim: true }),
+    longitude: schema.string({ escape: true, trim: true }),
+
     treatments: schema.array().members(
       schema.object().members({
-        personId: schema.number(),
-        campaignId: schema.number(),
+        campaignId: schema.number.optional(),
+        personId: schema.number.optional(),
+        vaccinationPostUserId: schema.number.optional(),
+        latitude: schema.string.optional({ escape: true, trim: true }),
+        longitude: schema.string.optional({ escape: true, trim: true }),
+
         illnessId: schema.number(),
         treatmentId: schema.number(),
         treatmentDoseId: schema.number.optional(),
-        vaccinationPostUserId: schema.number(),
-        latitude: schema.string({ escape: true, trim: true }),
-        longitude: schema.string({ escape: true, trim: true }),
         createdAt: schema.string({ escape: true, trim: true }),
       })
     ),
