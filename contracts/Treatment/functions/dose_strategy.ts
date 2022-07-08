@@ -16,11 +16,48 @@ const doseStrategy = async (doseMap: TreatmentDose[], treatmentId: number, birth
 
   //Obter o numero de dias em função da data de nascimento
 
-  const days = moment().diff(moment(birthday), 'days')
+  const ageDays = moment().diff(moment(birthday), 'days')
 
-  console.log(days)
+  console.log(`Age Days : ${ageDays}`)
   //Verificar a idade nesse ponto aqui
-  currentTreatmentDoses.forEach((dose) => {})
+
+  currentTreatmentDoses.sort((a, b) => {
+    return a.numDays - b.numDays
+  })
+
+  //Caso o numero de dias da criança seja inferior ao valor minimo de aplicação da dose
+  //Atribui a dose que aparece primeiro
+  if (ageDays < currentTreatmentDoses[0].numDays) {
+    console.log('Número de dias inferior ao valor minímo')
+    return currentTreatmentDoses[0].id
+  }
+
+  console.log(`List size : ${currentTreatmentDoses.length}`)
+
+  //Caso o numero de dias da criança seja maior ao valor máximo de aplicação da dose
+  //Atribui a dose que aparece no final
+  const lastDoseIndex = currentTreatmentDoses.length - 1
+
+  if (ageDays > currentTreatmentDoses[lastDoseIndex].numDays) {
+    console.log('Número de dias maior ao valor máximo')
+    return currentTreatmentDoses[lastDoseIndex].id
+  }
+
+  for (let i = 0; i < currentTreatmentDoses.length - 1; i++) {
+    console.log(`Count ${i}`)
+    if (
+      ageDays >= currentTreatmentDoses[i].numDays &&
+      ageDays < currentTreatmentDoses[i + 1].numDays
+    ) {
+      console.log(
+        `INTERVALO : ${currentTreatmentDoses[i].numDays}  E  ${
+          currentTreatmentDoses[i + 1].numDays
+        }   `
+      )
+      return currentTreatmentDoses[i].id
+    }
+    // console.log(currentTreatmentDoses[i].numDays)
+  }
 }
 
 export default doseStrategy
