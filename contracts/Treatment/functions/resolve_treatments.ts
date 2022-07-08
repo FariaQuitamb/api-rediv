@@ -19,6 +19,7 @@ interface Treatment {
 interface TreatmentData {
   campaignId: number
   personId: number
+  birthday: string
   vaccinationPostUserId: number
   latitude: string
   longitude: string
@@ -37,7 +38,13 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
 
     //Get dose acording to child age and treatment
 
-    const doseId = await doseStrategy(map, treatmentData.treatments[i].treatmentId, '2022-07-05')
+    const doseId = await doseStrategy(
+      map,
+      treatmentData.treatments[i].treatmentId,
+      treatmentData.birthday
+    )
+
+    console.log(`Dose Aplicada: ${doseId}`)
 
     //Start - Organização do objecto - Juntar propriedades
     treatmentData.treatments[i].campaignId = treatmentData.campaignId
