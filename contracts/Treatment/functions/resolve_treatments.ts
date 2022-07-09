@@ -1,6 +1,8 @@
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import moment from 'moment'
+import doseMap from './dose_map'
+import doseStrategy from './dose_strategy'
 
 interface Treatment {
   personId: number | undefined
@@ -17,24 +19,34 @@ interface Treatment {
 interface TreatmentData {
   campaignId: number
   personId: number
+  birthday: string
   vaccinationPostUserId: number
   latitude: string
   longitude: string
   treatments: Treatment[]
 }
 
-const resolveTreatment = (request, auth, treatmentData: TreatmentData) => {
+const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => {
+  //Start - Atribuição de dose estratégia
+
+  const map = await doseMap()
+
+  //End
+
   for (let i = 0; i < treatmentData.treatments.length; i++) {
+    //Start strategy
+
+    //Get dose acording to child age and treatment
+
+    const doseId = await doseStrategy(
+      map,
+      treatmentData.treatments[i].treatmentId,
+      treatmentData.birthday
+    )
+
+    console.log(`Dose Aplicada: ${doseId}`)
+
     //Start - Organização do objecto - Juntar propriedades
-
-    /*
-      campaignId: number
-      personId: number
-      vaccinationPostUserId: number
-      latitude: string
-      longitude: string
-    */
-
     treatmentData.treatments[i].campaignId = treatmentData.campaignId
     treatmentData.treatments[i].personId = treatmentData.personId
     treatmentData.treatments[i].vaccinationPostUserId = treatmentData.vaccinationPostUserId
@@ -81,7 +93,6 @@ const resolveTreatment = (request, auth, treatmentData: TreatmentData) => {
     treatmentData.treatments[i].treatmentDoseId = 10101 * i
   }
 
-  console.log(treatmentData.treatments)
   return treatmentData.treatments
 }
 

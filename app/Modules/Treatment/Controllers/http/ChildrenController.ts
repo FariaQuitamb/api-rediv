@@ -38,6 +38,65 @@ export default class ChildrenController {
         })
       }
 
+      const agePartes = childData.birthday.split(' ')
+
+      if (agePartes.length === 0) {
+        formatedLog({
+          text: `A informação da idade não está no formato esperado Ex: ("10 M"  ou  "2 A")`,
+          data: childData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+
+        //Utente registado com sucesso
+        return response.status(HttpStatusCode.OK).send({
+          message: 'A informação da idade não está no formato esperado Ex: ("10 M"  ou  "2 A")',
+          code: HttpStatusCode.OK,
+          data: childData,
+        })
+      }
+
+      if (agePartes[1] !== 'M' && agePartes[1] !== 'A') {
+        childData.birthday = moment().format('YYYY-MM-DD')
+
+        formatedLog({
+          text: `A informação da idade não está no formato esperado Ex: ("10 M"  ou  "2 A") , aplicando data actual como idade`,
+          data: childData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+      }
+
+      if (agePartes.length === 0) {
+        formatedLog({
+          text: `A informação da idade não está no formato esperado Ex: ("10 M"  ou  "2 A")`,
+          data: childData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+
+        //Utente registado com sucesso
+        return response.status(HttpStatusCode.OK).send({
+          message: 'A informação da idade não está no formato esperado Ex: ("10 M"  ou  "2 A")',
+          code: HttpStatusCode.OK,
+          data: childData,
+        })
+      }
+
+      const value = Number(agePartes[0])
+
+      if (agePartes[1] === 'M') {
+        childData.birthday = moment().subtract(value, 'months').format('YYYY-MM-DD')
+      }
+      if (agePartes[1] === 'A') {
+        childData.birthday = moment().subtract(value, 'years').format('YYYY-MM-DD')
+      }
+
+      console.log(childData.birthday)
+
       if (childData.name === undefined || childData.name === ' ') {
         childData.name = childData.cardNumber
         formatedLog({

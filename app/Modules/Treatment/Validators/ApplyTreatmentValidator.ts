@@ -37,6 +37,7 @@ export default class ApplyTreatmentValidator {
     vaccinationPostUserId: schema.number(),
     latitude: schema.string({ escape: true, trim: true }),
     longitude: schema.string({ escape: true, trim: true }),
+    birthday: schema.string({ escape: true, trim: true }),
 
     treatments: schema.array().members(
       schema.object().members({
