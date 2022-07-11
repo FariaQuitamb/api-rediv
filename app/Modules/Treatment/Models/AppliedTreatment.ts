@@ -19,6 +19,9 @@ export default class AppliedTreatment extends BaseModel {
   @column({ columnName: 'Id_tratDose' })
   public treatmentDoseId: number
 
+  @column({ columnName: 'Id_postoVacinacao' })
+  public vaccinationPostId: number
+
   @column({ columnName: 'Id_userPostoVacinacao' })
   public vaccinationPostUserId: number
 

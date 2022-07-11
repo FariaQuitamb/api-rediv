@@ -10,6 +10,7 @@ interface Treatment {
   illnessId: number
   treatmentId: number
   treatmentDoseId: number | undefined
+  vaccinationPostId: number | undefined
   vaccinationPostUserId: number | undefined
   latitude: string | undefined
   longitude: string | undefined
@@ -21,6 +22,7 @@ interface TreatmentData {
   personId: number
   birthday: string
   vaccinationPostUserId: number
+  vaccinationPostId: number
   latitude: string
   longitude: string
   treatments: Treatment[]
@@ -46,9 +48,12 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
 
     console.log(`Dose Aplicada: ${doseId}`)
 
+    treatmentData.treatments[i].treatmentDoseId = doseId
+
     //Start - Organização do objecto - Juntar propriedades
     treatmentData.treatments[i].campaignId = treatmentData.campaignId
     treatmentData.treatments[i].personId = treatmentData.personId
+    treatmentData.treatments[i].vaccinationPostId = treatmentData.vaccinationPostId
     treatmentData.treatments[i].vaccinationPostUserId = treatmentData.vaccinationPostUserId
     treatmentData.treatments[i].latitude = treatmentData.latitude
     treatmentData.treatments[i].longitude = treatmentData.longitude
@@ -89,8 +94,6 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
         type: LogType.warning,
       })
     }
-
-    treatmentData.treatments[i].treatmentDoseId = 10101 * i
   }
 
   return treatmentData.treatments
