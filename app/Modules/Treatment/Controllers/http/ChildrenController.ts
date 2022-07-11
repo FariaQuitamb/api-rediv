@@ -162,7 +162,7 @@ export default class ChildrenController {
         job: 'Cadastrar',
         tableId: child.id,
         action: 'Registo de Utente Menor',
-        actionId: `V:${version}-ID:${child.id.toString()}`,
+        actionId: `V:${version}`,
       })
 
       formatedLog({

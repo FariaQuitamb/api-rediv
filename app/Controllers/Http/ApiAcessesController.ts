@@ -88,7 +88,7 @@ export default class ApiAcessesController {
         job: 'Cadastrar',
         tableId: access.id,
         action: 'Registro de accesso a API',
-        actionId: `V:${version}-ID:${access.id.toString()}`,
+        actionId: `V:${version}`,
       })
 
       return response.status(HttpStatusCode.CREATED).send({

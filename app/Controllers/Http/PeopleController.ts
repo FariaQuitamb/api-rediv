@@ -211,7 +211,7 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
-        actionId: `V:${version}-ID:${personInfo.Id_regIndividual.toString()}`,
+        actionId: `V:${version}}`,
       })
 
       formatedLog({

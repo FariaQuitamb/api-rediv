@@ -48,7 +48,7 @@ export default class AuthController {
           job: 'Consulta',
           tableId: 0,
           action: 'LoginAttempt',
-          actionId: `V:${version}-U:${username}-P:${data.password}`,
+          actionId: `V:${version}`,
         })
 
         formatedLog({
