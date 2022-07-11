@@ -20,14 +20,11 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-import AppInstallation from 'App/Models/AppInstallation'
 
 import Env from '@ioc:Adonis/Core/Env'
 
 Route.get('/', async () => {
-  const test = await AppInstallation.all()
-
-  return { hello: 'world', title: 'It Works!', test }
+  return { hello: 'world', title: 'It Works!' }
 })
 
 //MAIN WRAPPER
