@@ -41,6 +41,8 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
     //Get dose acording to child age and treatment
 
     const doseId = await doseStrategy(
+      request,
+      auth,
       map,
       treatmentData.treatments[i].treatmentId,
       treatmentData.birthday
