@@ -105,9 +105,17 @@ export default class AuthController {
         actionId: `V:${version}`,
       })
 
+      formatedLog({
+        text: 'Login efectuado com sucesso',
+        data: { user: data.username },
+        auth: auth,
+        request: request,
+        type: LogType.error,
+      })
+
       return response.status(HttpStatusCode.ACCEPTED).send({
         code: HttpStatusCode.ACCEPTED,
-        message: 'Login efectuado com sucesso!',
+        message: 'Login efectuado com sucesso',
         data: { user, token },
       })
     } catch (error) {
