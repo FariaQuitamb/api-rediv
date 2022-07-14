@@ -66,7 +66,7 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
       const previewsDate = treatmentData.treatments[i].createdAt
       treatmentData.treatments[i].createdAt = moment().toISOString()
       formatedLog({
-        text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+        text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate} data final: ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
         data: treatmentData.treatments[i],
         auth: auth,
         request: request,
@@ -89,7 +89,7 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
       treatmentData.treatments[i].createdAt = moment().toISOString()
 
       formatedLog({
-        text: `Data inválida: A data de aplicação do tratamento foi modificada para data de hoje! Data Inserida: ${prevDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+        text: `Data inválida: A data de aplicação do tratamento foi modificada para data de hoje, por possuir erro! Data Inserida: ${prevDate} data final : ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
         data: treatmentData.treatments[i],
         auth: auth,
         request: request,

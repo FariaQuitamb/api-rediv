@@ -114,7 +114,7 @@ export default class ChildrenController {
         const previewsDate = childData.dataCad
         childData.dataCad = moment().toISOString()
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: childData,
           auth: auth,
           request: request,
@@ -128,7 +128,7 @@ export default class ChildrenController {
       if (childData.dataCad === null) {
         childData.dataCad = moment().toISOString()
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje! Data Inserida: ${prevDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje, por possuir erro! Data Inserida: ${prevDate} data final : ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: childData,
           auth: auth,
           request: request,
@@ -162,7 +162,7 @@ export default class ChildrenController {
         job: 'Cadastrar',
         tableId: child.id,
         action: 'Registo de Utente Menor',
-        actionId: `V:${version}-ID:${child.id.toString()}`,
+        actionId: `V:${version}`,
       })
 
       formatedLog({

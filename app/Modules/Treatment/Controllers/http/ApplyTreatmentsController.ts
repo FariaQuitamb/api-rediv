@@ -47,7 +47,7 @@ export default class ApplyTreatmentsController {
         job: 'Cadastrar',
         tableId: appliedTreatments[0].id,
         action: 'Aplicação de tratamento',
-        actionId: `V:${version}-ID:${appliedTreatments[0].id.toString()}`,
+        actionId: `V:${version}`,
       })
 
       formatedLog({

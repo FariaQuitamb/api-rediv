@@ -19,7 +19,7 @@ const doseStrategy = async (
     formatedLog({
       text: `Não existe dose para o tratamento selecionado : Id Tratamento-> ${treatmentId} Dose -> 0`,
       type: LogType.warning,
-      data: { childNumDays: ageDays },
+      data: { birthday, childNumDays: ageDays },
       auth: auth,
       request: request,
     })
@@ -32,7 +32,7 @@ const doseStrategy = async (
     formatedLog({
       text: `Existe apenas uma dose do tratamento selecionado, assumindo a dose única como sendo a que foi aplicada : Id Tratamento-> ${treatmentId} Dose -> ${dose}`,
       type: LogType.warning,
-      data: { childNumDays: ageDays },
+      data: { birthday, childNumDays: ageDays },
       auth: auth,
       request: request,
     })
@@ -52,7 +52,7 @@ const doseStrategy = async (
     formatedLog({
       text: `Número de dias inferior ao valor mínimo de aplicação do tratamento assumindo a dose mínima como aplicada: Id Tratamento-> ${treatmentId} Dose -> ${dose}`,
       type: LogType.warning,
-      data: { childNumDays: ageDays },
+      data: { birthday, childNumDays: ageDays },
       auth: auth,
       request: request,
     })
@@ -70,7 +70,7 @@ const doseStrategy = async (
     formatedLog({
       text: `Número de dias maior que o valor máximo de aplicação do tratamento , assumindo a última dose como aplicada : Id Tratamento-> ${treatmentId} Dose -> ${dose}`,
       type: LogType.warning,
-      data: { childNumDays: ageDays },
+      data: { birthday, childNumDays: ageDays },
       auth: auth,
       request: request,
     })
@@ -88,7 +88,7 @@ const doseStrategy = async (
           currentTreatmentDoses[i + 1].numDays
         } : Dias da criança: ${ageDays} Id Tratamento-> ${treatmentId}`,
         type: LogType.warning,
-        data: { childNumDays: ageDays },
+        data: { birthday, childNumDays: ageDays },
         auth: auth,
         request: request,
       })
@@ -100,7 +100,7 @@ const doseStrategy = async (
   formatedLog({
     text: `A selecção da dose do tratamento saiu do escopo tratado : Id Tratamento-> ${treatmentId}`,
     type: LogType.error,
-    data: { childNumDays: ageDays },
+    data: { birthday, childNumDays: ageDays },
     auth: auth,
     request: request,
   })

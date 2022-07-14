@@ -30,7 +30,7 @@ export default class PeopleController {
         const previewsDate = personData.dataCad
         personData.dataCad = moment().toISOString()
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje! Data Inserida: ${previewsDate} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: personData,
           auth: auth,
           request: request,
@@ -211,7 +211,7 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
-        actionId: `V:${version}-ID:${personInfo.Id_regIndividual.toString()}`,
+        actionId: `V:${version}}`,
       })
 
       formatedLog({
@@ -289,6 +289,13 @@ export default class PeopleController {
       //Pesquisa de preenchimento dos dados de pré-carregamento
       if (search === 'FILL_OFFLINE_DB') {
         if (municipalityId === undefined) {
+          formatedLog({
+            text: 'Tentativa de pesquisa para preenchimento de dados offline sem envio do municipio',
+            data: searchData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Pesquisa geral requer envio do id do município!',
             code: HttpStatusCode.ACCEPTED,
@@ -300,6 +307,14 @@ export default class PeopleController {
           .select(constants.searchPeopleFields)
           .limit(searchData.limit)
 
+        formatedLog({
+          text: 'Pesquisa para preenchimento de dados offline do município feita com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta geral',
           code: HttpStatusCode.ACCEPTED,
@@ -310,6 +325,13 @@ export default class PeopleController {
       //Pesquisa pelo - Nome
       if (search.match(regexLetterAccent)) {
         if (searchData.limit > 100) {
+          formatedLog({
+            text: 'Tentativa de pesquisa por nome , com pedido de retorno  acima de 100 registos',
+            data: searchData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.ACCEPTED).send({
             message: 'A consulta por nome aceita retornar apenas 100 registros no máximo!',
             code: HttpStatusCode.ACCEPTED,
@@ -325,6 +347,13 @@ export default class PeopleController {
           .timeout(60000)
           .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
+        formatedLog({
+          text: 'Pesquisa por nome realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por nome!',
           code: HttpStatusCode.ACCEPTED,
@@ -339,6 +368,14 @@ export default class PeopleController {
           .where('Telefone', search)
           .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
+
+        formatedLog({
+          text: 'Pesquisa por número de telefone realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por número de telefone!',
           code: HttpStatusCode.ACCEPTED,
@@ -353,6 +390,15 @@ export default class PeopleController {
           .where('CodigoNum', search)
           .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
+
+        formatedLog({
+          text: 'Pesquisa  por codigoNum  realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por codigoNum!',
           code: HttpStatusCode.ACCEPTED,
@@ -367,6 +413,13 @@ export default class PeopleController {
           .where('docNum', search)
           .orderBy('DataCad', 'desc')
           .paginate(searchData.page, searchData.limit)
+        formatedLog({
+          text: 'Pesquisa  por docNum realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por docNum!',
           code: HttpStatusCode.ACCEPTED,
@@ -375,7 +428,13 @@ export default class PeopleController {
       }
 
       //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
-
+      formatedLog({
+        text: 'Nenhum resultado encontrado',
+        data: searchData,
+        auth: auth,
+        request: request,
+        type: LogType.warning,
+      })
       return response.status(HttpStatusCode.OK).send({
         message: 'Nenhum resultado encontrado!',
         code: HttpStatusCode.OK,
@@ -446,12 +505,27 @@ export default class PeopleController {
               vacinationCicle = 'S'
             }
           }
+
+          formatedLog({
+            text: `Utente encontrado pesquisando pelo código : ${personData.code} `,
+            data: person,
+            auth: auth,
+            request: request,
+            type: LogType.success,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse código!',
             code: HttpStatusCode.OK,
             data: { person, vacinationCicle },
           })
         } else {
+          formatedLog({
+            text: `Código do utente não encontrado :${personData.code}`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Utente não encontrado!',
             code: HttpStatusCode.OK,
@@ -469,6 +543,13 @@ export default class PeopleController {
 
         //Verifica se foi enviado o nome
         if (personData.name === undefined || personData.name === '') {
+          formatedLog({
+            text: `Foi realizada pesquisa de utente sem documento faltando o nome`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite o nome do utente!',
             code: HttpStatusCode.OK,
@@ -477,7 +558,14 @@ export default class PeopleController {
         }
 
         //Verifica se foi enviada a data de nascimento
-        if (personData.name === undefined || personData.name === '') {
+        if (personData.birthday === undefined || personData.birthday === '') {
+          formatedLog({
+            text: `Foi realizada pesquisa de utente sem documento faltando a data de nascimento`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite a data de nascimento do utente!',
             code: HttpStatusCode.OK,
@@ -487,6 +575,13 @@ export default class PeopleController {
 
         //Verifica se foi enviado o nome do pai
         if (personData.fatherName === undefined || personData.fatherName === '') {
+          formatedLog({
+            text: `Foi realizada pesquisa de utente sem documento faltando o nome do pai`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite o nome do pai!',
             code: HttpStatusCode.OK,
@@ -495,6 +590,13 @@ export default class PeopleController {
         }
         //Verifica se foi enviado o nome da mãe
         if (personData.motherName === undefined || personData.motherName === '') {
+          formatedLog({
+            text: `Foi realizada pesquisa de utente sem documento faltando o nome da mãe`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Utente sem documento , digite o nome da mãe!',
             code: HttpStatusCode.OK,
@@ -513,6 +615,13 @@ export default class PeopleController {
           .first()
 
         if (person) {
+          formatedLog({
+            text: `Utente encontrando pesquisando pelo número de documento  ${personData.docNumber}`,
+            data: person,
+            auth: auth,
+            request: request,
+            type: LogType.success,
+          })
           return response.status(HttpStatusCode.OK).send({
             message: 'Já existe um utente registrado com esse número de documento!',
             code: BusinessCode.FOUND_INDIVIDUAL,
@@ -536,7 +645,7 @@ export default class PeopleController {
           const userInfo = formatUserInfo(auth.user)
 
           formatedLog({
-            text: `O utilizador inseriu a data de nascimento errada!  Data: ${previousDate} Utilizador:${userInfo}`,
+            text: `O utilizador inseriu a data de nascimento errada na pesquisa!  Data: ${previousDate} Utilizador:${userInfo}`,
             data: personData,
             auth: auth,
             request: request,
@@ -558,6 +667,13 @@ export default class PeopleController {
           .first()
 
         if (person) {
+          formatedLog({
+            text: `Utente encontrado pesquisando pelo nome próprio, pai , mãe e data de nascimento!`,
+            data: person,
+            auth: auth,
+            request: request,
+            type: LogType.success,
+          })
           return response.status(HttpStatusCode.OK).send({
             message:
               'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
@@ -566,6 +682,14 @@ export default class PeopleController {
           })
         }
       }
+
+      formatedLog({
+        text: `Registro de utente não encontrado por nenhuma das formas de pesquisa`,
+        data: personData,
+        auth: auth,
+        request: request,
+        type: LogType.warning,
+      })
 
       return response.status(HttpStatusCode.NOT_FOUND).send({
         message: 'Registro de utente não encontrado!',
