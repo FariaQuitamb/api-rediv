@@ -15,6 +15,17 @@ const doseStrategy = async (
 
   const ageDays = moment().diff(moment(birthday), 'days')
 
+  if (ageDays === null || ageDays === undefined) {
+    formatedLog({
+      text: `Não foi possível converter a data (${birthday}) em dias : Id Tratamento-> ${treatmentId}`,
+      type: LogType.error,
+      data: { birthday, childNumDays: ageDays },
+      auth: auth,
+      request: request,
+    })
+    return 0
+  }
+
   if (currentTreatmentDoses.length === 0) {
     formatedLog({
       text: `Não existe dose para o tratamento selecionado : Id Tratamento-> ${treatmentId} Dose -> 0`,
