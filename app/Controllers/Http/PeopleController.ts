@@ -30,7 +30,7 @@ export default class PeopleController {
         const previewsDate = personData.dataCad
         personData.dataCad = moment().toISOString()
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: personData,
           auth: auth,
           request: request,
@@ -643,7 +643,7 @@ export default class PeopleController {
           const userInfo = formatUserInfo(auth.user)
 
           formatedLog({
-            text: `O utilizador inseriu a data de nascimento errada na pesquisa!  Data: ${previousDate} Utilizador:${userInfo}`,
+            text: `O utilizador inseriu a data de nascimento errada na pesquisa  Data: ${previousDate} Utilizador:${userInfo}`,
             data: personData,
             auth: auth,
             request: request,
@@ -661,7 +661,7 @@ export default class PeopleController {
 
         if (person) {
           formatedLog({
-            text: `Utente encontrado pesquisando pelo nome próprio, pai , mãe e data de nascimento!`,
+            text: `Utente encontrado pesquisando pelo nome próprio, pai , mãe e data de nascimento`,
             data: person,
             auth: auth,
             request: request,

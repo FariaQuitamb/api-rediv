@@ -45,7 +45,7 @@ export default class VaccinationsController {
         const previewsDate = vaccinationData.createdAt
         vaccinationData.createdAt = moment().toISOString()
         formatedLog({
-          text: `Registo de vacinação modificado para data de hoje! Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `Registo de vacinação modificado para data de hoje Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: vaccinationData,
           auth: auth,
           request: request,
@@ -111,7 +111,7 @@ export default class VaccinationsController {
       //Verifica se a vacina selecionada existe
       if (!vaccineDose) {
         formatedLog({
-          text: 'A vacina selecionada não existe ou não está habilitada! - visualizar != S',
+          text: 'A vacina selecionada não existe ou não está habilitada - visualizar != S',
           data: vaccinationData,
           auth: auth,
           request: request,
@@ -539,7 +539,7 @@ export default class VaccinationsController {
         const previewsDate = vaccinationData.createdAt
         vaccinationData.createdAt = moment().toISOString()
         formatedLog({
-          text: `Registo de vacinação de reforço modificado para data de hoje por ser maior que a data actual! Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `Registo de vacinação de reforço modificado para data de hoje por ser maior que a data actual Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: vaccinationData,
           auth: auth,
           request: request,
@@ -626,7 +626,7 @@ export default class VaccinationsController {
       //Verifica se a vacina selecionada existe
       if (!vaccineDose) {
         formatedLog({
-          text: 'A vacina selecionada não existe ou não está habilitada! - visualizar != S',
+          text: 'A vacina selecionada não existe ou não está habilitada - visualizar != S',
           data: vaccinationData,
           auth: auth,
           request: request,
