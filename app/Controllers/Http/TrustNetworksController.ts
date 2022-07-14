@@ -39,21 +39,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -89,21 +89,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -141,21 +141,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -179,7 +179,7 @@ export default class TrustNetworksController {
 
       const partnerData = partner[0]
       return response.status(HttpStatusCode.OK).send({
-        message: 'A Instituição é parceira da Rede de Confiança!',
+        message: 'A Instituição é parceira da Rede de Confiança',
         code: HttpStatusCode.OK,
         data: { partner: partnerData },
       })
@@ -201,21 +201,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -227,7 +227,7 @@ export default class TrustNetworksController {
       const vaccinationPosts = await Database.rawQuery(trustNetworkQueries.vaccinationPostLocation)
 
       return response.status(HttpStatusCode.OK).send({
-        message: 'Postos de vacinação e suas coordenadas!',
+        message: 'Postos de vacinação e suas coordenadas',
         code: HttpStatusCode.OK,
         data: { vaccinationPosts },
       })
@@ -249,21 +249,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -275,7 +275,7 @@ export default class TrustNetworksController {
       const vaccinationPlaces = await Database.rawQuery(trustNetworkQueries.vaccinationPlaces)
 
       return response.status(HttpStatusCode.OK).send({
-        message: 'Coordenadas dos locais com registos de vacinação!',
+        message: 'Coordenadas dos locais com registos de vacinação',
         code: HttpStatusCode.OK,
         data: { vaccinationPlaces },
       })
@@ -297,21 +297,21 @@ export default class TrustNetworksController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       formatedLog({
-        text: 'Ocorreu um erro no servidor!',
+        text: 'Ocorreu um erro no servidor',
         data: {},
         auth: auth,
         request: request,
@@ -319,7 +319,7 @@ export default class TrustNetworksController {
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })

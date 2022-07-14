@@ -68,7 +68,7 @@ export default class GoalsController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })

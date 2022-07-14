@@ -81,7 +81,7 @@ export default class PeopleController {
         //Verifica se foi enviado o nome do pai
         if (personData.fatherName === undefined || personData.fatherName === '') {
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite o nome do pai!',
+            message: 'Utente sem documento , digite o nome do pai',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -89,7 +89,7 @@ export default class PeopleController {
         //Verifica se foi enviado o nome da mãe
         if (personData.motherName === undefined || personData.motherName === '') {
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite o nome da mãe!',
+            message: 'Utente sem documento , digite o nome da mãe',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -108,7 +108,7 @@ export default class PeopleController {
 
         if (exists) {
           return response.status(HttpStatusCode.OK).send({
-            message: 'Já existe um utente registrado com esse número de documento!',
+            message: 'Já existe um utente registrado com esse número de documento',
             code: BusinessCode.FOUND_INDIVIDUAL,
             data: exists,
           })
@@ -128,7 +128,7 @@ export default class PeopleController {
 
         if (exists) {
           formatedLog({
-            text: 'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
+            text: 'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento',
             data: personData,
             auth: auth,
             request: request,
@@ -137,7 +137,7 @@ export default class PeopleController {
 
           return response.status(HttpStatusCode.OK).send({
             message:
-              'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
+              'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento',
             code: BusinessCode.FOUND_INDIVIDUAL,
             data: exists,
           })
@@ -162,7 +162,7 @@ export default class PeopleController {
           request: request,
         })
         return response.status(HttpStatusCode.OK).send({
-          message: 'Data de  cadastro inválida!',
+          message: 'Data de  cadastro inválida',
           code: HttpStatusCode.OK,
           data: {},
         })
@@ -176,14 +176,14 @@ export default class PeopleController {
       //Caso não tenha inserido o utente
       if (insertedPerson.length === 0) {
         formatedLog({
-          text: 'Não foi possível registrar o utente!',
+          text: 'Não foi possível registrar o utente',
           type: LogType.error,
           data: personData,
           auth: auth,
           request: request,
         })
         return response.status(HttpStatusCode.OK).send({
-          message: 'Não foi possível registrar o utente!',
+          message: 'Não foi possível registrar o utente',
           code: HttpStatusCode.OK,
           data: [],
         })
@@ -215,7 +215,7 @@ export default class PeopleController {
       })
 
       formatedLog({
-        text: 'Novo utente registrado com sucesso!',
+        text: 'Novo utente registrado com sucesso',
         type: LogType.success,
         data: personData,
         auth: auth,
@@ -223,7 +223,7 @@ export default class PeopleController {
       })
       //Utente inserido com sucesso
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Utente registrado com sucesso!',
+        message: 'Utente registrado com sucesso',
         code: HttpStatusCode.CREATED,
         data: { utente: finalFormatedPerson },
       })
@@ -249,7 +249,7 @@ export default class PeopleController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           type: LogType.warning,
           data: personData,
           auth: auth,
@@ -257,14 +257,14 @@ export default class PeopleController {
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -297,7 +297,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Pesquisa geral requer envio do id do município!',
+            message: 'Pesquisa geral requer envio do id do município',
             code: HttpStatusCode.ACCEPTED,
             data: {},
           })
@@ -333,7 +333,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.ACCEPTED).send({
-            message: 'A consulta por nome aceita retornar apenas 100 registros no máximo!',
+            message: 'A consulta por nome aceita retornar apenas 100 registros no máximo',
             code: HttpStatusCode.ACCEPTED,
             data: {},
           })
@@ -355,7 +355,7 @@ export default class PeopleController {
           type: LogType.success,
         })
         return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta por nome!',
+          message: 'Resultados da consulta por nome',
           code: HttpStatusCode.ACCEPTED,
           data,
         })
@@ -377,7 +377,7 @@ export default class PeopleController {
           type: LogType.success,
         })
         return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta por número de telefone!',
+          message: 'Resultados da consulta por número de telefone',
           code: HttpStatusCode.ACCEPTED,
           data,
         })
@@ -400,7 +400,7 @@ export default class PeopleController {
         })
 
         return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta por codigoNum!',
+          message: 'Resultados da consulta por codigoNum',
           code: HttpStatusCode.ACCEPTED,
           data,
         })
@@ -421,7 +421,7 @@ export default class PeopleController {
           type: LogType.success,
         })
         return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta por docNum!',
+          message: 'Resultados da consulta por docNum',
           code: HttpStatusCode.ACCEPTED,
           data,
         })
@@ -436,7 +436,7 @@ export default class PeopleController {
         type: LogType.warning,
       })
       return response.status(HttpStatusCode.OK).send({
-        message: 'Nenhum resultado encontrado!',
+        message: 'Nenhum resultado encontrado',
         code: HttpStatusCode.OK,
         data: {},
       })
@@ -457,10 +457,8 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
-
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           type: LogType.warning,
           data: searchData,
           auth: auth,
@@ -468,14 +466,14 @@ export default class PeopleController {
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -514,7 +512,7 @@ export default class PeopleController {
             type: LogType.success,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Já existe um utente registrado com esse código!',
+            message: 'Já existe um utente registrado com esse código',
             code: HttpStatusCode.OK,
             data: { person, vacinationCicle },
           })
@@ -527,7 +525,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente não encontrado!',
+            message: 'Utente não encontrado',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -551,7 +549,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite o nome do utente!',
+            message: 'Utente sem documento , digite o nome do utente',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -567,7 +565,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite a data de nascimento do utente!',
+            message: 'Utente sem documento , digite a data de nascimento do utente',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -583,7 +581,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite o nome do pai!',
+            message: 'Utente sem documento , digite o nome do pai',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -598,7 +596,7 @@ export default class PeopleController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Utente sem documento , digite o nome da mãe!',
+            message: 'Utente sem documento , digite o nome da mãe',
             code: HttpStatusCode.OK,
             data: [],
           })
@@ -623,7 +621,7 @@ export default class PeopleController {
             type: LogType.success,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Já existe um utente registrado com esse número de documento!',
+            message: 'Já existe um utente registrado com esse número de documento',
             code: BusinessCode.FOUND_INDIVIDUAL,
             data: person,
           })
@@ -651,11 +649,6 @@ export default class PeopleController {
             request: request,
             type: LogType.warning,
           })
-          /*  return response.status(HttpStatusCode.CONFLICT).send({
-            message: 'Data de nascimento mal formada!',
-            code: HttpStatusCode.OK,
-            data: [],
-          })*/
         }
 
         const person = await Person.query()
@@ -676,7 +669,7 @@ export default class PeopleController {
           })
           return response.status(HttpStatusCode.OK).send({
             message:
-              'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento!',
+              'Já existe um utente registrado com  o mesmo nome , pai , mãe e data de nascimento',
             code: BusinessCode.FOUND_INDIVIDUAL,
             data: person,
           })
@@ -692,7 +685,7 @@ export default class PeopleController {
       })
 
       return response.status(HttpStatusCode.NOT_FOUND).send({
-        message: 'Registro de utente não encontrado!',
+        message: 'Registro de utente não encontrado',
         code: HttpStatusCode.NOT_FOUND,
         data: {},
       })
@@ -716,10 +709,8 @@ export default class PeopleController {
       const substring = 'Timeout: Request failed to complete in'
 
       if (errorInfo.includes(substring)) {
-        //console.log('Não foi possível completar a operação dentro do tempo esperado!')
-
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: personData,
           auth: auth,
           request: request,
@@ -727,14 +718,14 @@ export default class PeopleController {
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -789,7 +780,7 @@ export default class PeopleController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })

@@ -166,7 +166,7 @@ export default class ChildrenController {
       })
 
       formatedLog({
-        text: 'Novo utente registrado com sucesso!',
+        text: 'Novo utente registrado com sucesso',
         type: LogType.success,
         data: child,
         auth: auth,
@@ -175,7 +175,7 @@ export default class ChildrenController {
 
       //Utente registado com sucesso
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Utente registrado com sucesso!',
+        message: 'Utente registrado com sucesso',
         code: HttpStatusCode.CREATED,
         data: child,
       })
@@ -197,7 +197,7 @@ export default class ChildrenController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           type: LogType.warning,
           data: childData,
           auth: auth,
@@ -205,14 +205,14 @@ export default class ChildrenController {
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })

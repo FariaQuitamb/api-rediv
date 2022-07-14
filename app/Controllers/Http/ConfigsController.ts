@@ -28,7 +28,7 @@ export default class ConfigsController {
       const version = JSON.parse(newData)
 
       formatedLog({
-        text: 'Versão actual da aplicação mobile modificada!',
+        text: 'Versão actual da aplicação mobile modificada',
         data: versionData,
         auth: auth,
         request: request,
@@ -36,7 +36,7 @@ export default class ConfigsController {
       })
 
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Versão actual da aplicação mobile modificada!',
+        message: 'Versão actual da aplicação mobile modificada',
         code: HttpStatusCode.CREATED,
         data: { version: version?.mobile_app_version, changes: version?.changes },
       })
@@ -53,7 +53,7 @@ export default class ConfigsController {
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Não foi possível modificar a versão actual da aplicação mobile!',
+        message: 'Não foi possível modificar a versão actual da aplicação mobile',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -96,7 +96,7 @@ export default class ConfigsController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
+          text: 'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão',
           data: {},
           auth: auth,
           request: request,
@@ -104,14 +104,14 @@ export default class ConfigsController {
         })
         return response.status(HttpStatusCode.OK).send({
           message:
-            'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão!',
+            'Ficheiro json ainda não foi criado , insira primeiro as informações da nova versão',
           code: HttpStatusCode.OK,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Não foi possível obter a versão actual da aplicação mobile!',
+        message: 'Não foi possível obter a versão actual da aplicação mobile',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
