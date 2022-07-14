@@ -9,7 +9,7 @@ export default class AccessRequest {
     const accessHeader = accessInfo(request.headers())
 
     if (accessHeader.id === 'undefined' || accessHeader.accessKey === 'undefined') {
-      response.unauthorized({ code: 401, message: 'Envie os dados de acesso correctamente!' })
+      response.unauthorized({ code: 401, message: 'Envie os dados de acesso correctamente' })
       return
     }
 
@@ -20,7 +20,7 @@ export default class AccessRequest {
       .first()
 
     if (!access) {
-      response.unauthorized({ code: 401, message: 'Acesso negado!' })
+      response.unauthorized({ code: 401, message: 'Acesso negado' })
       return
     }
 

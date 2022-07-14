@@ -24,7 +24,7 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Env from '@ioc:Adonis/Core/Env'
 
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works!' }
+  return { hello: 'world', title: 'It Works' }
 })
 
 //MAIN WRAPPER

@@ -85,7 +85,7 @@ export default class PreloadsController {
       })
 
       return response.status(HttpStatusCode.ACCEPTED).send({
-        message: 'Dados de pré-carregamento!',
+        message: 'Dados de pré-carregamento',
         code: HttpStatusCode.ACCEPTED,
         data: { provinces, nationalities, docTypes, vaccines },
       })

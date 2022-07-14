@@ -110,7 +110,7 @@ export default class AuthController {
         data: { user: data.username },
         auth: auth,
         request: request,
-        type: LogType.error,
+        type: LogType.success,
       })
 
       return response.status(HttpStatusCode.ACCEPTED).send({

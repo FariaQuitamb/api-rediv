@@ -18,6 +18,6 @@ test.group('Welcome', (group) => {
 
     const { title } = JSON.parse(text)
     assert.exists(title)
-    assert.equal(title, 'It Works!')
+    assert.equal(title, 'It Works')
   })
 })

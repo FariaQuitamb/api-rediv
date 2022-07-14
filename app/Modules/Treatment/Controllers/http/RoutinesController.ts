@@ -45,14 +45,14 @@ export default class RoutinesController {
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })

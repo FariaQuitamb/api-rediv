@@ -46,21 +46,21 @@ export default class AppInstallationsController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       formatedLog({
-        text: 'Ocorreu um erro no servidor!',
+        text: 'Ocorreu um erro no servidor',
         data: {},
         auth: auth,
         request: request,
@@ -68,7 +68,7 @@ export default class AppInstallationsController {
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -114,21 +114,21 @@ export default class AppInstallationsController {
 
       if (errorInfo.includes(substring)) {
         formatedLog({
-          text: 'Não foi possível completar a operação dentro do tempo esperado!',
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
           data: {},
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-          message: 'Não foi possível completar a operação dentro do tempo esperado!',
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
           data: [],
         })
       }
 
       formatedLog({
-        text: 'Ocorreu um erro no servidor!',
+        text: 'Ocorreu um erro no servidor',
         data: {},
         auth: auth,
         request: request,
@@ -136,7 +136,7 @@ export default class AppInstallationsController {
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
