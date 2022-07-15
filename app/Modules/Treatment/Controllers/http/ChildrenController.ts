@@ -108,13 +108,23 @@ export default class ChildrenController {
         })
       }
 
-      //Verify future date
+      //Verifica se é necessário validar a data do futuro
+      let checkFuture = true
 
-      if (isAfterToday(childData.dataCad)) {
-        const previewsDate = childData.dataCad
-        childData.dataCad = moment().toISOString()
+      const previewsDate = childData.dataCad
+
+      //Mudança : formatação da data
+
+      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+
+      if (childData.dataCad === null) {
+        checkFuture = false
+
+        const today = moment().utc(true)
+        childData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo infantil simplificado foi modificada para data de hoje por ser inválida ,  data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: childData,
           auth: auth,
           request: request,
@@ -122,18 +132,17 @@ export default class ChildrenController {
         })
       }
 
-      const prevDate = childData.dataCad
-      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
-      //Caso tenha inserido data que não seja possível converter
-      if (childData.dataCad === null) {
-        childData.dataCad = moment().toISOString()
-        formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje, por possuir erro Data Inserida: ${prevDate} data final : ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-          data: childData,
-          auth: auth,
-          request: request,
-          type: LogType.warning,
-        })
+      if (checkFuture) {
+        if (isAfterToday(childData.dataCad)) {
+          childData.dataCad = moment().utc(true).toISOString()
+          formatedLog({
+            text: `A data do registo infantil simplificado foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: childData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
       }
 
       //Verifica se existe um utente com o número de documento enviado

@@ -25,17 +25,41 @@ export default class PeopleController {
 
     try {
       let hasDocNumber = true
+      let checkFuture = true
 
-      if (isAfterToday(personData.dataCad)) {
-        const previewsDate = personData.dataCad
-        personData.dataCad = moment().toISOString()
+      const previewsDate = personData.dataCad
+
+      //Mudança : formatação da data
+      //const dateBefore = personData.dataCad
+
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+
+      if (personData.dataCad === null) {
+        checkFuture = false
+
+        const today = moment().utc(true)
+        personData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje por ser inválida ,  data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: personData,
           auth: auth,
           request: request,
           type: LogType.warning,
         })
+      }
+
+      if (checkFuture) {
+        if (isAfterToday(personData.dataCad)) {
+          personData.dataCad = moment().utc(true).toISOString()
+          formatedLog({
+            text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
       }
 
       //START - CORRECÇÃO PARA DATA ERRADA
@@ -142,30 +166,6 @@ export default class PeopleController {
             data: exists,
           })
         }
-      }
-
-      //Mudança : formatação da data
-      //const dateBefore = personData.dataCad
-      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
-      //const dateAfter = personData.dataCad
-
-      if (personData.dataCad === null) {
-        //Log de erro
-        const personJson = JSON.stringify(personData)
-        const deviceInfo = JSON.stringify(formatHeaderInfo(request))
-        const userInfo = formatUserInfo(auth.user)
-
-        await logError({
-          type: 'MB',
-          page: 'PeopleController/store',
-          error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
-          request: request,
-        })
-        return response.status(HttpStatusCode.OK).send({
-          message: 'Data de  cadastro inválida',
-          code: HttpStatusCode.OK,
-          data: {},
-        })
       }
 
       const person = new Person()
