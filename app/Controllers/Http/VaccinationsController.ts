@@ -45,7 +45,7 @@ export default class VaccinationsController {
         const previewsDate = vaccinationData.createdAt
         vaccinationData.createdAt = moment().toISOString()
         formatedLog({
-          text: `Registo de vacinação modificado para data de hoje Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `Registo de vacinação modificado para data de hoje data inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: vaccinationData,
           auth: auth,
           request: request,
@@ -535,16 +535,43 @@ export default class VaccinationsController {
     try {
       //Vacination Date verification  , cannot be after today (future)
 
-      if (isAfterToday(vaccinationData.createdAt)) {
-        const previewsDate = vaccinationData.createdAt
-        vaccinationData.createdAt = moment().toISOString()
+      //Verifica se é necessário validar a data do futuro
+      let checkFuture = true
+
+      const previewsDate = vaccinationData.createdAt
+
+      //Mudança : formatação da data
+
+      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
+        .utc(true)
+        .toISOString()
+
+      if (vaccinationData.createdAt === null) {
+        checkFuture = false
+
+        const today = moment().utc(true)
+        vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `Registo de vacinação de reforço modificado para data de hoje por ser maior que a data actual Data Inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo de vacinação de reforço foi modificada para data de hoje por ser inválida ,  data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: vaccinationData,
           auth: auth,
           request: request,
           type: LogType.warning,
         })
+      }
+
+      if (checkFuture) {
+        if (isAfterToday(vaccinationData.createdAt)) {
+          vaccinationData.createdAt = moment().utc(true).toISOString()
+          formatedLog({
+            text: `A data do registo de vacinação de reforço foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: vaccinationData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
       }
 
       //Default regMB set to S = Yes to Mobile Register
