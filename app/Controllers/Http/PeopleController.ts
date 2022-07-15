@@ -616,7 +616,7 @@ export default class PeopleController {
 
         if (person) {
           formatedLog({
-            text: `Utente encontrando pesquisando pelo número de documento  ${personData.docNumber}`,
+            text: `Utente encontrado pesquisando pelo número de documento  ${personData.docNumber}`,
             data: person,
             auth: auth,
             request: request,
