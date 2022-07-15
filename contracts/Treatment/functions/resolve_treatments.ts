@@ -96,7 +96,7 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
       if (isAfterToday(treatmentData.treatments[i].createdAt)) {
         treatmentData.treatments[i].createdAt = moment().utc(true).toISOString()
         formatedLog({
-          text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate} data final: ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate} data final: ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: treatmentData.treatments[i],
           auth: auth,
           request: request,

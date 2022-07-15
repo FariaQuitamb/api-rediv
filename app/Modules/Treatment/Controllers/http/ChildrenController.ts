@@ -136,7 +136,7 @@ export default class ChildrenController {
         if (isAfterToday(childData.dataCad)) {
           childData.dataCad = moment().utc(true).toISOString()
           formatedLog({
-            text: `A data do registo infantil simplificado foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            text: `A data do registo infantil simplificado foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: childData,
             auth: auth,
             request: request,

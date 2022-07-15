@@ -25,6 +25,8 @@ export default class PeopleController {
 
     try {
       let hasDocNumber = true
+
+      //Verifica se é necessário validar a data do futuro
       let checkFuture = true
 
       const previewsDate = personData.dataCad
@@ -53,7 +55,7 @@ export default class PeopleController {
         if (isAfterToday(personData.dataCad)) {
           personData.dataCad = moment().utc(true).toISOString()
           formatedLog({
-            text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: personData,
             auth: auth,
             request: request,
