@@ -200,7 +200,8 @@ export default class PeopleController {
         phone: personInfo.Telefone,
         birthday: personInfo.dtNascimento,
         father_name: personInfo.NomePai,
-        mother_name: personInfo.omeMae,
+        mother_name: personInfo.NomeMae,
+        code: personInfo.Codigo,
       }
 
       const version = Env.get('API_VERSION')
@@ -213,13 +214,13 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
-        actionId: `V:${version}}`,
+        actionId: `V:${version}`,
       })
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',
         type: LogType.success,
-        data: personData,
+        data: personInfo,
         auth: auth,
         request: request,
       })
