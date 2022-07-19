@@ -159,32 +159,76 @@ export default class ChildrenController {
         })
       }
 
-      const child = await Person.create(childData)
+      //const child = await Person.create(childData)
+
+      const person = new Person()
+      //Adiciona utente usando transação para garantir que o registo suba e que tenha codigo associado
+      //A inserção possuí um timeout de 60000 ms
+      const insertedChild = await person.transactionInsertChild(childData, 60000)
+
+      //Caso não tenha inserido o utente
+      if (insertedChild.length === 0) {
+        formatedLog({
+          text: 'Não foi  possível realizar o registo infantil simplificado',
+          type: LogType.error,
+          data: insertedChild,
+          auth: auth,
+          request: request,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Não foi  possível realizar o registo infantil simplificado',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      const personInfo = insertedChild[0]
 
       const version = Env.get('API_VERSION')
-
+      //Log de actividade
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
-        screen: ' ChildrenController/store',
+        screen: 'ChildrenController/store',
         table: 'regIndividual',
         job: 'Cadastrar',
-        tableId: child.id,
+        tableId: personInfo.Id_regIndividual,
         action: 'Registo de Utente Menor',
         actionId: `V:${version}`,
       })
 
       formatedLog({
-        text: 'Novo utente registrado com sucesso',
+        text: 'Registo infantil simplificado realizado com sucesso',
         type: LogType.success,
-        data: child,
+        data: personInfo,
         auth: auth,
         request: request,
       })
 
+      const child = {
+        id: personInfo.Id_regIndividual,
+        institution_id: personInfo.Id_regInstituicao,
+        name: personInfo.Nome,
+        phone: personInfo.Telefone,
+        birthday: moment(personInfo.dtNascimento).format('YYYY-MM-DD'),
+        father_name: personInfo.NomePai,
+        mother_name: personInfo.NomeMae,
+        card_number: personInfo.NCartao,
+        genre: personInfo.Genero,
+        nationality_id: personInfo.Id_Nacionalidade,
+        province_id: personInfo.Id_provincia,
+        municipality_id: personInfo.Id_Municipio,
+        category_id: personInfo.Id_Categoria,
+        code: personInfo.Codigo,
+        status: personInfo.Status,
+        sector_id: personInfo.Id_Setor,
+        code_number: personInfo.CodigoNum,
+        comorbility: personInfo.Comorbilidade,
+      }
+
       //Utente registado com sucesso
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Utente registrado com sucesso',
+        message: 'Registo infantil simplificado realizado com sucesso',
         code: HttpStatusCode.CREATED,
         data: child,
       })
