@@ -22,6 +22,20 @@ import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 import Env from '@ioc:Adonis/Core/Env'
+import addJobs from 'App/bullmq/queue/queue'
+import createWorker from 'App/bullmq/worker/worker'
+
+Route.get('/init', async () => {
+  createWorker()
+
+  return { hello: 'world', title: 'It Works' }
+})
+
+Route.get('/addJob', async () => {
+  await addJobs()
+
+  return { hello: 'world', title: 'It Works' }
+})
 
 Route.get('/', async () => {
   return { hello: 'world', title: 'It Works' }
