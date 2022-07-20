@@ -26,16 +26,42 @@ export default class PeopleController {
     try {
       let hasDocNumber = true
 
-      if (isAfterToday(personData.dataCad)) {
-        const previewsDate = personData.dataCad
-        personData.dataCad = moment().toISOString()
+      //Verifica se é necessário validar a data do futuro
+      let checkFuture = true
+
+      const previewsDate = personData.dataCad
+
+      //Mudança : formatação da data
+      //const dateBefore = personData.dataCad
+
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+
+      if (personData.dataCad === null) {
+        checkFuture = false
+
+        const today = moment().utc(true)
+        personData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo individual foi modificada para data de hoje por ser inválida ,  data Inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: personData,
           auth: auth,
           request: request,
           type: LogType.warning,
         })
+      }
+
+      if (checkFuture) {
+        if (isAfterToday(personData.dataCad)) {
+          personData.dataCad = moment().utc(true).toISOString()
+          formatedLog({
+            text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: personData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
       }
 
       //START - CORRECÇÃO PARA DATA ERRADA
@@ -144,30 +170,6 @@ export default class PeopleController {
         }
       }
 
-      //Mudança : formatação da data
-      //const dateBefore = personData.dataCad
-      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
-      //const dateAfter = personData.dataCad
-
-      if (personData.dataCad === null) {
-        //Log de erro
-        const personJson = JSON.stringify(personData)
-        const deviceInfo = JSON.stringify(formatHeaderInfo(request))
-        const userInfo = formatUserInfo(auth.user)
-
-        await logError({
-          type: 'MB',
-          page: 'PeopleController/store',
-          error: `User:${userInfo} Device: ${deviceInfo} Dados : ${personJson} `,
-          request: request,
-        })
-        return response.status(HttpStatusCode.OK).send({
-          message: 'Data de  cadastro inválida',
-          code: HttpStatusCode.OK,
-          data: {},
-        })
-      }
-
       const person = new Person()
       //Adiciona utente usando transação para garantir que o registo suba e que tenha codigo associado
       //A inserção possuí um timeout de 60000 ms
@@ -198,7 +200,8 @@ export default class PeopleController {
         phone: personInfo.Telefone,
         birthday: personInfo.dtNascimento,
         father_name: personInfo.NomePai,
-        mother_name: personInfo.omeMae,
+        mother_name: personInfo.NomeMae,
+        code: personInfo.Codigo,
       }
 
       const version = Env.get('API_VERSION')
@@ -211,13 +214,13 @@ export default class PeopleController {
         job: 'Cadastrar',
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
-        actionId: `V:${version}}`,
+        actionId: `V:${version}`,
       })
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',
         type: LogType.success,
-        data: personData,
+        data: personInfo,
         auth: auth,
         request: request,
       })
@@ -614,7 +617,7 @@ export default class PeopleController {
 
         if (person) {
           formatedLog({
-            text: `Utente encontrando pesquisando pelo número de documento  ${personData.docNumber}`,
+            text: `Utente encontrado pesquisando pelo número de documento  ${personData.docNumber}`,
             data: person,
             auth: auth,
             request: request,
@@ -643,7 +646,7 @@ export default class PeopleController {
           const userInfo = formatUserInfo(auth.user)
 
           formatedLog({
-            text: `O utilizador inseriu a data de nascimento errada na pesquisa!  Data: ${previousDate} Utilizador:${userInfo}`,
+            text: `O utilizador inseriu a data de nascimento errada na pesquisa  Data: ${previousDate} Utilizador:${userInfo}`,
             data: personData,
             auth: auth,
             request: request,
@@ -661,7 +664,7 @@ export default class PeopleController {
 
         if (person) {
           formatedLog({
-            text: `Utente encontrado pesquisando pelo nome próprio, pai , mãe e data de nascimento!`,
+            text: `Utente encontrado pesquisando pelo nome próprio, pai , mãe e data de nascimento`,
             data: person,
             auth: auth,
             request: request,

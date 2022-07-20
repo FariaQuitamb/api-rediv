@@ -20,7 +20,7 @@ export default class ChildrenController {
     const childData = await request.validate(ChildValidator)
     try {
       //Valor padrão para comorbilidade
-
+      childData.nationalityId = 1
       childData.coMorbidity = 'NÃO'
 
       if (childData.cardNumber.length > 10) {
@@ -108,13 +108,23 @@ export default class ChildrenController {
         })
       }
 
-      //Verify future date
+      //Verifica se é necessário validar a data do futuro
+      let checkFuture = true
 
-      if (isAfterToday(childData.dataCad)) {
-        const previewsDate = childData.dataCad
-        childData.dataCad = moment().toISOString()
+      const previewsDate = childData.dataCad
+
+      //Mudança : formatação da data
+
+      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+
+      if (childData.dataCad === null) {
+        checkFuture = false
+
+        const today = moment().utc(true)
+        childData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo infantil simplificado foi modificada para data de hoje por ser inválida ,  data Inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: childData,
           auth: auth,
           request: request,
@@ -122,18 +132,17 @@ export default class ChildrenController {
         })
       }
 
-      const prevDate = childData.dataCad
-      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
-      //Caso tenha inserido data que não seja possível converter
-      if (childData.dataCad === null) {
-        childData.dataCad = moment().toISOString()
-        formatedLog({
-          text: `A data do registo individual foi modificada para data de hoje, por possuir erro! Data Inserida: ${prevDate} data final : ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-          data: childData,
-          auth: auth,
-          request: request,
-          type: LogType.warning,
-        })
+      if (checkFuture) {
+        if (isAfterToday(childData.dataCad)) {
+          childData.dataCad = moment().utc(true).toISOString()
+          formatedLog({
+            text: `A data do registo infantil simplificado foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: childData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
       }
 
       //Verifica se existe um utente com o número de documento enviado
@@ -150,32 +159,76 @@ export default class ChildrenController {
         })
       }
 
-      const child = await Person.create(childData)
+      //const child = await Person.create(childData)
+
+      const person = new Person()
+      //Adiciona utente usando transação para garantir que o registo suba e que tenha codigo associado
+      //A inserção possuí um timeout de 60000 ms
+      const insertedChild = await person.transactionInsertChild(childData, 60000)
+
+      //Caso não tenha inserido o utente
+      if (insertedChild.length === 0) {
+        formatedLog({
+          text: 'Não foi  possível realizar o registo infantil simplificado',
+          type: LogType.error,
+          data: insertedChild,
+          auth: auth,
+          request: request,
+        })
+        return response.status(HttpStatusCode.OK).send({
+          message: 'Não foi  possível realizar o registo infantil simplificado',
+          code: HttpStatusCode.OK,
+          data: [],
+        })
+      }
+
+      const personInfo = insertedChild[0]
 
       const version = Env.get('API_VERSION')
-
+      //Log de actividade
       await logRegister({
         id: auth.user?.id ?? 0,
         system: 'MB',
-        screen: ' ChildrenController/store',
+        screen: 'ChildrenController/store',
         table: 'regIndividual',
         job: 'Cadastrar',
-        tableId: child.id,
+        tableId: personInfo.Id_regIndividual,
         action: 'Registo de Utente Menor',
         actionId: `V:${version}`,
       })
 
       formatedLog({
-        text: 'Novo utente registrado com sucesso',
+        text: 'Registo infantil simplificado realizado com sucesso',
         type: LogType.success,
-        data: child,
+        data: personInfo,
         auth: auth,
         request: request,
       })
 
+      const child = {
+        id: personInfo.Id_regIndividual,
+        institution_id: personInfo.Id_regInstituicao,
+        name: personInfo.Nome,
+        phone: personInfo.Telefone,
+        birthday: moment(personInfo.dtNascimento).format('YYYY-MM-DD'),
+        father_name: personInfo.NomePai,
+        mother_name: personInfo.NomeMae,
+        card_number: personInfo.NCartao,
+        genre: personInfo.Genero,
+        nationality_id: personInfo.Id_Nacionalidade,
+        province_id: personInfo.Id_provincia,
+        municipality_id: personInfo.Id_Municipio,
+        category_id: personInfo.Id_Categoria,
+        code: personInfo.Codigo,
+        status: personInfo.Status,
+        sector_id: personInfo.Id_Setor,
+        code_number: personInfo.CodigoNum,
+        comorbility: personInfo.Comorbilidade,
+      }
+
       //Utente registado com sucesso
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Utente registrado com sucesso',
+        message: 'Registo infantil simplificado realizado com sucesso',
         code: HttpStatusCode.CREATED,
         data: child,
       })

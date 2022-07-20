@@ -62,19 +62,12 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
 
     //End
 
-    if (isAfterToday(treatmentData.treatments[i].createdAt)) {
-      const previewsDate = treatmentData.treatments[i].createdAt
-      treatmentData.treatments[i].createdAt = moment().toISOString()
-      formatedLog({
-        text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje por ser maior a data actual! Data Inserida: ${previewsDate} data final: ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
-        data: treatmentData.treatments[i],
-        auth: auth,
-        request: request,
-        type: LogType.warning,
-      })
-    }
+    //Verifica se é necessário validar a data do futuro
+    let checkFuture = true
 
-    const prevDate = treatmentData.treatments[i].createdAt
+    const previewsDate = treatmentData.treatments[i].createdAt
+
+    //Mudança : formatação da data
 
     treatmentData.treatments[i].createdAt = moment(
       treatmentData.treatments[i].createdAt,
@@ -83,18 +76,33 @@ const resolveTreatment = async (request, auth, treatmentData: TreatmentData) => 
     )
       .utc(true)
       .toISOString()
-    //Caso tenha inserido data que não seja possível converter
 
     if (treatmentData.treatments[i].createdAt === null) {
-      treatmentData.treatments[i].createdAt = moment().toISOString()
+      checkFuture = false
+
+      const today = moment().utc(true)
+      treatmentData.treatments[i].createdAt = moment(today, moment.ISO_8601, true).toISOString()
 
       formatedLog({
-        text: `Data inválida: A data de aplicação do tratamento foi modificada para data de hoje, por possuir erro! Data Inserida: ${prevDate} data final : ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+        text: `A data de aplicação do tratamento foi modificada para data de hoje, por ser inválida: ${previewsDate} data final : ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
         data: treatmentData.treatments[i],
         auth: auth,
         request: request,
         type: LogType.warning,
       })
+    }
+
+    if (checkFuture) {
+      if (isAfterToday(treatmentData.treatments[i].createdAt)) {
+        treatmentData.treatments[i].createdAt = moment().utc(true).toISOString()
+        formatedLog({
+          text: `Data superior ao dia actual : A data de aplicação do tratamento foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate} data final: ${treatmentData.treatments[i].createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          data: treatmentData.treatments[i],
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+        })
+      }
     }
   }
 

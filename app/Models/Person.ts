@@ -144,6 +144,72 @@ export default class Person extends BaseModel {
             .update({ Codigo: code, docNum: 'PM' + code })
             .timeout(timeout)
         }
+
+        newPerson[0].Codigo = code
+      }
+    })
+
+    return newPerson
+  }
+
+  public async transactionInsertChild(personData, timeout) {
+    let newPerson
+    await Database.transaction(async (trx) => {
+      newPerson = await trx
+        .table('vac_regIndividual')
+        .returning([
+          'Id_regIndividual',
+          'Id_regInstituicao',
+          'Nome',
+          'Telefone',
+          'dtNascimento',
+          'NomePai',
+          'NomeMae',
+          'Genero',
+          'Id_Nacionalidade',
+          'Id_provincia',
+          'Id_Municipio',
+          'Id_Categoria',
+          'Status',
+          'Id_Setor',
+          'Comorbilidade',
+          'CodigoNum',
+          'NCartao',
+        ])
+        .insert({
+          Nome: personData.name,
+          Id_regInstituicao: personData.institutionId,
+          NCartao: personData.cardNumber,
+          Telefone: personData.phone,
+          Genero: personData.genre,
+          dtNascimento: personData.birthday,
+          Id_Nacionalidade: personData.nationalityId,
+          Id_provincia: personData.provinceId,
+          Id_Municipio: personData.municipalityId,
+          Id_Categoria: personData.categoryId,
+          Status: personData.status,
+          Id_Setor: personData.sectorId,
+          CodigoNum: personData.codeNumber,
+          DataCad: personData.dataCad,
+        })
+        .timeout(timeout)
+
+      if (newPerson.length > 0) {
+        const id = newPerson[0].Id_regIndividual
+
+        //Gerar a referência - codigo
+        //Para o caso de utente sem BI gerar  PM-Referência
+
+        const code = generateCode(id.toString())
+        console.log(code)
+
+        await trx
+          .from('vac_regIndividual')
+          .where('Id_regIndividual', id)
+          .update({ Codigo: code, docNum: 'PM' + code })
+          .timeout(timeout)
+
+        newPerson[0].Codigo = code
       }
     })
 

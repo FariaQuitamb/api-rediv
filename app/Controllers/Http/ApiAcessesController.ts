@@ -46,7 +46,7 @@ export default class ApiAcessesController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -63,7 +63,7 @@ export default class ApiAcessesController {
 
       if (findAccess) {
         return response.status(HttpStatusCode.OK).send({
-          message: 'Essa Instituição já possuí acesso !',
+          message: 'Essa Instituição já possuí acesso ',
           code: HttpStatusCode.OK,
           data: {},
         })
@@ -92,7 +92,7 @@ export default class ApiAcessesController {
       })
 
       return response.status(HttpStatusCode.CREATED).send({
-        message: 'Acesso criado com sucesso!',
+        message: 'Acesso criado com sucesso',
         code: HttpStatusCode.CREATED,
         data: access,
       })
@@ -109,7 +109,7 @@ export default class ApiAcessesController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -123,7 +123,7 @@ export default class ApiAcessesController {
 
       if (!access) {
         return response.status(HttpStatusCode.OK).send({
-          message: 'Instituição não encontrada!',
+          message: 'Instituição não encontrada',
           code: HttpStatusCode.OK,
           data: {},
         })
@@ -153,7 +153,7 @@ export default class ApiAcessesController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
@@ -195,7 +195,7 @@ export default class ApiAcessesController {
         request: request,
       })
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
-        message: 'Ocorreu um erro no servidor!',
+        message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         data: [],
       })
