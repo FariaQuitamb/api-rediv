@@ -40,6 +40,7 @@ export default class ChildValidator {
     coMorbidity: schema.string.optional(),
     codeNumber: schema.string(),
     dataCad: schema.string(),
+    doctypeId: schema.number.optional(),
   })
 
   /**

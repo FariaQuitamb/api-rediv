@@ -19,8 +19,12 @@ export default class ChildrenController {
   public async store({ auth, response, request }: HttpContextContract) {
     const childData = await request.validate(ChildValidator)
     try {
-      //Valor padrão para comorbilidade
+      //Colocando o default para sem documento
+      childData.doctypeId = 0
+
       childData.nationalityId = 1
+
+      //Valor padrão para comorbilidade
       childData.coMorbidity = 'NÃO'
 
       if (childData.cardNumber.length > 10) {

@@ -191,6 +191,8 @@ export default class Person extends BaseModel {
           Id_Setor: personData.sectorId,
           CodigoNum: personData.codeNumber,
           DataCad: personData.dataCad,
+          Comorbilidade: personData.coMorbidity,
+          Id_tipoDocumento: personData.doctypeId,
         })
         .timeout(timeout)
 
@@ -206,7 +208,7 @@ export default class Person extends BaseModel {
         await trx
           .from('vac_regIndividual')
           .where('Id_regIndividual', id)
-          .update({ Codigo: code, docNum: 'PM' + code })
+          .update({ Codigo: code, docNum: 'RI' + code })
           .timeout(timeout)
 
         newPerson[0].Codigo = code
