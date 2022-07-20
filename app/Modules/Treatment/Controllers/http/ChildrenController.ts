@@ -20,7 +20,7 @@ export default class ChildrenController {
     const childData = await request.validate(ChildValidator)
     try {
       //Valor padrão para comorbilidade
-
+      childData.nationalityId = 1
       childData.coMorbidity = 'NÃO'
 
       if (childData.cardNumber.length > 10) {
