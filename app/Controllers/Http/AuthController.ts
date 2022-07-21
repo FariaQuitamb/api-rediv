@@ -22,6 +22,7 @@ import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
 import deviceInfo from 'Contracts/functions/device_info '
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -40,7 +41,7 @@ export default class AuthController {
 
       if (!user) {
         const version = Env.get('API_VERSION')
-        await logRegister({
+        const log = {
           id: 0,
           system: 'MB',
           screen: 'AuthController/login',
@@ -49,7 +50,9 @@ export default class AuthController {
           tableId: 0,
           action: 'LoginAttempt',
           actionId: `V:${version}`,
-        })
+        }
+
+        await addActivityLogJob(log)
 
         formatedLog({
           text: 'Login incorrecto',
@@ -70,8 +73,6 @@ export default class AuthController {
 
       const headers = request.headers()
       const device = deviceInfo(headers)
-
-      console.log(device)
 
       const token = await auth.use('api').generate(user, {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
@@ -94,7 +95,7 @@ export default class AuthController {
 
       const id = auth.user?.id ?? 0
       //Log de actividade
-      await logRegister({
+      const log = {
         id: id,
         system: 'MB',
         screen: 'AuthController/login',
@@ -103,7 +104,8 @@ export default class AuthController {
         tableId: id,
         action: 'Login',
         actionId: `V:${version}`,
-      })
+      }
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Login efectuado com sucesso',
@@ -119,8 +121,6 @@ export default class AuthController {
         data: { user, token },
       })
     } catch (error) {
-      //console.log(error)
-
       //Log de erro
 
       const deviceInfo = formatHeaderInfo(request)
@@ -150,7 +150,7 @@ export default class AuthController {
         //Log de actividade
 
         const version = Env.get('API_VERSION')
-        await logRegister({
+        const log = {
           id: id,
           system: 'MB',
           screen: 'AuthController/logout',
@@ -159,7 +159,9 @@ export default class AuthController {
           tableId: id,
           action: 'Logout',
           actionId: `V:${version}`,
-        })
+        }
+
+        await addActivityLogJob(log)
 
         return response.status(HttpStatusCode.ACCEPTED).send({
           code: HttpStatusCode.ACCEPTED,
@@ -173,7 +175,6 @@ export default class AuthController {
         })
       }
     } catch (error) {
-      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -239,7 +240,6 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -309,7 +309,6 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      // console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)

@@ -18,6 +18,7 @@ import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -206,7 +207,7 @@ export default class PeopleController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PeopleController/store',
@@ -215,7 +216,11 @@ export default class PeopleController {
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
         actionId: `V:${version}`,
-      })
+      }
+
+      //Job para tratar a inserção de log
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',
