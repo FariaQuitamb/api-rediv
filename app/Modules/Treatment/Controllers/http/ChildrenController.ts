@@ -18,6 +18,7 @@ export default class ChildrenController {
 
   public async store({ auth, response, request }: HttpContextContract) {
     const childData = await request.validate(ChildValidator)
+
     try {
       //Colocando o default para sem documento
       childData.doctypeId = 0
@@ -119,12 +120,12 @@ export default class ChildrenController {
 
       //Mudança : formatação da data
 
-      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+      childData.dataCad = moment(childData.dataCad, moment.ISO_8601, true).toISOString()
 
       if (childData.dataCad === null) {
         checkFuture = false
 
-        const today = moment().utc(true)
+        const today = moment()
         childData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
 
         formatedLog({
@@ -138,7 +139,7 @@ export default class ChildrenController {
 
       if (checkFuture) {
         if (isAfterToday(childData.dataCad)) {
-          childData.dataCad = moment().utc(true).toISOString()
+          childData.dataCad = moment().toISOString()
           formatedLog({
             text: `A data do registo infantil simplificado foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${childData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: childData,

@@ -65,9 +65,11 @@ export default class VaccinationsController {
       vaccinationData.longitude = geo.longitude
 
       //Mudança : formatação da data para ISO 8601
-      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
-        .utc(true)
-        .toISOString()
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
       const person = await Person.find(vaccinationData.personId)
       //
       //Verificar se o registro individual está habilitado a receber a vacina
@@ -542,14 +544,16 @@ export default class VaccinationsController {
 
       //Mudança : formatação da data
 
-      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
-        .utc(true)
-        .toISOString()
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
 
       if (vaccinationData.createdAt === null) {
         checkFuture = false
 
-        const today = moment().utc(true)
+        const today = moment()
         vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
 
         formatedLog({
@@ -563,7 +567,7 @@ export default class VaccinationsController {
 
       if (checkFuture) {
         if (isAfterToday(vaccinationData.createdAt)) {
-          vaccinationData.createdAt = moment().utc(true).toISOString()
+          vaccinationData.createdAt = moment().toISOString()
           formatedLog({
             text: `A data do registo de vacinação de reforço foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: vaccinationData,
@@ -587,9 +591,11 @@ export default class VaccinationsController {
       vaccinationData.longitude = geo.longitude
 
       //Mudança : formatação da data para ISO 8601
-      vaccinationData.createdAt = moment(vaccinationData.createdAt, moment.ISO_8601, true)
-        .utc(true)
-        .toISOString()
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
 
       //Verificar o status enviado
 
