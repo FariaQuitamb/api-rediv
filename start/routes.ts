@@ -26,6 +26,7 @@ import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 Route.get('/', async () => {
+  console.log({ hello: 'world', title: 'It Works' })
   return { hello: 'world', title: 'It Works' }
 })
 
