@@ -1,23 +1,24 @@
 import { Worker } from 'bullmq'
 import logRegister from 'Contracts/functions/log_register'
-import path from 'path'
+import RedisConfig from 'Config/redis_config'
 
 const queueName = 'queue'
 
 const processor = async (job) => {
+  const log = job.data
   await new Promise((resolve) => setTimeout(resolve, 3000))
 
   console.log('Worker in action on job ' + JSON.stringify(job))
   try {
     await logRegister({
-      id: 43 ?? 0,
-      system: 'WORKER',
-      screen: 'PeopleController/store',
-      table: 'regIndividual',
-      job: 'Cadastrar',
-      tableId: 123,
-      action: 'Registro de Utente',
-      actionId: `V:hhh`,
+      id: log.id,
+      system: log.system,
+      screen: log.screen,
+      table: log.table,
+      job: log.job,
+      tableId: log.tableId,
+      action: log.action,
+      actionId: log.actionId,
     })
   } catch (error) {
     console.log('Erro ao executar job')
@@ -26,28 +27,16 @@ const processor = async (job) => {
   return job.data
 }
 
-export default function createWorker() {
-  console.log('Inited work for queue')
+function ActivityLogWorker() {
+  console.log('O worker do job de log de actividades foi iniciado com sucesso 🚀')
   const worker = new Worker(queueName, processor, {
-    connection: {
-      host: '127.0.0.1',
-      port: 6379,
-    },
+    connection: RedisConfig,
     concurrency: 10,
   })
 
   return worker
 }
 
-/*
-export default function createWorker() {
-  const processorFile = path.join(__dirname, 'processor.ts')
-  const worker = new Worker(queueName, processorFile, {
-    connection: {
-      host: '127.0.0.1',
-      port: 6379,
-    },
-  })
+export default function execWorkers() {
+  ActivityLogWorker()
 }
-
-*/

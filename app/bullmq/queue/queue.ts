@@ -1,5 +1,6 @@
 import { Queue, QueueEvents } from 'bullmq'
 import { cuid } from '@ioc:Adonis/Core/Helpers'
+import RedisConfig from 'Config/redis_config'
 
 interface Activity {
   id: number
@@ -12,30 +13,13 @@ interface Activity {
   actionId: string
 }
 
-const data: Activity = {
-  id: 1,
-  system: 'WORKER',
-  screen: 'Jobs',
-  table: 'RegIndividual',
-  job: 'Bullmq',
-  tableId: 134,
-  action: 'Add',
-  actionId: 'Bullmq',
-}
-
 const queueName = 'queue'
 
 const queue = new Queue(queueName, {
-  connection: {
-    host: '127.0.0.1',
-    port: 6379,
-  },
+  connection: RedisConfig,
 })
 const queueEvents = new QueueEvents(queueName, {
-  connection: {
-    host: '127.0.0.1',
-    port: 6379,
-  },
+  connection: RedisConfig,
 })
 
 queueEvents.on('progress', async ({ jobId }) => {
@@ -53,11 +37,12 @@ queueEvents.on('failed', ({ jobId }) => {
   console.info(`process in ${queueName} failed ${jobId}`)
 })
 
-export default async function addJobs() {
+export default async function addActivityLogJob(data: any) {
   //Necessário enviar o ID único do Job
   const jobId = cuid()
-  await queue.add('addActivity' + jobId, data, { jobId })
-
-  console.log('Added new job in queue')
+  await queue.add('addActivity', data, { jobId })
+  console.log(
+    `Nova tarefa adicionada na pilha de execução  Tabela: ${data.table}  Id Tabela :  ${data.tableId} 📚`
+  )
   return queue
 }
