@@ -17,6 +17,7 @@
   "preloads": [
     "./start/routes",
     "./start/kernel",
+    "./start/worker_starter",
     "./start/bouncer",
     "./app/Modules/Treatment/routes/routes"
   ],
