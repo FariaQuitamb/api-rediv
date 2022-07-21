@@ -23,8 +23,17 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 import Env from '@ioc:Adonis/Core/Env'
 
+import momentSimple from 'moment'
+import momentTimezone from 'moment-timezone'
+
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works' }
+  const nowDefault = new Date().toISOString()
+  const now = momentSimple()
+  const date = momentSimple('2022-07-21 11:27:52.787').toLocaleString()
+  const tzNow = momentTimezone().tz('Africa/Luanda').toDate().toISOString()
+  const tz = momentTimezone().tz('Africa/Luanda').toLocaleString()
+
+  return { hello: 'world', title: 'It Works', date, now, nowDefault, tzNow, tz }
 })
 
 //MAIN WRAPPER
