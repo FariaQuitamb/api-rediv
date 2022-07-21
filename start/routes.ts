@@ -20,22 +20,10 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-
 import Env from '@ioc:Adonis/Core/Env'
-import addJobs from 'App/bullmq/queue/queue'
-import createWorker from 'App/bullmq/worker/worker'
-
-Route.get('/init', async () => {
-  createWorker()
-
-  return { hello: 'world', title: 'It Works' }
-})
-
-Route.get('/addJob', async () => {
-  await addJobs()
-
-  return { hello: 'world', title: 'It Works' }
-})
+import execWorkers from 'App/bullmq/worker/worker'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 Route.get('/', async () => {
   return { hello: 'world', title: 'It Works' }
@@ -93,6 +81,38 @@ Route.group(() => {
     //MOBILE APP VERSION AND INSTALLATION
     Route.post('mobile_version', 'ConfigsController.changeAppVersion')
     Route.post('installations', 'AppInstallationsController.index')
+
+    //Workers force
+    Route.get('/force_workers', async ({ auth, request }) => {
+      try {
+        execWorkers()
+        formatedLog({
+          text: 'Forçando workers para execução dos jobs pendentes',
+          type: LogType.success,
+          data: {},
+          auth: auth,
+          request: request,
+        })
+        return {
+          message: 'Forçando workers para execução dos jobs pendentes',
+          code: HttpStatusCode.OK,
+          data: {},
+        }
+      } catch (error) {
+        formatedLog({
+          text: 'Não foi possível forçar os workers',
+          type: LogType.error,
+          data: error,
+          auth: auth,
+          request: request,
+        })
+        return {
+          message: 'Não foi possível forçar os workers',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: {},
+        }
+      }
+    })
   }).middleware('auth:api')
 
   Route.post('install', 'AppInstallationsController.store')
