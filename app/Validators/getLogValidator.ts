@@ -28,6 +28,7 @@ export default class GetLogValidator {
     limit: schema.number(),
     job: schema.string(),
     controllerMethod: schema.string(),
+    userId: schema.string(),
     table: schema.string(),
     tableId: schema.string(),
     date: schema.date.optional(),

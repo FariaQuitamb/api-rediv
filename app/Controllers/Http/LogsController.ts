@@ -46,6 +46,11 @@ export default class LogsController {
         filters.push(value)
       }
 
+      if (logData.userId !== undefined && logData.userId !== ' ') {
+        const value = { field: 'ID_Login', value: logData.userId }
+        filters.push(value)
+      }
+
       if (logData.date !== undefined) {
         const value = { field: 'Data', value: logData.date }
         filters.push(value)
