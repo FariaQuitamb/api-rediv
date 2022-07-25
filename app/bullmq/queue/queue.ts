@@ -13,7 +13,7 @@ interface Activity {
   actionId: string
 }
 
-const queueName = 'queue'
+const queueName = 'activitylog'
 
 const queue = new Queue(queueName, {
   connection: RedisConfig,

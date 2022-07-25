@@ -2,7 +2,7 @@ import { Worker } from 'bullmq'
 import logRegister from 'Contracts/functions/log_register'
 import RedisConfig from 'Config/redis_config'
 
-const queueName = 'queue'
+const queueName = 'activitylog'
 
 const processor = async (job) => {
   const log = job.data
