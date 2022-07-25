@@ -11,7 +11,8 @@ const processor = async (job) => {
   console.log('Worker in action on job ' + JSON.stringify(job))
   try {
     await logRegister({
-      id: log.id,
+      //Changed user id field
+      user_id: log.id,
       system: log.system,
       screen: log.screen,
       table: log.table,
