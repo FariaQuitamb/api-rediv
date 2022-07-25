@@ -34,12 +34,12 @@ export default class PeopleController {
       //Mudança : formatação da data
       //const dateBefore = personData.dataCad
 
-      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).utc(true).toISOString()
+      personData.dataCad = moment(personData.dataCad, moment.ISO_8601, true).toISOString()
 
       if (personData.dataCad === null) {
         checkFuture = false
 
-        const today = moment().utc(true)
+        const today = moment()
         personData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
 
         formatedLog({
@@ -53,7 +53,7 @@ export default class PeopleController {
 
       if (checkFuture) {
         if (isAfterToday(personData.dataCad)) {
-          personData.dataCad = moment().utc(true).toISOString()
+          personData.dataCad = moment().toISOString()
           formatedLog({
             text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: personData,
@@ -71,7 +71,7 @@ export default class PeopleController {
 
       const hasDayError = parseInt(dateParts[2]) < 1 || parseInt(dateParts[2]) > 31
 
-      let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true).utc(true)
+      let receivedDate = moment(new Date(personData.birthday), moment.ISO_8601, true)
 
       if (receivedDate.toISOString() === null) {
         const sentDate = personData.birthday
@@ -81,7 +81,7 @@ export default class PeopleController {
 
         const changedDate = `${dateParts[0]}-${month}-${day}`
 
-        receivedDate = moment(new Date(changedDate), moment.ISO_8601, true).utc(true)
+        receivedDate = moment(new Date(changedDate), moment.ISO_8601, true)
 
         personData.birthday = receivedDate.format(moment.HTML5_FMT.DATE)
 
@@ -638,9 +638,7 @@ export default class PeopleController {
 
         const previousDate = personData.birthday
 
-        personData.birthday = moment(personData.birthday, moment.ISO_8601, true)
-          .utc(true)
-          .toISOString()
+        personData.birthday = moment(personData.birthday, moment.ISO_8601, true).toISOString()
 
         if (personData.birthday === null) {
           const userInfo = formatUserInfo(auth.user)
