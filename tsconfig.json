@@ -32,7 +32,8 @@
       "@adonisjs/lucid",
       "@adonisjs/auth",
       "@adonisjs/bouncer",
-      "@adonisjs/view"
+      "@adonisjs/view",
+      "adonis5-sentry"
     ]
   }
 }
