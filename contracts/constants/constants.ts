@@ -113,6 +113,8 @@ const searchPeopleFields = [
 
 //LOGGED USER QUERY
 
+//Logged users fields
+
 let loggedUserFields = [
   '[id] as access_id',
   '[Id_userPostoVacinacao] as user_id',
@@ -121,7 +123,7 @@ let loggedUserFields = [
   '[BI] as national_id',
   '[Telefone] as phone',
   '[Funcao] as role',
-  ' [SIGIS].[dbo].[vac_postoVacinacao].[Id_postoVacinacao] as vaccination_post_id',
+  '[SIGIS].[dbo].[vac_postoVacinacao].[Id_postoVacinacao] as vaccination_post_id',
   '[Posto] as vaccination_post',
   '[ProvPosto] as province',
   '[MunicPosto] as municipality',
@@ -135,6 +137,8 @@ let loggedUserFields = [
   '[app_version]',
 ]
 
+//Users query
+
 let mainSource = ' [SIGIS].[dbo].[vw_AcsPostoVac_MB] '
 
 let sources = ' inner join [SIGIS].[dbo].[api_tokens] as access'
@@ -142,7 +146,37 @@ sources += ' on ([Id_userPostoVacinacao] = [user_id])'
 sources += ' inner join [SIGIS].[dbo].[vac_postoVacinacao]'
 sources +=
   ' on([SIGIS].[dbo].[vac_postoVacinacao].[Id_postoVacinacao]=[SIGIS].[dbo].[vw_AcsPostoVac_MB].[Id_postoVacinacao])'
-//sources += ' order by [id] desc'
+
+//Query for login and logout from activity logs
+
+const userFields = [
+  '[ID_Login] as userId',
+  '[SIGIS].[dbo].[vac_userPostoVacinacao].[Nome] as personalName',
+  '[SIGIS].[dbo].[vac_userPostoVacinacao].[Utilizador] as  username',
+  '[BI] as nationalID',
+  '[Telefone] as phone',
+  '[SIGIS].[dbo].[vac_tipoFuncPostoVac].[Nome] as role',
+  '[NomeEM] AS postName',
+  '[TipoPosto] as postType',
+  '[NomeResp] as postManagerName',
+  '[BIResp] as postManagerNationalId',
+  '[TelResp] as postManagerPhone',
+  '[SIGIS].[dbo].[Provincia].[Nome]  as province',
+  '[SIGIS].[dbo].[Municipio].[Nome] as municipality',
+  '[Data] as date',
+]
+
+const mainTable = '[SIGIS].[dbo].[LogVAC]'
+let userJoinQuery =
+  ' join   [SIGIS].[dbo].[vac_userPostoVacinacao]  on ([SIGIS].[dbo].[LogVAC].[ID_Tabela] =  [SIGIS].[dbo].[vac_userPostoVacinacao].[Id_userPostoVacinacao]) '
+userJoinQuery +=
+  'join   [SIGIS].[dbo].[vac_postoVacinacao]  on ([SIGIS].[dbo].[vac_userPostoVacinacao].[Id_postoVacinacao] = [SIGIS].[dbo].[vac_postoVacinacao].[Id_postoVacinacao]) '
+userJoinQuery +=
+  ' join  [SIGIS].[dbo].[vac_tipoFuncPostoVac]  on ([SIGIS].[dbo].[vac_tipoFuncPostoVac].[Id_tipoFuncPostoVac] = [SIGIS].[dbo].[vac_userPostoVacinacao].[Id_tipoFuncPostoVac]) '
+userJoinQuery +=
+  'join [SIGIS].[dbo].[Provincia]  on ( [SIGIS].[dbo].[Provincia].[Id_provincia]=[SIGIS].[dbo].[vac_postoVacinacao].[Id_provinciaEM]  )'
+userJoinQuery +=
+  ' join [SIGIS].[dbo].[Municipio] on ([SIGIS].[dbo].[Municipio].[Id_Municipio]=[SIGIS].[dbo].[vac_postoVacinacao].[Id_MunicipioEM] )'
 
 //Ranking query
 
@@ -172,5 +206,8 @@ const constants = {
   rankingQueryNational,
   rankingQueryProvince,
   rankingQueryMunicipality,
+  userFields,
+  userJoinQuery,
+  mainTable,
 }
 export default constants

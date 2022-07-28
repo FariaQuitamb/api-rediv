@@ -22,6 +22,7 @@ import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
 import deviceInfo from 'Contracts/functions/device_info '
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
+import LoggedUserActivityValidator from 'App/Validators/LoggedUserActivityValidator'
 
 export default class AuthController {
   public async login({ auth, response, request }: HttpContextContract) {
@@ -144,6 +145,7 @@ export default class AuthController {
   public async logout({ auth, request, response }: HttpContextContract) {
     try {
       const id = auth.user?.id ?? 0
+      console.log
       await auth.use('api').revoke()
 
       if (auth.use('api').isLoggedOut) {
@@ -324,6 +326,128 @@ export default class AuthController {
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         details: error,
         message: 'Não foi possível listar utilizadores com sessão activa',
+      })
+    }
+  }
+
+  public async aboutIUsage({ auth, request, response }: HttpContextContract) {
+    const searchData = await request.validate(LoggedUserActivityValidator)
+    try {
+      const fields: Array<{ field: string; value: any }> = [
+        { field: '[ID_Login]', value: searchData.userId },
+        { field: '[SIGIS].[dbo].[vac_userPostoVacinacao].[Nome]', value: searchData.personalName },
+        {
+          field: '[SIGIS].[dbo].[vac_userPostoVacinacao].[Utilizador]',
+          value: searchData.username,
+        },
+        { field: '[BI]', value: searchData.nationalID },
+        { field: '[Telefone]', value: searchData.phone },
+        { field: '[SIGIS].[dbo].[vac_tipoFuncPostoVac].[Nome]', value: searchData.role },
+        { field: '[NomeEM] ', value: searchData.postName },
+        { field: '[NomeResp] ', value: searchData.postManagerName },
+        { field: '[BIResp] ', value: searchData.postManagerNationalId },
+        { field: '[TelResp]', value: searchData.postManagerPhone },
+        { field: '[SIGIS].[dbo].[Provincia].[Nome]', value: searchData.province },
+        { field: '[SIGIS].[dbo].[Municipio].[Nome]', value: searchData.municipality },
+        { field: 'Data', value: searchData.date },
+      ]
+
+      let query = generateQuery(fields)
+
+      //Logged in
+      const loggedUsers = await Database.from(constants.mainTable)
+
+        .select(constants.userFields)
+        .where('Sistema', 'MB')
+        .where('Acao', 'Login')
+        .joinRaw(constants.userJoinQuery)
+        .whereRaw(query)
+        .orderBy('Data', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      //Active
+
+      let newQuery = query.replace('[Data]', '[created_at]')
+
+      newQuery = newQuery.replace('[ID_Login]', '[Id_userPostoVacinacao]')
+      newQuery = newQuery.replace(
+        '[SIGIS].[dbo].[vac_userPostoVacinacao].[Utilizador]',
+        '[Utilizador]'
+      )
+
+      newQuery = newQuery.replace('[SIGIS].[dbo].[vac_userPostoVacinacao].[Nome]', '[Nome]')
+
+      newQuery = newQuery.replace('[SIGIS].[dbo].[vac_tipoFuncPostoVac].[Nome]', '[Funcao]')
+
+      newQuery = newQuery.replace('[NomeEM]', '[Posto]')
+      newQuery = newQuery.replace('[SIGIS].[dbo].[Provincia].[Nome]', '[ProvPosto]')
+
+      newQuery = newQuery.replace('[SIGIS].[dbo].[Municipio].[Nome]', '[MunicPosto]')
+
+      //newQuery = newQuery.replace('[SIGIS].[dbo].[Municipio].[Nome]', '[NomeResp]')
+
+      console.log(newQuery)
+
+      const activeUsers = await Database.from(constants.mainSource)
+        .select(constants.loggedUserFields)
+        .joinRaw(constants.sources)
+        .whereRaw(newQuery)
+        .orderBy('id', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      //Logged out
+
+      const loggedOutUsers = await Database.from(constants.mainTable)
+
+        .select(constants.userFields)
+        .where('Sistema', 'MB')
+        .where('Acao', 'Logout')
+        .joinRaw(constants.userJoinQuery)
+        .whereRaw(query)
+        .orderBy('Data', 'desc')
+        .paginate(searchData.page, searchData.limit)
+
+      /*
+  --Quantos fizeram login
+  --Quantos activos  
+  --Quantos  fizeram logout
+        */
+
+      const info = {
+        loggged_in: loggedUsers.total,
+        active: activeUsers.total,
+        logged_out: loggedOutUsers.total,
+
+        userListByAboveCategory: {
+          loggged_in: loggedUsers.toJSON(),
+          active: activeUsers.toJSON(),
+          logged_out: loggedOutUsers.toJSON(),
+        },
+      }
+
+      //console.log(loggedUsers.toJSON())
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Situação dos utilizadores LogQuery :' + query + 'ApiTokensQuery :' + newQuery,
+        code: HttpStatusCode.OK,
+        data: info,
+      })
+    } catch (error) {
+      // console.log(error)
+      //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'AuthController/aboutUsers',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
+        request: request,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        details: error,
+        message: 'Não foi possível obter informação sobre os utilizadores',
       })
     }
   }
