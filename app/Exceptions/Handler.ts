@@ -14,10 +14,16 @@
 */
 
 import Logger from '@ioc:Adonis/Core/Logger'
+import Sentry from '@ioc:Adonis/Addons/Sentry'
 import HttpExceptionHandler from '@ioc:Adonis/Core/HttpExceptionHandler'
 
 export default class ExceptionHandler extends HttpExceptionHandler {
   constructor() {
     super(Logger)
+  }
+
+  public async handle(error, ctx) {
+    Sentry.captureException(error, ctx)
+    return super.handle(error, ctx)
   }
 }
