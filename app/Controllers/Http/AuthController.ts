@@ -72,8 +72,6 @@ export default class AuthController {
       const headers = request.headers()
       const device = deviceInfo(headers)
 
-      console.log(device)
-
       const token = await auth.use('api').generate(user, {
         expiresIn: Env.get('JWT_EXPIRES_IN'),
         name: user.username,
@@ -120,8 +118,6 @@ export default class AuthController {
         data: { user, token },
       })
     } catch (error) {
-      //console.log(error)
-
       //Log de erro
 
       const deviceInfo = formatHeaderInfo(request)
@@ -145,7 +141,7 @@ export default class AuthController {
   public async logout({ auth, request, response }: HttpContextContract) {
     try {
       const id = auth.user?.id ?? 0
-      console.log
+
       await auth.use('api').revoke()
 
       if (auth.use('api').isLoggedOut) {
@@ -175,7 +171,6 @@ export default class AuthController {
         })
       }
     } catch (error) {
-      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -241,7 +236,6 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -311,7 +305,6 @@ export default class AuthController {
         data: loggedUsers,
       })
     } catch (error) {
-      // console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
@@ -384,10 +377,6 @@ export default class AuthController {
 
       newQuery = newQuery.replace('[SIGIS].[dbo].[Municipio].[Nome]', '[MunicPosto]')
 
-      //newQuery = newQuery.replace('[SIGIS].[dbo].[Municipio].[Nome]', '[NomeResp]')
-
-      console.log(newQuery)
-
       const activeUsers = await Database.from(constants.mainSource)
         .select(constants.loggedUserFields)
         .joinRaw(constants.sources)
@@ -425,15 +414,12 @@ export default class AuthController {
         },
       }
 
-      //console.log(loggedUsers.toJSON())
-
       return response.status(HttpStatusCode.OK).send({
         message: 'Situação dos utilizadores LogQuery :' + query + 'ApiTokensQuery :' + newQuery,
         code: HttpStatusCode.OK,
         data: info,
       })
     } catch (error) {
-      // console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const userInfo = formatUserInfo(auth.user)
