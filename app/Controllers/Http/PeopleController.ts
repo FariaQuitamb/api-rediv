@@ -18,12 +18,15 @@ import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
+import sentryReport from 'Contracts/functions/sentry/sentry_reporter'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
 
     try {
+      sentryReport('Registo Individual', auth.user, { key: 'People', value: 'StorePeople' })
+
       let hasDocNumber = true
 
       //Verifica se é necessário validar a data do futuro
