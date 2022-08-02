@@ -18,15 +18,12 @@ import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
-import sentryReport from 'Contracts/functions/sentry/sentry_reporter'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
     const personData = await request.validate(PersonValidator)
 
     try {
-      sentryReport('Registo Individual', auth.user, { key: 'People', value: 'StorePeople' })
-
       let hasDocNumber = true
 
       //Verifica se é necessário validar a data do futuro
@@ -51,6 +48,8 @@ export default class PeopleController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'warning', value: 'Alertas' },
+          context: { controller: 'PeopleController', method: 'store' },
         })
       }
 
@@ -63,6 +62,8 @@ export default class PeopleController {
             auth: auth,
             request: request,
             type: LogType.warning,
+            tag: { key: 'warning', value: 'Alertas' },
+            context: { controller: 'PeopleController', method: 'store' },
           })
         }
       }
@@ -98,6 +99,8 @@ export default class PeopleController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'warning', value: 'Alertas' },
+          context: { controller: 'PeopleController', method: 'store' },
         })
       }
 
@@ -162,6 +165,8 @@ export default class PeopleController {
             auth: auth,
             request: request,
             type: LogType.warning,
+            tag: { key: 'warning', value: 'Alertas' },
+            context: { controller: 'PeopleController', method: 'store' },
           })
 
           return response.status(HttpStatusCode.OK).send({
@@ -260,6 +265,8 @@ export default class PeopleController {
           data: personData,
           auth: auth,
           request: request,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'PeopleController', method: 'store' },
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -301,6 +308,8 @@ export default class PeopleController {
             auth: auth,
             request: request,
             type: LogType.warning,
+            tag: { key: 'warning', value: 'Alertas' },
+            context: { controller: 'PeopleController', method: 'list' },
           })
           return response.status(HttpStatusCode.OK).send({
             message: 'Pesquisa geral requer envio do id do município',
@@ -318,7 +327,7 @@ export default class PeopleController {
           data: searchData,
           auth: auth,
           request: request,
-          type: LogType.warning,
+          type: LogType.success,
         })
 
         return response.status(HttpStatusCode.ACCEPTED).send({
@@ -337,6 +346,8 @@ export default class PeopleController {
             auth: auth,
             request: request,
             type: LogType.warning,
+            tag: { key: 'warning', value: 'Alertas' },
+            context: { controller: 'PeopleController', method: 'list' },
           })
           return response.status(HttpStatusCode.ACCEPTED).send({
             message: 'A consulta por nome aceita retornar apenas 100 registros no máximo',
@@ -469,6 +480,8 @@ export default class PeopleController {
           data: searchData,
           auth: auth,
           request: request,
+          tag: { key: 'timeout', value: 'Erros' },
+          context: { controller: 'PeopleController', method: 'list' },
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -719,6 +732,8 @@ export default class PeopleController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'PeopleController', method: 'checkPerson' },
         })
 
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -770,6 +785,8 @@ export default class PeopleController {
         auth: auth,
         request: request,
         type: LogType.error,
+        tag: { key: 'timeout', value: 'Timeout' },
+        context: { controller: 'PeopleController', method: 'rankUser' },
       })
 
       const errorInfo = formatError(error)
