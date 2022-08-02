@@ -177,6 +177,8 @@ export default class LogsController {
         auth: auth,
         request: request,
         type: LogType.error,
+        tag: { key: 'exceptions', value: 'Erros' },
+        context: { controller: 'LogsController', method: 'getErrorLogs' },
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({

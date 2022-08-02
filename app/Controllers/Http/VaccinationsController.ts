@@ -118,6 +118,8 @@ export default class VaccinationsController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'business', value: 'Configuração' },
+          context: { controller: 'VaccinationsController', method: 'store' },
         })
 
         return response.status(HttpStatusCode.OK).send({
@@ -373,7 +375,6 @@ export default class VaccinationsController {
 
             //Verifica se está recebendo a vacina correcta
             if (vaccinationData.vaccineId === doseInfo.Id_Vacina) {
-              //
               //
               //Recebendo vacina correcta antes do tempo estipulado
               //
@@ -671,6 +672,8 @@ export default class VaccinationsController {
           auth: auth,
           request: request,
           type: LogType.error,
+          tag: { key: 'business', value: 'Configuração' },
+          context: { controller: 'VaccinationsController', method: 'booster' },
         })
         return response.status(HttpStatusCode.OK).send({
           message: 'A vacina selecionada não existe ou está fora de uso',

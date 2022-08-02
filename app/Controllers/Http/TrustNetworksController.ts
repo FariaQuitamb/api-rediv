@@ -44,6 +44,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController ', method: 'today' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -94,6 +96,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController ', method: 'inGeneral' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -146,6 +150,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController ', method: 'withOneOrMoreRecord' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -206,6 +212,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController ', method: 'withOneOrMoreRecord' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -254,6 +262,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController', method: 'vaccinationPostLocations' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -302,6 +312,8 @@ export default class TrustNetworksController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController', method: 'vaccinationPlaces' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',

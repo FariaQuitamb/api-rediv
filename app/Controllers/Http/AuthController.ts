@@ -60,6 +60,8 @@ export default class AuthController {
           auth: auth,
           request: request,
           type: LogType.error,
+          tag: { key: 'exceptions', value: 'Erros' },
+          context: { controller: 'AuthController', method: 'login' },
         })
 
         return response.status(HttpStatusCode.OK).send({

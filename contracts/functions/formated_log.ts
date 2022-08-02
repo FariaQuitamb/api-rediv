@@ -1,6 +1,7 @@
 import moment from 'moment'
 import formatHeaderInfo from './format_header_info'
 import formatUserInfo from './format_user_info'
+import sentryReport from './sentry/sentry_reporter'
 
 export enum LogType {
   success = 'SUCCESS',
@@ -14,12 +15,24 @@ type LogFields = {
   auth: any
   data: any
   request: any
+  tag?: { key: string; value: string }
+  context?: { controller: string; method: string }
 }
 
-const formatedLog = ({ text, type, auth, data, request }: LogFields) => {
+const formatedLog = ({ text, type, auth, data, request, tag, context }: LogFields) => {
   const today = moment()
 
   const time = today.locale('pt').format('LLLL:ss').toUpperCase()
+
+  if (
+    type !== LogType.success &&
+    tag !== undefined &&
+    context !== undefined &&
+    tag !== null &&
+    context !== null
+  ) {
+    sentryReport(text, auth.user, context, tag)
+  }
 
   const dataJson = JSON.stringify(data)
 
