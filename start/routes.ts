@@ -23,17 +23,8 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 import Env from '@ioc:Adonis/Core/Env'
 
-import momentSimple from 'moment'
-import momentTimezone from 'moment-timezone'
-
 Route.get('/', async () => {
-  const nowDefault = new Date().toISOString()
-  const now = momentSimple()
-  const date = momentSimple('2022-07-21 11:27:52.787').toLocaleString()
-  const tzNow = momentTimezone().tz('Africa/Luanda').toDate().toISOString()
-  const tz = momentTimezone().tz('Africa/Luanda').toLocaleString()
-
-  return { hello: 'world', title: 'It Works', date, now, nowDefault, tzNow, tz }
+  return { hello: 'world', title: 'It Works' }
 })
 
 //MAIN WRAPPER
@@ -51,6 +42,7 @@ Route.group(() => {
     Route.get('auth/logout', 'AuthController.logout')
     Route.post('auth/logged', 'AuthController.loggedUsers')
     Route.post('auth/logged_users', 'AuthController.loggedUsersView')
+    Route.post('auth/about_usage', 'AuthController.aboutIUsage')
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
     //Person

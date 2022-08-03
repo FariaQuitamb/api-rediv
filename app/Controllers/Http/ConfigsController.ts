@@ -101,6 +101,8 @@ export default class ConfigsController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'warning', value: 'Alertas' },
+          context: { controller: 'ConfigsController', method: 'getMobileVersion' },
         })
         return response.status(HttpStatusCode.OK).send({
           message:

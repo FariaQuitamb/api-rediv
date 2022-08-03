@@ -51,6 +51,8 @@ export default class AppInstallationsController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'warning', value: 'Alertas' },
+          context: { controller: 'AppInstallationsController', method: 'store' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -65,6 +67,8 @@ export default class AppInstallationsController {
         auth: auth,
         request: request,
         type: LogType.error,
+        tag: { key: 'exceptions', value: 'Erros' },
+        context: { controller: 'AppInstallationsController', method: 'store' },
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
@@ -119,6 +123,8 @@ export default class AppInstallationsController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'AppInstallationsController', method: 'index' },
         })
         return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
           message: 'Não foi possível completar a operação dentro do tempo esperado',
@@ -133,6 +139,8 @@ export default class AppInstallationsController {
         auth: auth,
         request: request,
         type: LogType.error,
+        tag: { key: 'exceptions', value: 'Erros' },
+        context: { controller: 'AppInstallationsController', method: 'index' },
       })
 
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({

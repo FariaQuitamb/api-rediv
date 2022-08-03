@@ -118,6 +118,8 @@ export default class VaccinationsController {
           auth: auth,
           request: request,
           type: LogType.warning,
+          tag: { key: 'business', value: 'Configuração' },
+          context: { controller: 'VaccinationsController', method: 'store' },
         })
 
         return response.status(HttpStatusCode.OK).send({
@@ -215,10 +217,16 @@ export default class VaccinationsController {
 
       const doseInfo = takenDoses[0] as DoseInfo
 
+      console.log(doseInfo)
+
+      console.log(doseInfo.DataCad !== doseInfo.dtHoje)
+      console.log(`${doseInfo.DataCad}  =  ${doseInfo.dtHoje}`)
+
       if (doseInfo.PrxDose !== 0) {
         //
         //Verifica se já realizou uma vacina no corrente dia
         //
+
         if (doseInfo.DataCad !== doseInfo.dtHoje) {
           //Verifica se está inserindo a vacina no intervalo de vacinação correcto
 
@@ -368,7 +376,6 @@ export default class VaccinationsController {
             //Verifica se está recebendo a vacina correcta
             if (vaccinationData.vaccineId === doseInfo.Id_Vacina) {
               //
-              //
               //Recebendo vacina correcta antes do tempo estipulado
               //
               //
@@ -484,28 +491,29 @@ export default class VaccinationsController {
           }
         } else {
           formatedLog({
-            text: 'Já recebeu Vacina',
+            text: 'O utente já recebeu vacina no dia de hoje',
             data: vaccinationData,
             auth: auth,
             request: request,
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Já recebeu Vacina',
+            message: 'O utente já recebeu vacina no dia de hoje',
             code: HttpStatusCode.OK,
             data: {},
           })
         }
       } else {
         formatedLog({
-          text: 'O utente não tem próxima dose a tomar',
+          text: 'Ciclo de vacinação do utente está completo , pode apenas apanhar vacina de reforço',
           data: vaccinationData,
           auth: auth,
           request: request,
           type: LogType.warning,
         })
         return response.status(HttpStatusCode.OK).send({
-          message: 'O utente não tem próxima dose a tomar',
+          message:
+            'Ciclo de vacinação do utente está completo , pode apenas apanhar vacina de reforço',
           code: HttpStatusCode.OK,
           data: {},
         })
@@ -664,6 +672,8 @@ export default class VaccinationsController {
           auth: auth,
           request: request,
           type: LogType.error,
+          tag: { key: 'business', value: 'Configuração' },
+          context: { controller: 'VaccinationsController', method: 'booster' },
         })
         return response.status(HttpStatusCode.OK).send({
           message: 'A vacina selecionada não existe ou está fora de uso',
@@ -837,7 +847,7 @@ export default class VaccinationsController {
             type: LogType.warning,
           })
           return response.status(HttpStatusCode.OK).send({
-            message: 'Já recebeu vacina',
+            message: 'O utente já recebeu vacina no dia de hoje',
             code: HttpStatusCode.OK,
             data: {},
           })
