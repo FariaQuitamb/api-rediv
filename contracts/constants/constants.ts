@@ -189,6 +189,15 @@ const rankingQueryProvince =
 const rankingQueryMunicipality =
   ' SELECT TOP(?)  tbl.[Id_userPostoVacinacao],tbl.[NOME] as name, tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio], [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] where [Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?   ORDER BY total DESC'
 
+let provinceRank =
+  ' SELECT tbl.[Id_provincia] as province_id, tbl.[Nome] as province, tbl.total FROM ( SELECT  [Id_Provincia],[Nome],[Sigla],[total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] vac where vac.Id_Provincia  = prov.Id_Provincia )'
+provinceRank += ' FROM [SIGIS].[dbo].[Provincia] prov) AS [tbl] ORDER BY total DESC'
+
+let municipalityRank =
+  ' SELECT    [prov].[Nome] as province,[tbl].[municipality_id], [tbl].[municipality], [tbl].total FROM (  SELECT  [mun].[Id_Provincia] as province_id,[mun].[Id_municipio] as municipality_id , [mun].[Nome] as municipality, [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao]  vac  Join vac_userPostoVacinacao up on   vac.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao]   where   up.[Id_Municipio] =  mun.Id_Municipio )'
+municipalityRank +=
+  ' FROM [SIGIS].[dbo].[Municipio] mun ) AS [tbl]  join [Provincia] prov ON (tbl.province_id = prov.Id_Provincia)  ORDER BY total DESC'
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -209,5 +218,8 @@ const constants = {
   userFields,
   userJoinQuery,
   mainTable,
+  //Locations Rank
+  provinceRank,
+  municipalityRank,
 }
 export default constants
