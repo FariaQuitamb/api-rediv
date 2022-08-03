@@ -1,15 +1,15 @@
 const getUserRank = (arr: any, userId: number) => {
-  let nationalPosition = 0
+  let position = 0
 
   arr.some(function (userRank, index) {
     if (userRank.Id_userPostoVacinacao === userId) {
-      nationalPosition = index + 1
+      position = index + 1
 
       return true
     }
   })
 
-  return nationalPosition
+  return position
 }
 
 export default getUserRank
