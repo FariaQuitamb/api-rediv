@@ -214,6 +214,42 @@ let treatmentMunicipalityRank =
 treatmentMunicipalityRank +=
   'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?    ORDER BY total DESC'
 
+//User vaccination registers fields and source query
+
+const userWorkTable = '[SIGIS].[dbo].[vac_regVacinacaoLog]'
+const userWorkFields = [
+  '[Id_regVacinacaoLog] as logId',
+  'up.[Id_userPostoVacinacao] as userId',
+  'up.[Nome] as personalName',
+  '[BI] as nationalId',
+  '[Utilizador] as username',
+  '[Telefone] as userPhone',
+  'fn.Nome as  userRole',
+  '[TipoPosto] as postType',
+  '[NomeEM] as postName',
+  '[NomeResp] as  postManagerName',
+  '[BIResp] as postManagerNationalId',
+  '[TelResp] as postManagerPhone',
+  'p.Nome as province',
+  'mun.Nome as municipality',
+  '[Mac_address] as  deviceId',
+  '[SIGIS].[dbo].[vac_regVacinacaoLog].[Latitude] as latitude',
+  '[SIGIS].[dbo].[vac_regVacinacaoLog].[Longitude] as longitude',
+  '[Tipo] as vaccineDose',
+  'vac.[DataCad] as vaccinationDate',
+]
+
+let userWorkSources = '  join [SIGIS].[dbo].[vac_regVacinacao]  vac'
+userWorkSources +=
+  ' on ([SIGIS].[dbo].[vac_regVacinacaoLog].Id_regVacinacao = vac.Id_regVacinacao) join  [SIGIS].[dbo].[vac_userPostoVacinacao] up'
+userWorkSources +=
+  ' on(vac.Id_userPostoVacinacao = up.Id_postoVacinacao)  join  [SIGIS].[dbo].[vac_postoVacinacao] pv'
+userWorkSources +=
+  ' on(pv.Id_postoVacinacao = vac.Id_postoVacinacao) join  [SIGIS].[dbo].[vac_tipoFuncPostoVac] fn'
+userWorkSources +=
+  ' on (fn.Id_tipoFuncPostoVac = up.Id_tipoFuncPostoVac) join Provincia p on (p.Id_Provincia = vac.Id_Provincia) join Municipio mun'
+userWorkSources += ' on (mun.Id_Municipio = pv.Id_MunicipioEM)'
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -241,5 +277,10 @@ const constants = {
   treatmentNationalRank,
   treatmentProvinceRank,
   treatmentMunicipalityRank,
+  //User Work,
+
+  userWorkTable,
+  userWorkFields,
+  userWorkSources,
 }
 export default constants

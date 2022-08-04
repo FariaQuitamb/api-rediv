@@ -38,11 +38,14 @@ Route.group(() => {
   Route.post('auth/login', 'AuthController.login')
 
   Route.group(() => {
-    //Auth
+    //Auth + Users
     Route.get('auth/logout', 'AuthController.logout')
     Route.post('auth/logged', 'AuthController.loggedUsers')
     Route.post('auth/logged_users', 'AuthController.loggedUsersView')
     Route.post('auth/about_usage', 'AuthController.aboutIUsage')
+
+    Route.post('user_work', 'UsersController.userWork')
+
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
     //Person
@@ -55,7 +58,7 @@ Route.group(() => {
 
     //RANKING - for treatment new aproach
     Route.post('ranking_treatment', 'VaccinationRanksController.rankUserTreatment')
-
+    //
     Route.get('locations_rank', 'VaccinationRanksController.locationsRank')
 
     //Vaccination
