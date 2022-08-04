@@ -50,8 +50,12 @@ Route.group(() => {
     Route.post('people/search', 'PeopleController.list')
     Route.post('people/check', 'PeopleController.checkPerson')
 
-    //RANKING
-    Route.post('ranking', 'PeopleController.rankUser')
+    //RANKING - for covid old aproach
+    Route.post('ranking', 'VaccinationRanksController.rankUser')
+
+    //RANKING - for treatment new aproach
+    Route.post('ranking_treatment', 'VaccinationRanksController.rankUserTreatment')
+
     Route.get('locations_rank', 'VaccinationRanksController.locationsRank')
 
     //Vaccination

@@ -198,6 +198,22 @@ let municipalityRank =
 municipalityRank +=
   ' FROM [SIGIS].[dbo].[Municipio] mun ) AS [tbl]  join [Provincia] prov ON (tbl.province_id = prov.Id_Provincia)  ORDER BY total DESC'
 
+//Treatment Ranks
+
+let treatmentNationalRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentNationalRank += 'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]   ORDER BY total DESC'
+
+let treatmentProvinceRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentProvinceRank +=
+  'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_provincia] = ?   ORDER BY total DESC'
+
+let treatmentMunicipalityRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentMunicipalityRank +=
+  'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?    ORDER BY total DESC'
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -221,5 +237,9 @@ const constants = {
   //Locations Rank
   provinceRank,
   municipalityRank,
+  //Ranking  for treatment
+  treatmentNationalRank,
+  treatmentProvinceRank,
+  treatmentMunicipalityRank,
 }
 export default constants
