@@ -45,6 +45,7 @@ Route.group(() => {
     Route.post('auth/about_usage', 'AuthController.aboutIUsage')
 
     Route.post('user_work', 'UsersController.userWork')
+    Route.post('user_treatments', 'UsersController.userWorkTreatment')
 
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
