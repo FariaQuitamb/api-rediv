@@ -106,12 +106,4 @@ export default class ApplyTreatmentsController {
       })
     }
   }
-
-  public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }

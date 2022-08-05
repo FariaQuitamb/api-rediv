@@ -19,10 +19,16 @@ const generateQuery = (fields: Array<{ field: string; value: any }>) => {
     if (
       filters[0].field === 'Data' ||
       filters[0].field === 'created_at' ||
-      filters[0].field === 'expires_at'
+      filters[0].field === 'expires_at' ||
+      filters[0].field === '[vac].[DataCad]'
     ) {
       //Converte as datas
-      query = ` CONVERT(date,[${filters[0].field}]) =  CONVERT(date,'${filters[0].value}')`
+
+      if (filters[0].field === '[vac].[DataCad]') {
+        query = ` CONVERT(date,[vac].[DataCad]) =  CONVERT(date,'${filters[0].value}')`
+      } else {
+        query = ` CONVERT(date,[${filters[0].field}]) =  CONVERT(date,'${filters[0].value}')`
+      }
     }
   } else {
     let filterQuery: string
@@ -32,9 +38,14 @@ const generateQuery = (fields: Array<{ field: string; value: any }>) => {
       } else if (
         elem.field === 'Data' ||
         elem.field === 'created_at' ||
-        elem.field === 'expires_at'
+        elem.field === 'expires_at' ||
+        elem.field === '[vac].[DataCad]'
       ) {
-        filterQuery = ` CONVERT(date,[${elem.field}]) =  CONVERT(date,'${elem.value}')`
+        if (elem.field === '[vac].[DataCad]') {
+          query = ` CONVERT(date,[vac].[DataCad]) =  CONVERT(date,'${elem.value}')`
+        } else {
+          filterQuery = ` CONVERT(date,[${elem.field}]) =  CONVERT(date,'${elem.value}')`
+        }
       } else {
         filterQuery = ` ${elem.field} = '${elem.value}'`
       }
