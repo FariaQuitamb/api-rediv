@@ -88,7 +88,7 @@ export default class PreloadsController {
       })
 
       formatedLog({
-        text: 'Carregamento inicial  de dados para o dispositivo  ',
+        text: 'Carregamento inicial  de dados para o dispositivo',
         data: {},
         auth: auth,
         request: request,
@@ -115,6 +115,66 @@ export default class PreloadsController {
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         message: 'Ocorreu um erro ao  obter os dados de pré-carregamento',
+        data: [],
+      })
+    }
+  }
+
+  public async symptomsList({ auth, request, response }: HttpContextContract) {
+    try {
+      const symptoms = await Severity.query().preload('symptoms')
+
+      if (!symptoms) {
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
+          message: 'Não foi possível obter a lista de sintomas',
+          data: [],
+        })
+      }
+
+      //Log de actividade
+
+      const version = Env.get('API_VERSION')
+
+      await logRegister({
+        id: auth.user?.id ?? 0,
+        system: 'MB',
+        screen: 'PreloadController/index',
+        table: 'Provincia/Municipio/Tipo documentos/Vacinas',
+        job: 'Consulta',
+        tableId: 0,
+        action: 'Pré-carregamento',
+        actionId: `V:${version}`,
+      })
+
+      formatedLog({
+        text: 'Lista de sintomas carregada',
+        data: {},
+        auth: auth,
+        request: request,
+        type: LogType.success,
+      })
+
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: 'Lista de sintomas',
+        code: HttpStatusCode.ACCEPTED,
+        data: { symptoms },
+      })
+    } catch (error) {
+      //console.log(error)
+      //Log de erro
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'PreloadController/symptomsList',
+        error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo}`,
+        request: request,
+      })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        message: 'Ocorreu um erro ao  obter  a lista de sintomas',
         data: [],
       })
     }
