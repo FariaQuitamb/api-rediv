@@ -1,7 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 
-import LoggedUserActivityValidator from 'App/Validators/LoggedUserActivityValidator'
+import UserWorkTreatmentValidator from 'App/Validators/UserWorkTreatmentValidator'
 import UserWorkValidator from 'App/Validators/UserWorkValidator'
 import constants from 'Contracts/constants/constants'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
@@ -80,7 +80,7 @@ export default class UsersController {
   }
 
   public async userWorkTreatment({ auth, request, response }: HttpContextContract) {
-    const searchData = await request.validate(UserWorkValidator)
+    const searchData = await request.validate(UserWorkTreatmentValidator)
     try {
       const fields: Array<{ field: string; value: any }> = [
         {
@@ -96,20 +96,17 @@ export default class UsersController {
         { field: '[Telefone]', value: searchData.phone },
         { field: '[fn].[Nome]', value: searchData.role },
         { field: '[TipoPosto] ', value: searchData.postType },
-
-        { field: '[NomeEM] ', value: searchData.postName },
+        { field: '[NomeEM] ', value: searchData.mobilityPostname },
+        { field: '[NomeEA] ', value: searchData.advancedPostname },
+        { field: '[NomePVAR] ', value: searchData.PVARPostname },
         { field: '[NomeResp] ', value: searchData.postManagerName },
         { field: '[BIResp] ', value: searchData.postManagerNationalId },
         { field: '[TelResp]', value: searchData.postManagerPhone },
         { field: '[p].[Nome]', value: searchData.province },
         { field: '[mun].[Nome]', value: searchData.municipality },
-        { field: '[Mac_address]', value: searchData.deviceId },
-
         { field: '[SIGIS].[dbo].[vac_regVacinacaoLog].[Latitude] ', value: searchData.latitude },
         { field: '[SIGIS].[dbo].[vac_regVacinacaoLog].[Longitude]', value: searchData.longitude },
-
-        { field: '[Tipo]', value: searchData.vaccineDose },
-        { field: '[vac].[DataCad]', value: searchData.vaccinationDate },
+        { field: '[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', value: searchData.vaccinationDate },
       ]
 
       let query = generateQuery(fields)
@@ -118,8 +115,8 @@ export default class UsersController {
       const userWork = await Database.from(constants.userWorkTreatmentTable)
         .select(constants.userWorkTreatmentFields)
         .joinRaw(constants.userWorkTreatmentSources)
-        //.whereRaw(query)
-        //.orderBy('[vac].[DataCad]', 'desc')
+        .whereRaw(query)
+        .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
         .paginate(searchData.page, searchData.limit)
 
       return response.status(HttpStatusCode.OK).send({
@@ -134,7 +131,7 @@ export default class UsersController {
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
-        page: 'UsersController/userWork',
+        page: 'UsersController/userWorkTreatment',
         error: `User: ${userInfo} Device: ${deviceInfo} ${errorInfo} `,
         request: request,
       })
