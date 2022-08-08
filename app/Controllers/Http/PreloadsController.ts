@@ -11,6 +11,7 @@ import logError from 'Contracts/functions/log_error'
 import logRegister from 'Contracts/functions/log_register'
 import Env from '@ioc:Adonis/Core/Env'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
+import Severity from 'App/Models/Severity'
 
 export default class PreloadsController {
   public async index({ auth, request, response }: HttpContextContract) {
@@ -22,6 +23,8 @@ export default class PreloadsController {
       const nationalities = await Nationality.query().orderBy('Nome')
 
       const docTypes = await DocType.query().orderBy('Id_tipoDocumento')
+
+      const symptoms = await Severity.query().preload('symptoms')
 
       const vaccines = await Vaccine.query()
         .preload('lots', (query) => query.where('Visualizar', 'S').orderBy('NumLote'))
@@ -49,6 +52,14 @@ export default class PreloadsController {
         return response.status(HttpStatusCode.OK).send({
           code: HttpStatusCode.OK,
           message: 'Não foi possível obter os tipos de documento',
+          data: [],
+        })
+      }
+
+      if (!symptoms) {
+        return response.status(HttpStatusCode.OK).send({
+          code: HttpStatusCode.OK,
+          message: 'Não foi possível obter a lista de sintomas',
           data: [],
         })
       }
@@ -87,7 +98,7 @@ export default class PreloadsController {
       return response.status(HttpStatusCode.ACCEPTED).send({
         message: 'Dados de pré-carregamento',
         code: HttpStatusCode.ACCEPTED,
-        data: { provinces, nationalities, docTypes, vaccines },
+        data: { provinces, nationalities, docTypes, vaccines, symptoms },
       })
     } catch (error) {
       //console.log(error)
