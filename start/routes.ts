@@ -49,6 +49,8 @@ Route.group(() => {
 
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
+    Route.get('symptoms', 'PreloadsController.symptomsList')
+
     //Person
     Route.post('people', 'PeopleController.store')
     Route.post('people/search', 'PeopleController.list')
