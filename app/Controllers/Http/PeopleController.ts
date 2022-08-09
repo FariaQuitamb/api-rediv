@@ -18,6 +18,7 @@ import getUserRank from 'Contracts/functions/get_user_rank'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
+import constantQueries from 'Contracts/constants/constant_queries'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -284,7 +285,7 @@ export default class PeopleController {
     }
   }
 
-  public async list({ auth, response, request }: HttpContextContract) {
+  public async search({ auth, response, request }: HttpContextContract) {
     const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
     const searchData = await request.validate(SearchValidator)
 
@@ -800,6 +801,120 @@ export default class PeopleController {
         error: `User: ${userInfo} Device: ${deviceInfo}  ${errorInfo}`,
         request: request,
       })
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async searchVaccines({ auth, response, request }: HttpContextContract) {
+    const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
+    const searchData = await request.validate(SearchValidator)
+
+    //Expressões regulares
+
+    const regexNumberOnly = /^\d+$/
+
+    const hasLetter = /[a-zA-Z]/
+    const hasNumber = /[0-9]/
+
+    try {
+      const search = searchData.search
+
+      //Pesquisa pelo CodigoNum
+      if (search.match(regexNumberOnly) && search.length === 10) {
+        const data = await Database.from(constantQueries.vaccinationMainTable)
+          .select(constantQueries.vaccinationFields)
+          .joinRaw(constantQueries.vaccinationSources)
+          .where('CodigoNum', search)
+          .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+        formatedLog({
+          text: 'Pesquisa  por codigoNum  realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por codigoNum',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
+      if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
+        const data = await Database.from(constantQueries.vaccinationMainTable)
+          .select(constantQueries.vaccinationFields)
+          .joinRaw(constantQueries.vaccinationSources)
+          .where('docNum', search)
+          .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+        formatedLog({
+          text: 'Pesquisa  por docNum realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por docNum',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
+      //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
+      formatedLog({
+        text: 'Nenhum resultado encontrado',
+        data: searchData,
+        auth: auth,
+        request: request,
+        type: LogType.warning,
+      })
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Nenhum resultado encontrado',
+        code: HttpStatusCode.OK,
+        data: {},
+      })
+    } catch (error) {
+      //console.log(error)
+      //Log de erro
+      const searchInfo = JSON.stringify(searchData)
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'v2:PeopleController/list',
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
+          type: LogType.warning,
+          data: searchData,
+          auth: auth,
+          request: request,
+          tag: { key: 'timeout', value: 'Erros' },
+          context: { controller: 'PeopleController', method: 'list' },
+        })
+
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
       return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
         message: 'Ocorreu um erro no servidor',
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
