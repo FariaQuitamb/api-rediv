@@ -38,20 +38,31 @@ Route.group(() => {
   Route.post('auth/login', 'AuthController.login')
 
   Route.group(() => {
-    //Auth
+    //Auth + Users
     Route.get('auth/logout', 'AuthController.logout')
     Route.post('auth/logged', 'AuthController.loggedUsers')
     Route.post('auth/logged_users', 'AuthController.loggedUsersView')
     Route.post('auth/about_usage', 'AuthController.aboutIUsage')
+
+    Route.post('user_work', 'UsersController.userWork')
+    Route.post('user_treatments', 'UsersController.userWorkTreatment')
+
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
+    Route.get('symptoms', 'PreloadsController.symptomsList')
+
     //Person
     Route.post('people', 'PeopleController.store')
     Route.post('people/search', 'PeopleController.list')
     Route.post('people/check', 'PeopleController.checkPerson')
 
-    //RANKING
-    Route.post('ranking', 'PeopleController.rankUser')
+    //RANKING - for covid old aproach
+    Route.post('ranking', 'VaccinationRanksController.rankUser')
+
+    //RANKING - for treatment new aproach
+    Route.post('ranking_treatment', 'VaccinationRanksController.rankUserTreatment')
+    //
+    Route.get('locations_rank', 'VaccinationRanksController.locationsRank')
 
     //Vaccination
     Route.post('vaccination/', 'VaccinationsController.store')
