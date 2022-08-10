@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 interface Covid {
   personId: number
   name: string
@@ -101,7 +103,9 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
     vaccines.push(auxVaccine)
   })
 
-  console.log({ person, vaccines })
+  vaccines.sort((a, b) => (moment(a.createdAt).isBefore(moment(b.createdAt)) ? 1 : -1))
+
+  return { person, vaccines }
 }
 
 export default personVaccines

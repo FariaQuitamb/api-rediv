@@ -825,6 +825,7 @@ export default class PeopleController {
 
       //Pesquisa pelo CodigoNum
       if (search.match(regexNumberOnly) && search.length === 10) {
+        console.log('CODIGO NUM')
         const covidVaccines = await Database.from(constantQueries.vaccinationMainTable)
           .select(constantQueries.vaccinationFields)
           .joinRaw(constantQueries.vaccinationSources)
@@ -837,7 +838,22 @@ export default class PeopleController {
           .where('CodigoNum', search)
           .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
 
-        personVaccines(covidVaccines, treatments)
+        if (!(covidVaccines.length > 0 || treatments.length > 0)) {
+          formatedLog({
+            text: 'O utente não existe na lista de vacinados , pesquisa por código númerico',
+            data: searchData,
+            auth: auth,
+            request: request,
+            type: LogType.success,
+          })
+          return response.status(HttpStatusCode.ACCEPTED).send({
+            message: 'O utente não existe na lista de vacinados',
+            code: HttpStatusCode.NOT_FOUND,
+            data: [],
+          })
+        }
+
+        const data = personVaccines(covidVaccines, treatments)
 
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
@@ -850,44 +866,67 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por codigoNum',
           code: HttpStatusCode.ACCEPTED,
-          data: { covidVaccines, treatments },
-        })
-      }
-
-      //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
-      if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
-        const data = await Database.from(constantQueries.vaccinationMainTable)
-          .select(constantQueries.vaccinationFields)
-          .joinRaw(constantQueries.vaccinationSources)
-          .where('docNum', search)
-          .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
-
-        formatedLog({
-          text: 'Pesquisa  por docNum realizada com sucesso',
-          data: searchData,
-          auth: auth,
-          request: request,
-          type: LogType.success,
-        })
-        return response.status(HttpStatusCode.ACCEPTED).send({
-          message: 'Resultados da consulta por docNum',
-          code: HttpStatusCode.ACCEPTED,
           data,
         })
       }
 
       //Pesquisa pelo docNum - Caso seja apenas número ou seja número e letra simultaneamente
+      if (search.match(regexNumberOnly) || (search.match(hasLetter) && search.match(hasNumber))) {
+        const covidVaccines = await Database.from(constantQueries.vaccinationMainTable)
+          .select(constantQueries.vaccinationFields)
+          .joinRaw(constantQueries.vaccinationSources)
+          .where('docNum', search)
+          .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+        const treatments = await Database.from(constantQueries.treatmentMainTable)
+          .select(constantQueries.treatmentsFields)
+          .joinRaw(constantQueries.treatmentSources)
+          .where('docNum', search)
+          .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
+
+        if (!(covidVaccines.length > 0 || treatments.length > 0)) {
+          formatedLog({
+            text: 'O utente não existe na lista de vacinados , pesquisa por número do documento',
+            data: searchData,
+            auth: auth,
+            request: request,
+            type: LogType.success,
+          })
+          return response.status(HttpStatusCode.ACCEPTED).send({
+            message: 'O utente não existe na lista de vacinados',
+            code: HttpStatusCode.NOT_FOUND,
+            data: [],
+          })
+        }
+
+        const data = personVaccines(covidVaccines, treatments)
+
+        formatedLog({
+          text: 'Pesquisa  por codigoNum  realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por número do documento',
+          code: HttpStatusCode.ACCEPTED,
+          data,
+        })
+      }
+
       formatedLog({
-        text: 'Nenhum resultado encontrado',
+        text: 'O utente não existe na lista de vacinados , pesquisa fora dos campos padrão',
         data: searchData,
         auth: auth,
         request: request,
-        type: LogType.warning,
+        type: LogType.error,
       })
-      return response.status(HttpStatusCode.OK).send({
-        message: 'Nenhum resultado encontrado',
-        code: HttpStatusCode.OK,
-        data: {},
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: 'O utente não existe na lista de vacinados',
+        code: HttpStatusCode.NOT_FOUND,
+        data: [],
       })
     } catch (error) {
       //console.log(error)
