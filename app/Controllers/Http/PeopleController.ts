@@ -30,6 +30,7 @@ export default class PeopleController {
 
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
+      let dateHasChanged = false
 
       const previewsDate = personData.dataCad
 
@@ -40,6 +41,7 @@ export default class PeopleController {
 
       if (personData.dataCad === null) {
         checkFuture = false
+        dateHasChanged = true
 
         const today = moment()
         personData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
@@ -57,6 +59,7 @@ export default class PeopleController {
 
       if (checkFuture) {
         if (isAfterToday(personData.dataCad)) {
+          dateHasChanged = true
           personData.dataCad = moment().toISOString()
           formatedLog({
             text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
@@ -107,6 +110,10 @@ export default class PeopleController {
       }
 
       //END-CORRECÇÃO PARA DATA ERRADA
+
+      //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
+
+      personData.dataCad = dateHasChanged ? personData.dataCad : previewsDate
 
       //Verifica se o utente tem número de documento
       if (personData.docNumber === undefined || personData.docNumber === ' ') {
@@ -937,7 +944,7 @@ export default class PeopleController {
       const errorInfo = formatError(error)
       await logError({
         type: 'MB',
-        page: 'v2:PeopleController/list',
+        page: 'v2:PeopleController/searchVaccines',
         error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
         request: request,
       })
