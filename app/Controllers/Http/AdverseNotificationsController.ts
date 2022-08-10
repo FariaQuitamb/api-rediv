@@ -54,7 +54,7 @@ export default class AdverseNotificationsController {
           dateHasChanged = true
           notificationData.createdAt = moment().toISOString()
           formatedLog({
-            text: `A data do registo de notificação de caso adverso foi modificada para data de hoje por ser maior que a data actual data inserida: ${previewsDate}  Data Final :  ${notificationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            text: ` A data do registo de notificação de caso adverso foi modificada para data de hoje por ser maior que a data actual data inserida: ${previewsDate}  Data Final :  ${notificationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: notificationData,
             auth: auth,
             request: request,
