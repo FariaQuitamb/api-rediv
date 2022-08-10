@@ -19,6 +19,7 @@ import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
+import personVaccines from 'Contracts/functions/person_vaccines'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -810,7 +811,6 @@ export default class PeopleController {
   }
 
   public async searchVaccines({ auth, response, request }: HttpContextContract) {
-    const searchView = '[SIGIS].[dbo].[vw_ListaVacinados_MB]'
     const searchData = await request.validate(SearchValidator)
 
     //Expressões regulares
@@ -825,11 +825,19 @@ export default class PeopleController {
 
       //Pesquisa pelo CodigoNum
       if (search.match(regexNumberOnly) && search.length === 10) {
-        const data = await Database.from(constantQueries.vaccinationMainTable)
+        const covidVaccines = await Database.from(constantQueries.vaccinationMainTable)
           .select(constantQueries.vaccinationFields)
           .joinRaw(constantQueries.vaccinationSources)
           .where('CodigoNum', search)
           .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+        const treatments = await Database.from(constantQueries.treatmentMainTable)
+          .select(constantQueries.treatmentsFields)
+          .joinRaw(constantQueries.treatmentSources)
+          .where('CodigoNum', search)
+          .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
+
+        personVaccines(covidVaccines, treatments)
 
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
@@ -842,7 +850,7 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por codigoNum',
           code: HttpStatusCode.ACCEPTED,
-          data,
+          data: { covidVaccines, treatments },
         })
       }
 
