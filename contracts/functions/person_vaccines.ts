@@ -38,6 +38,7 @@ interface Treatment {
 }
 
 interface Vaccine {
+  type: string
   vaccine: string
   createdAt: string
   vaccinationType: string
@@ -75,6 +76,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
 
   covidVaccines.map((vaccine) => {
     const auxVaccine: Vaccine = {
+      type: 'covid',
       vaccine: vaccine.vaccine,
       createdAt: vaccine.createdAt,
       vaccinationType: vaccine.vaccinationType,
@@ -90,6 +92,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
 
   treatemts.map((vaccine) => {
     const auxVaccine: Vaccine = {
+      type: 'treatment',
       vaccine: vaccine.vaccine,
       createdAt: vaccine.createdAt,
       vaccinationType: '',

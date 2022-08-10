@@ -78,6 +78,9 @@ Route.group(() => {
     Route.post('vaccination/', 'VaccinationsController.store')
     Route.post('vaccination/booster', 'VaccinationsController.booster')
 
+    //ADVERSE EVENTS ROUTES
+    Route.post('adverse_event', 'AdverseNotificationsController.store')
+
     //Goals
     Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')
 
