@@ -19,6 +19,7 @@ import getGeoLocation from 'Contracts/functions/get_geolocation'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 import isAfterToday from 'Contracts/functions/isafter_today'
+import getEstimatedDate from 'Contracts/functions/vaccination/get_estimated_date'
 
 interface DoseInfo {
   Id_regVacinacao: number
@@ -41,17 +42,54 @@ export default class VaccinationsController {
     try {
       //Vacination Date verification  , cannot be after today (future)
 
-      if (isAfterToday(vaccinationData.createdAt)) {
-        const previewsDate = vaccinationData.createdAt
-        vaccinationData.createdAt = moment().toISOString()
+      //Verifica se é necessário validar a data do futuro
+      let checkFuture = true
+
+      let dateHasChanged = false
+
+      const previewsDate = vaccinationData.createdAt
+
+      //Mudança : formatação da data
+
+      vaccinationData.createdAt = moment(
+        vaccinationData.createdAt,
+        moment.ISO_8601,
+        true
+      ).toISOString()
+
+      if (vaccinationData.createdAt === null) {
+        checkFuture = false
+        dateHasChanged = true
+
+        const today = moment()
+        vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
+
         formatedLog({
-          text: `Registo de vacinação modificado para data de hoje data inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+          text: `A data do registo de vacinação  foi modificada para data de hoje por ser inválida ,  data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
           data: vaccinationData,
           auth: auth,
           request: request,
           type: LogType.warning,
         })
       }
+
+      if (checkFuture) {
+        if (isAfterToday(vaccinationData.createdAt)) {
+          vaccinationData.createdAt = moment().toISOString()
+          dateHasChanged = true
+          formatedLog({
+            text: `Registo de vacinação modificado para data de hoje data inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
+            data: vaccinationData,
+            auth: auth,
+            request: request,
+            type: LogType.warning,
+          })
+        }
+      }
+
+      //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
+
+      vaccinationData.createdAt = dateHasChanged ? vaccinationData.createdAt : previewsDate
 
       //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
@@ -218,9 +256,8 @@ export default class VaccinationsController {
       const doseInfo = takenDoses[0] as DoseInfo
 
       console.log(doseInfo)
-
-      console.log(doseInfo.DataCad !== doseInfo.dtHoje)
-      console.log(`${doseInfo.DataCad}  =  ${doseInfo.dtHoje}`)
+      const daysToNextVaccine = moment(doseInfo.DtProxDose).diff(moment(), 'days')
+      console.log(`Diferença em dias para próxima vacina ${daysToNextVaccine}`)
 
       if (doseInfo.PrxDose !== 0) {
         //
@@ -358,16 +395,23 @@ export default class VaccinationsController {
             // Reminder false for Day 7 to Day 22 When NumDays = 21
             // Verifica se o número de dias passados é inferior a 15 dias
             if (Math.abs(doseInfo.NumDias - doseInfo.NumDias2) < 15) {
+              const estimated = getEstimatedDate(doseInfo.DataCad)
+
               formatedLog({
-                text: 'O intervalo entre as vacinas não permite adicionar uma nova',
+                text: `O intervalo entre as vacinass não permite adicionar uma nova , poderá receber aproximadamente dentro de ${estimated.daysTillVaccine} dias ( ${estimated.friendlyDate} ) `,
                 data: vaccinationData,
                 auth: auth,
                 request: request,
                 type: LogType.warning,
               })
 
+              const message =
+                estimated.daysTillVaccine === 0
+                  ? 'Já recebeu vacina'
+                  : `Já recebeu vacina, poderá receber uma nova aproximadamente dentro de ${estimated.daysTillVaccine} dias ( ${estimated.friendlyDate} )`
+
               return response.status(HttpStatusCode.OK).send({
-                message: 'Já recebeu vacina',
+                message: message,
                 code: HttpStatusCode.OK,
                 data: {},
               })
@@ -548,6 +592,8 @@ export default class VaccinationsController {
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
 
+      let dateHasChanged = false
+
       const previewsDate = vaccinationData.createdAt
 
       //Mudança : formatação da data
@@ -560,6 +606,7 @@ export default class VaccinationsController {
 
       if (vaccinationData.createdAt === null) {
         checkFuture = false
+        dateHasChanged = true
 
         const today = moment()
         vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
@@ -576,6 +623,7 @@ export default class VaccinationsController {
       if (checkFuture) {
         if (isAfterToday(vaccinationData.createdAt)) {
           vaccinationData.createdAt = moment().toISOString()
+          dateHasChanged = true
           formatedLog({
             text: `A data do registo de vacinação de reforço foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: vaccinationData,
@@ -585,6 +633,12 @@ export default class VaccinationsController {
           })
         }
       }
+
+      //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
+
+      console.log(`Has chaanged ${dateHasChanged}`)
+
+      vaccinationData.createdAt = dateHasChanged ? vaccinationData.createdAt : previewsDate
 
       //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
@@ -976,16 +1030,24 @@ export default class VaccinationsController {
           // Verifica se o número de dias passados é inferior a 15 dias
 
           if (Math.abs(boosterInfo.NumDias - boosterInfo.NumDias2) < 15) {
+            const estimated = getEstimatedDate(boosterInfo.DataCad)
+
             formatedLog({
-              text: 'O intervalo entre as vacinas não permite adicionar uma nova',
+              text: `O intervalo entre as vacinass não permite adicionar uma nova dose de reforço , poderá receber aproximadamente dentro de ${estimated.daysTillVaccine} dias ( ${estimated.friendlyDate} ) `,
               data: vaccinationData,
               auth: auth,
               request: request,
               type: LogType.warning,
             })
 
+            //Verifica se os dias restantes é iguala 0
+            const message =
+              estimated.daysTillVaccine === 0
+                ? 'Já recebeu vacina'
+                : `Já recebeu vacina, poderá receber uma nova aproximadamente dentro de ${estimated.daysTillVaccine} dias ( ${estimated.friendlyDate} )`
+
             return response.status(HttpStatusCode.OK).send({
-              message: 'Já recebeu vacina',
+              message: message,
               code: HttpStatusCode.OK,
               data: {},
             })
