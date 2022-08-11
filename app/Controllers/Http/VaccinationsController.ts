@@ -255,10 +255,6 @@ export default class VaccinationsController {
 
       const doseInfo = takenDoses[0] as DoseInfo
 
-      console.log(doseInfo)
-      const daysToNextVaccine = moment(doseInfo.DtProxDose).diff(moment(), 'days')
-      console.log(`Diferença em dias para próxima vacina ${daysToNextVaccine}`)
-
       if (doseInfo.PrxDose !== 0) {
         //
         //Verifica se já realizou uma vacina no corrente dia
@@ -563,7 +559,6 @@ export default class VaccinationsController {
         })
       }
     } catch (error) {
-      //console.log(error)
       //Log de erro
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
       const data = JSON.stringify(vaccinationData)
@@ -635,8 +630,6 @@ export default class VaccinationsController {
       }
 
       //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
-
-      console.log(`Has chaanged ${dateHasChanged}`)
 
       vaccinationData.createdAt = dateHasChanged ? vaccinationData.createdAt : previewsDate
 
@@ -1187,7 +1180,6 @@ export default class VaccinationsController {
         })
       }
     } catch (error) {
-      //console.log(error)
       //Log de erro
 
       const deviceInfo = JSON.stringify(formatHeaderInfo(request))
