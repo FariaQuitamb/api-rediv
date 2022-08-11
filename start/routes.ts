@@ -23,8 +23,17 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 import Env from '@ioc:Adonis/Core/Env'
 
+import AppliedTreatment from 'App/Modules/Treatment/Models/AppliedTreatment'
+import Vaccination from 'App/Models/Vaccination'
+
 Route.get('/', async () => {
-  return { hello: 'world', title: 'It Works' }
+  const vaccinations = await Vaccination.query().preload('vaccine').preload('dose')
+
+  const treatments = await AppliedTreatment.query()
+    .preload('treatment', (query) => query.preload('vaccine').preload('prevention'))
+    .preload('vaccinationPost', (query) => query.preload('province'))
+
+  return { hello: 'world', title: 'It Works', vaccinations, treatments }
 })
 
 //MAIN WRAPPER
@@ -53,7 +62,8 @@ Route.group(() => {
 
     //Person
     Route.post('people', 'PeopleController.store')
-    Route.post('people/search', 'PeopleController.list')
+    Route.post('people/search', 'PeopleController.search')
+    Route.post('people/vaccines', 'PeopleController.searchVaccines')
     Route.post('people/check', 'PeopleController.checkPerson')
 
     //RANKING - for covid old aproach
@@ -67,6 +77,9 @@ Route.group(() => {
     //Vaccination
     Route.post('vaccination/', 'VaccinationsController.store')
     Route.post('vaccination/booster', 'VaccinationsController.booster')
+
+    //ADVERSE EVENTS ROUTES
+    Route.post('adverse_event', 'AdverseNotificationsController.store')
 
     //Goals
     Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')
