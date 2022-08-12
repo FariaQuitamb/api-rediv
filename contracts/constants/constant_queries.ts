@@ -10,6 +10,7 @@ const vaccinationFields = [
   '[NCartao] as cardNumber',
   '[SIGIS].[dbo].[vac_Vacina].[Nome] as vaccine',
   '[SIGIS].[dbo].[vac_regVacinacao].[DataCad] as createdAt',
+  '[SIGIS].[dbo].[vac_regVacinacao]. [Id_regVacinacao] as vaccinationId',
   '[SIGIS].[dbo].[vac_regVacinacao].[Status] as vaccinationType',
   '[numLote] as batch',
   '[Fabricante] as manufacturer',
@@ -35,6 +36,7 @@ vaccinationSources +=
 
 const treatmentsFields = [
   '[SIGIS].[dbo].[vac_regIndividual] .[Id_regIndividual] as personId',
+  ' [SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento] as treatmentId',
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
   '[Telefone] as phone',
   '[docNum] as docId',
