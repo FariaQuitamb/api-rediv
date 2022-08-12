@@ -69,6 +69,24 @@ export default class AdverseNotificationsController {
 
       const notification = AdverseNotification.create(notificationData)
 
+      if (!notification) {
+        formatedLog({
+          text: 'Não foi possível inserir a notificação de caso adverso',
+          type: LogType.error,
+          data: notificationData,
+          auth: auth,
+          request: request,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'PeopleController', method: 'store' },
+        })
+
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível inserir a notificação de caso adverso',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: {},
+        })
+      }
+
       formatedLog({
         text: 'Registo de notificação de caso adverso feito com sucesso',
         type: LogType.success,
