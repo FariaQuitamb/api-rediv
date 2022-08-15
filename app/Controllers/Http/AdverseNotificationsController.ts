@@ -14,11 +14,8 @@ export default class AdverseNotificationsController {
   public async store({ auth, response, request }: HttpContextContract) {
     const notificationData = await request.validate(AdverseNotificationValidator)
     try {
-      notificationData.pregnancy = 'NÃO'
-
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
-      let dateHasChanged = false
 
       const previewsDate = notificationData.createdAt
 
@@ -33,7 +30,6 @@ export default class AdverseNotificationsController {
 
       if (notificationData.createdAt === null) {
         checkFuture = false
-        dateHasChanged = true
 
         const today = moment()
         notificationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
@@ -51,7 +47,6 @@ export default class AdverseNotificationsController {
 
       if (checkFuture) {
         if (isAfterToday(notificationData.createdAt)) {
-          dateHasChanged = true
           notificationData.createdAt = moment().toISOString()
           formatedLog({
             text: ` A data do registo de notificação de caso adverso foi modificada para data de hoje por ser maior que a data actual data inserida: ${previewsDate}  Data Final :  ${notificationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
@@ -64,8 +59,6 @@ export default class AdverseNotificationsController {
           })
         }
       }
-
-      notificationData.createdAt = dateHasChanged ? notificationData.createdAt : previewsDate
 
       const notification = AdverseNotification.create(notificationData)
 

@@ -3,6 +3,7 @@
 const vaccinationFields = [
   '[SIGIS].[dbo].[vac_regIndividual] .[Id_regIndividual] as personId',
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
+  '[Genero] as genre',
   '[Telefone] as phone',
   '[docNum] as docId',
   '[Codigo] as code',
@@ -38,6 +39,7 @@ const treatmentsFields = [
   '[SIGIS].[dbo].[vac_regIndividual] .[Id_regIndividual] as personId',
   ' [SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento] as treatmentId',
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
+  '[Genero] as genre',
   '[Telefone] as phone',
   '[docNum] as docId',
   '[Codigo] as code',
