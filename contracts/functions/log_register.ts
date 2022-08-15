@@ -1,7 +1,7 @@
 import LogVaccine from 'App/Models/LogVaccine'
-
+//Changed user id field
 const logRegister = async (args: {
-  id: number
+  user_id: number
   system: string
   job: string
   screen: string

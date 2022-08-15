@@ -14,11 +14,8 @@ export default class AdverseNotificationsController {
   public async store({ auth, response, request }: HttpContextContract) {
     const notificationData = await request.validate(AdverseNotificationValidator)
     try {
-      notificationData.pregnancy = 'NÃO'
-
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
-      let dateHasChanged = false
 
       const previewsDate = notificationData.createdAt
 
@@ -33,7 +30,6 @@ export default class AdverseNotificationsController {
 
       if (notificationData.createdAt === null) {
         checkFuture = false
-        dateHasChanged = true
 
         const today = moment()
         notificationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
@@ -51,7 +47,6 @@ export default class AdverseNotificationsController {
 
       if (checkFuture) {
         if (isAfterToday(notificationData.createdAt)) {
-          dateHasChanged = true
           notificationData.createdAt = moment().toISOString()
           formatedLog({
             text: ` A data do registo de notificação de caso adverso foi modificada para data de hoje por ser maior que a data actual data inserida: ${previewsDate}  Data Final :  ${notificationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
@@ -65,9 +60,25 @@ export default class AdverseNotificationsController {
         }
       }
 
-      notificationData.createdAt = dateHasChanged ? notificationData.createdAt : previewsDate
-
       const notification = AdverseNotification.create(notificationData)
+
+      if (!notification) {
+        formatedLog({
+          text: 'Não foi possível inserir a notificação de caso adverso',
+          type: LogType.error,
+          data: notificationData,
+          auth: auth,
+          request: request,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'PeopleController', method: 'store' },
+        })
+
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível inserir a notificação de caso adverso',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: {},
+        })
+      }
 
       formatedLog({
         text: 'Registo de notificação de caso adverso feito com sucesso',

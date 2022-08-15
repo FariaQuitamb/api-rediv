@@ -76,7 +76,7 @@ export default class PreloadsController {
 
       const version = Env.get('API_VERSION')
 
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PreloadController/index',
@@ -85,7 +85,9 @@ export default class PreloadsController {
         tableId: 0,
         action: 'Pré-carregamento',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Carregamento inicial  de dados para o dispositivo',

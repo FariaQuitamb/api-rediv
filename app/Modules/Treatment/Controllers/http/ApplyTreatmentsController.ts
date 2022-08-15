@@ -10,6 +10,7 @@ import formatUserInfo from 'Contracts/functions/format_user_info'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
 import resolveTreatment from 'Contracts/Treatment/functions/resolve_treatments'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class ApplyTreatmentsController {
   public async index({}: HttpContextContract) {}
@@ -39,7 +40,7 @@ export default class ApplyTreatmentsController {
 
       const version = Env.get('API_VERSION')
 
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'ApplyTreatmentsController/store',
@@ -48,7 +49,9 @@ export default class ApplyTreatmentsController {
         tableId: appliedTreatments[0].id,
         action: 'Aplicação de tratamento',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Tratamento aplicado com sucesso',

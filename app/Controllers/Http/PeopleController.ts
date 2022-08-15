@@ -30,7 +30,6 @@ export default class PeopleController {
 
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
-      let dateHasChanged = false
 
       const previewsDate = personData.dataCad
 
@@ -41,7 +40,6 @@ export default class PeopleController {
 
       if (personData.dataCad === null) {
         checkFuture = false
-        dateHasChanged = true
 
         const today = moment()
         personData.dataCad = moment(today, moment.ISO_8601, true).toISOString()
@@ -59,7 +57,6 @@ export default class PeopleController {
 
       if (checkFuture) {
         if (isAfterToday(personData.dataCad)) {
-          dateHasChanged = true
           personData.dataCad = moment().toISOString()
           formatedLog({
             text: `A data do registo individual foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${personData.dataCad} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
@@ -112,8 +109,6 @@ export default class PeopleController {
       //END-CORRECÇÃO PARA DATA ERRADA
 
       //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
-
-      personData.dataCad = dateHasChanged ? personData.dataCad : previewsDate
 
       //Verifica se o utente tem número de documento
       if (personData.docNumber === undefined || personData.docNumber === ' ') {
@@ -223,7 +218,7 @@ export default class PeopleController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PeopleController/store',
@@ -232,7 +227,11 @@ export default class PeopleController {
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
         actionId: `V:${version}`,
-      })
+      }
+
+      //Job para tratar a inserção de log
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',
