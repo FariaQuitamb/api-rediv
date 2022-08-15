@@ -1,4 +1,6 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import VaccinationPost from 'App/Models/VaccinationPost'
+import Treatment from './Treatment'
 
 export default class AppliedTreatment extends BaseModel {
   public static table = 'vac_vacTratamento]'
@@ -34,4 +36,10 @@ export default class AppliedTreatment extends BaseModel {
 
   @column({ columnName: 'DataCad' })
   public createdAt: string
+
+  @belongsTo(() => Treatment)
+  public treatment: BelongsTo<typeof Treatment>
+
+  @belongsTo(() => VaccinationPost)
+  public vaccinationPost: BelongsTo<typeof VaccinationPost>
 }

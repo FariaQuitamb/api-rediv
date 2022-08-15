@@ -216,7 +216,7 @@ treatmentMunicipalityRank +=
 
 //User vaccination registers fields and source query
 
-const userWorkTable = '[SIGIS].[dbo].[vac_regVacinacaoLog]'
+const userWorkTable = '[SIGIS].[dbo].[vac_regVacinacaoLog] '
 const userWorkFields = [
   '[Id_regVacinacaoLog] as logId',
   'up.[Id_userPostoVacinacao] as userId',
@@ -239,7 +239,7 @@ const userWorkFields = [
   'vac.[DataCad] as vaccinationDate',
 ]
 
-let userWorkSources = '  join [SIGIS].[dbo].[vac_regVacinacao]  vac'
+let userWorkSources = '  join [SIGIS].[dbo].[vac_regVacinacao] vac '
 userWorkSources +=
   ' on ([SIGIS].[dbo].[vac_regVacinacaoLog].Id_regVacinacao = vac.Id_regVacinacao) join  [SIGIS].[dbo].[vac_userPostoVacinacao] up'
 userWorkSources +=
@@ -252,7 +252,7 @@ userWorkSources += ' on (mun.Id_Municipio = pv.Id_MunicipioEM)'
 
 //User work for Treatment
 
-const userWorkTreatmentTable = '[SIGIS].[dbo].[LogVAC] '
+const userWorkTreatmentTable = '[SIGIS].[dbo].[vac_vacTratamento]'
 const userWorkTreatmentFields = [
   'up.[Id_userPostoVacinacao] as userId',
   'up.[Nome] as personalName',
@@ -261,27 +261,25 @@ const userWorkTreatmentFields = [
   '[Telefone] as userPhone',
   'fn.Nome as  userRole',
   '[TipoPosto] as postType',
-  'CONCAT([NomePVAR] ,[NomeEA] ,[NomeEM]) as postName',
+  'pv.NomeEM as mobilityPostname',
+  'pv.NomeEA as advancedPostname',
+  'pv.NomePVAR as PVARPostname',
   '[NomeResp] as  postManagerName',
   '[BIResp] as postManagerNationalId',
   '[TelResp] as postManagerPhone',
   'p.Nome as province',
   'mun.Nome as municipality',
-  'vac.[Latitude] as latitude',
-  'vac.[Longitude] as longitude',
-  'vac.[DataCad] as vaccinationDate',
-  ' [Tabela]',
+  '[SIGIS].[dbo].[vac_vacTratamento].[Latitude] as latitude',
+  '[SIGIS].[dbo].[vac_vacTratamento].[Longitude] as longitude',
+  '[SIGIS].[dbo].[vac_vacTratamento].[DataCad] as vaccinationDate',
 ]
 
 let userWorkTreatmentSources =
-  ' [SIGIS].[dbo].[vac_vacTratamento] vac on (log.[ID_Tabela] = vac.[Id_vacTratamento])  join  [SIGIS].[dbo].[vac_userPostoVacinacao] up '
+  ' join [SIGIS].[dbo].[vac_userPostoVacinacao] up  on([SIGIS].[dbo].[vac_vacTratamento].Id_userPostoVacinacao = up.Id_userPostoVacinacao)  join  [SIGIS].[dbo].[vac_postoVacinacao] pv '
 userWorkTreatmentSources +=
-  ' on(vac.Id_userPostoVacinacao = up.Id_userPostoVacinacao)  join  [SIGIS].[dbo].[vac_postoVacinacao] pv '
+  ' on(pv.Id_postoVacinacao = [SIGIS].[dbo].[vac_vacTratamento].Id_postoVacinacao) join  [SIGIS].[dbo].[vac_tipoFuncPostoVac] fn  on (fn.Id_tipoFuncPostoVac = up.Id_tipoFuncPostoVac)  join Provincia p '
 userWorkTreatmentSources +=
-  ' on(pv.Id_postoVacinacao = vac.Id_postoVacinacao) join  [SIGIS].[dbo].[vac_tipoFuncPostoVac] fn '
-userWorkTreatmentSources +=
-  ' on (fn.Id_tipoFuncPostoVac = up.Id_tipoFuncPostoVac)  join Provincia p on (p.Id_Provincia = up.Id_provincia)  join Municipio mun '
-userWorkTreatmentSources += ' on (mun.Id_Municipio = up.Id_Municipio) '
+  ' on (p.Id_Provincia = up.Id_provincia)   join Municipio mun on (mun.Id_Municipio = up.Id_Municipio)  '
 
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
