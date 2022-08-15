@@ -45,8 +45,6 @@ export default class VaccinationsController {
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
 
-      let dateHasChanged = false
-
       const previewsDate = vaccinationData.createdAt
 
       //Mudança : formatação da data
@@ -59,7 +57,6 @@ export default class VaccinationsController {
 
       if (vaccinationData.createdAt === null) {
         checkFuture = false
-        dateHasChanged = true
 
         const today = moment()
         vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
@@ -76,7 +73,7 @@ export default class VaccinationsController {
       if (checkFuture) {
         if (isAfterToday(vaccinationData.createdAt)) {
           vaccinationData.createdAt = moment().toISOString()
-          dateHasChanged = true
+
           formatedLog({
             text: `Registo de vacinação modificado para data de hoje data inserida: ${previewsDate} data final: ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: vaccinationData,
@@ -86,10 +83,6 @@ export default class VaccinationsController {
           })
         }
       }
-
-      //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
-
-      vaccinationData.createdAt = dateHasChanged ? vaccinationData.createdAt : previewsDate
 
       //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
@@ -587,8 +580,6 @@ export default class VaccinationsController {
       //Verifica se é necessário validar a data do futuro
       let checkFuture = true
 
-      let dateHasChanged = false
-
       const previewsDate = vaccinationData.createdAt
 
       //Mudança : formatação da data
@@ -601,7 +592,6 @@ export default class VaccinationsController {
 
       if (vaccinationData.createdAt === null) {
         checkFuture = false
-        dateHasChanged = true
 
         const today = moment()
         vaccinationData.createdAt = moment(today, moment.ISO_8601, true).toISOString()
@@ -618,7 +608,7 @@ export default class VaccinationsController {
       if (checkFuture) {
         if (isAfterToday(vaccinationData.createdAt)) {
           vaccinationData.createdAt = moment().toISOString()
-          dateHasChanged = true
+
           formatedLog({
             text: `A data do registo de vacinação de reforço foi modificada para data de hoje por ser maior a data actual data inserida: ${previewsDate}  Data Final :  ${vaccinationData.createdAt} User: Id:${auth.user?.id} Name: ${auth.user?.name} Phone: ${auth.user?.phone} BI:${auth.user?.bi}`,
             data: vaccinationData,
@@ -628,10 +618,6 @@ export default class VaccinationsController {
           })
         }
       }
-
-      //MANTER A DATA CASO NÃO TENHA SOFRIDO MODIFICAÇÃO
-
-      vaccinationData.createdAt = dateHasChanged ? vaccinationData.createdAt : previewsDate
 
       //Default regMB set to S = Yes to Mobile Register
       vaccinationData.regMB = 'S'
