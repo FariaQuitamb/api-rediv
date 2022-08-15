@@ -623,7 +623,7 @@ export default class VaccinationsController {
       vaccinationData.regMB = 'S'
 
       //13-06-2022 - Pais diferente de 0 coloca as vacinas de reforço como transcrita
-      //Fix abaixo
+
       vaccinationData.vaccinationCountryId = 0
 
       //Added geolocation
