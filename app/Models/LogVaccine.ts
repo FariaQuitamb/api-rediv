@@ -4,7 +4,7 @@ export default class LogVaccine extends BaseModel {
   public static table = 'LogVAC'
 
   @column({ isPrimary: true, columnName: 'ID_Login' })
-  public id: number
+  public user_id: number
   @column({ columnName: 'Sistema' })
   public system: string
 

@@ -218,7 +218,7 @@ export default class PeopleController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PeopleController/store',
@@ -227,7 +227,11 @@ export default class PeopleController {
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
         actionId: `V:${version}`,
-      })
+      }
+
+      //Job para tratar a inserção de log
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',

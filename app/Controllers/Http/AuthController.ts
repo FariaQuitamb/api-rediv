@@ -11,7 +11,6 @@ import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatError from 'Contracts/functions/format_error'
 import logError from 'Contracts/functions/log_error'
 
-import logRegister from 'Contracts/functions/log_register'
 import Database from '@ioc:Adonis/Lucid/Database'
 import constants from 'Contracts/constants/constants'
 import formatUserInfo from 'Contracts/functions/format_user_info'
@@ -22,6 +21,7 @@ import LoggedUserValidator from 'App/Validators/LoggedUserValidator'
 import LoggedUserViewValidator from 'App/Validators/LoggedUserViewValidator'
 import deviceInfo from 'Contracts/functions/device_info '
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 import LoggedUserActivityValidator from 'App/Validators/LoggedUserActivityValidator'
 
 export default class AuthController {
@@ -41,7 +41,7 @@ export default class AuthController {
 
       if (!user) {
         const version = Env.get('API_VERSION')
-        await logRegister({
+        const log = {
           id: 0,
           system: 'MB',
           screen: 'AuthController/login',
@@ -50,7 +50,9 @@ export default class AuthController {
           tableId: 0,
           action: 'LoginAttempt',
           actionId: `V:${version}`,
-        })
+        }
+
+        await addActivityLogJob(log)
 
         formatedLog({
           text: 'Login incorrecto',
@@ -95,7 +97,7 @@ export default class AuthController {
 
       const id = auth.user?.id ?? 0
       //Log de actividade
-      await logRegister({
+      const log = {
         id: id,
         system: 'MB',
         screen: 'AuthController/login',
@@ -104,7 +106,8 @@ export default class AuthController {
         tableId: id,
         action: 'Login',
         actionId: `V:${version}`,
-      })
+      }
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Login efectuado com sucesso',
@@ -150,7 +153,7 @@ export default class AuthController {
         //Log de actividade
 
         const version = Env.get('API_VERSION')
-        await logRegister({
+        const log = {
           id: id,
           system: 'MB',
           screen: 'AuthController/logout',
@@ -159,7 +162,9 @@ export default class AuthController {
           tableId: id,
           action: 'Logout',
           actionId: `V:${version}`,
-        })
+        }
+
+        await addActivityLogJob(log)
 
         return response.status(HttpStatusCode.ACCEPTED).send({
           code: HttpStatusCode.ACCEPTED,

@@ -37,8 +37,10 @@ const formatedLog = ({ text, type, auth, data, request, tag, context }: LogField
   const dataJson = JSON.stringify(data)
 
   let deviceInfo = ''
-  if (request.headers() !== undefined) {
-    deviceInfo = JSON.stringify(formatHeaderInfo(request))
+  if (request !== null) {
+    if (request!.headers() !== undefined) {
+      deviceInfo = JSON.stringify(formatHeaderInfo(request))
+    }
   }
 
   const userInfo = formatUserInfo(auth.user)

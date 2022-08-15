@@ -11,6 +11,7 @@ import ListAccessesValidator from 'App/Validators/ListAccessesValidator'
 import logRegister from 'Contracts/functions/log_register'
 import ApiAccessStateValidator from 'App/Validators/ApiAccessStateValidator'
 import ListAccessesSearchValidator from 'App/Validators/ListAccessesSearchValidator'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class ApiAcessesController {
   public async index({ auth, response, request }: HttpContextContract) {
@@ -80,7 +81,7 @@ export default class ApiAcessesController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'ApiAcessesController/store',
@@ -89,7 +90,9 @@ export default class ApiAcessesController {
         tableId: access.id,
         action: 'Registro de accesso a API',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Acesso criado com sucesso',
