@@ -10,7 +10,6 @@ import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
-import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
 import GetUserRank from 'App/Validators/getUserRank'
@@ -20,6 +19,7 @@ import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
