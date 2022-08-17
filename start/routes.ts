@@ -25,9 +25,17 @@ import execWorkers from 'App/bullmq/worker/worker'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
+import AppliedTreatment from 'App/Modules/Treatment/Models/AppliedTreatment'
+import Vaccination from 'App/Models/Vaccination'
+
 Route.get('/', async () => {
-  console.log({ hello: 'world', title: 'It Works' })
-  return { hello: 'world', title: 'It Works' }
+  const vaccinations = await Vaccination.query().preload('vaccine').preload('dose')
+
+  const treatments = await AppliedTreatment.query()
+    .preload('treatment', (query) => query.preload('vaccine').preload('prevention'))
+    .preload('vaccinationPost', (query) => query.preload('province'))
+
+  return { hello: 'world', title: 'It Works', vaccinations, treatments }
 })
 
 //MAIN WRAPPER
@@ -41,24 +49,39 @@ Route.group(() => {
   Route.post('auth/login', 'AuthController.login')
 
   Route.group(() => {
-    //Auth
+    //Auth + Users
     Route.get('auth/logout', 'AuthController.logout')
     Route.post('auth/logged', 'AuthController.loggedUsers')
     Route.post('auth/logged_users', 'AuthController.loggedUsersView')
     Route.post('auth/about_usage', 'AuthController.aboutIUsage')
+
+    Route.post('user_work', 'UsersController.userWork')
+    Route.post('user_treatments', 'UsersController.userWorkTreatment')
+
     //Preload Route
     Route.get('preload', 'PreloadsController.index')
+    Route.get('symptoms', 'PreloadsController.symptomsList')
+
     //Person
     Route.post('people', 'PeopleController.store')
-    Route.post('people/search', 'PeopleController.list')
+    Route.post('people/search', 'PeopleController.search')
+    Route.post('people/vaccines', 'PeopleController.searchVaccines')
     Route.post('people/check', 'PeopleController.checkPerson')
 
-    //RANKING
-    Route.post('ranking', 'PeopleController.rankUser')
+    //RANKING - for covid old aproach
+    Route.post('ranking', 'VaccinationRanksController.rankUser')
+
+    //RANKING - for treatment new aproach
+    Route.post('ranking_treatment', 'VaccinationRanksController.rankUserTreatment')
+    //
+    Route.get('locations_rank', 'VaccinationRanksController.locationsRank')
 
     //Vaccination
     Route.post('vaccination/', 'VaccinationsController.store')
     Route.post('vaccination/booster', 'VaccinationsController.booster')
+
+    //ADVERSE EVENTS ROUTES
+    Route.post('adverse_event', 'AdverseNotificationsController.store')
 
     //Goals
     Route.post('goals/postgoal', 'GoalsController.getVaccinationPostGoal')

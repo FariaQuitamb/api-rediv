@@ -23,6 +23,7 @@ export default class ExceptionHandler extends HttpExceptionHandler {
   }
 
   public async handle(error, ctx) {
+    Sentry.setTag('exceptions', 'Erros')
     Sentry.captureException(error, ctx)
     return super.handle(error, ctx)
   }

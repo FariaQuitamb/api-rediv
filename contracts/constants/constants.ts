@@ -189,6 +189,98 @@ const rankingQueryProvince =
 const rankingQueryMunicipality =
   ' SELECT TOP(?)  tbl.[Id_userPostoVacinacao],tbl.[NOME] as name, tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio], [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] where [Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?   ORDER BY total DESC'
 
+let provinceRank =
+  ' SELECT tbl.[Id_provincia] as province_id, tbl.[Nome] as province, tbl.total FROM ( SELECT  [Id_Provincia],[Nome],[Sigla],[total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao] vac where vac.Id_Provincia  = prov.Id_Provincia )'
+provinceRank += ' FROM [SIGIS].[dbo].[Provincia] prov) AS [tbl] ORDER BY total DESC'
+
+let municipalityRank =
+  ' SELECT    [prov].[Nome] as province,[tbl].[municipality_id], [tbl].[municipality], [tbl].total FROM (  SELECT  [mun].[Id_Provincia] as province_id,[mun].[Id_municipio] as municipality_id , [mun].[Nome] as municipality, [total] = ( SELECT COUNT([Id_regVacinacao]) FROM [dbo].[vac_regVacinacao]  vac  Join vac_userPostoVacinacao up on   vac.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao]   where   up.[Id_Municipio] =  mun.Id_Municipio )'
+municipalityRank +=
+  ' FROM [SIGIS].[dbo].[Municipio] mun ) AS [tbl]  join [Provincia] prov ON (tbl.province_id = prov.Id_Provincia)  ORDER BY total DESC'
+
+//Treatment Ranks
+
+let treatmentNationalRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentNationalRank += 'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]   ORDER BY total DESC'
+
+let treatmentProvinceRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentProvinceRank +=
+  'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_provincia] = ?   ORDER BY total DESC'
+
+let treatmentMunicipalityRank =
+  'SELECT TOP(?) tbl.[Id_userPostoVacinacao],tbl.[NOME] as name,tbl.[Id_provincia] as province_id, tbl.[Id_Municipio] as municipality_id, total  FROM ( SELECT up.[Id_userPostoVacinacao], up.[Nome], up.[Id_provincia], [Id_Municipio],  [total] = ( SELECT COUNT( [Id_vacTratamento]) FROM [SIGIS].[dbo].[vac_vacTratamento] t where t.[Id_userPostoVacinacao] = up.[Id_userPostoVacinacao] ) '
+treatmentMunicipalityRank +=
+  'FROM [dbo].[vac_userPostoVacinacao] up ) AS [tbl]  where [Id_Municipio] = ?    ORDER BY total DESC'
+
+//User vaccination registers fields and source query
+
+const userWorkTable = '[SIGIS].[dbo].[vac_regVacinacaoLog] '
+const userWorkFields = [
+  '[Id_regVacinacaoLog] as logId',
+  'up.[Id_userPostoVacinacao] as userId',
+  'up.[Nome] as personalName',
+  '[BI] as nationalId',
+  '[Utilizador] as username',
+  '[Telefone] as userPhone',
+  'fn.Nome as  userRole',
+  '[TipoPosto] as postType',
+  '[NomeEM] as postName',
+  '[NomeResp] as  postManagerName',
+  '[BIResp] as postManagerNationalId',
+  '[TelResp] as postManagerPhone',
+  'p.Nome as province',
+  'mun.Nome as municipality',
+  '[Mac_address] as  deviceId',
+  '[SIGIS].[dbo].[vac_regVacinacaoLog].[Latitude] as latitude',
+  '[SIGIS].[dbo].[vac_regVacinacaoLog].[Longitude] as longitude',
+  '[Tipo] as vaccineDose',
+  'vac.[DataCad] as vaccinationDate',
+]
+
+let userWorkSources = '  join [SIGIS].[dbo].[vac_regVacinacao] vac '
+userWorkSources +=
+  ' on ([SIGIS].[dbo].[vac_regVacinacaoLog].Id_regVacinacao = vac.Id_regVacinacao) join  [SIGIS].[dbo].[vac_userPostoVacinacao] up'
+userWorkSources +=
+  ' on(vac.Id_userPostoVacinacao = up.Id_userPostoVacinacao)  join  [SIGIS].[dbo].[vac_postoVacinacao] pv'
+userWorkSources +=
+  ' on(pv.Id_postoVacinacao = vac.Id_postoVacinacao) join  [SIGIS].[dbo].[vac_tipoFuncPostoVac] fn'
+userWorkSources +=
+  ' on (fn.Id_tipoFuncPostoVac = up.Id_tipoFuncPostoVac) join Provincia p on (p.Id_Provincia = vac.Id_Provincia) join Municipio mun'
+userWorkSources += ' on (mun.Id_Municipio = pv.Id_MunicipioEM)'
+
+//User work for Treatment
+
+const userWorkTreatmentTable = '[SIGIS].[dbo].[vac_vacTratamento]'
+const userWorkTreatmentFields = [
+  'up.[Id_userPostoVacinacao] as userId',
+  'up.[Nome] as personalName',
+  '[BI] as nationalId',
+  '[Utilizador] as username',
+  '[Telefone] as userPhone',
+  'fn.Nome as  userRole',
+  '[TipoPosto] as postType',
+  'pv.NomeEM as mobilityPostname',
+  'pv.NomeEA as advancedPostname',
+  'pv.NomePVAR as PVARPostname',
+  '[NomeResp] as  postManagerName',
+  '[BIResp] as postManagerNationalId',
+  '[TelResp] as postManagerPhone',
+  'p.Nome as province',
+  'mun.Nome as municipality',
+  '[SIGIS].[dbo].[vac_vacTratamento].[Latitude] as latitude',
+  '[SIGIS].[dbo].[vac_vacTratamento].[Longitude] as longitude',
+  '[SIGIS].[dbo].[vac_vacTratamento].[DataCad] as vaccinationDate',
+]
+
+let userWorkTreatmentSources =
+  ' join [SIGIS].[dbo].[vac_userPostoVacinacao] up  on([SIGIS].[dbo].[vac_vacTratamento].Id_userPostoVacinacao = up.Id_userPostoVacinacao)  join  [SIGIS].[dbo].[vac_postoVacinacao] pv '
+userWorkTreatmentSources +=
+  ' on(pv.Id_postoVacinacao = [SIGIS].[dbo].[vac_vacTratamento].Id_postoVacinacao) join  [SIGIS].[dbo].[vac_tipoFuncPostoVac] fn  on (fn.Id_tipoFuncPostoVac = up.Id_tipoFuncPostoVac)  join Provincia p '
+userWorkTreatmentSources +=
+  ' on (p.Id_Provincia = up.Id_provincia)   join Municipio mun on (mun.Id_Municipio = up.Id_Municipio)  '
+
 const constants = {
   sqlFirstSecondDose: sqlFirstSecondDoses,
   getFirstDose,
@@ -209,5 +301,21 @@ const constants = {
   userFields,
   userJoinQuery,
   mainTable,
+  //Locations Rank
+  provinceRank,
+  municipalityRank,
+  //Ranking  for treatment
+  treatmentNationalRank,
+  treatmentProvinceRank,
+  treatmentMunicipalityRank,
+  //User Work,
+
+  userWorkTable,
+  userWorkFields,
+  userWorkSources,
+  //User Work Treatment
+  userWorkTreatmentTable,
+  userWorkTreatmentFields,
+  userWorkTreatmentSources,
 }
 export default constants
