@@ -11,4 +11,6 @@ import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
 
+//Added developer
+
 export default class AdverseEventsController {}
