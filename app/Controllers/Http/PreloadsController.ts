@@ -11,6 +11,7 @@ import logError from 'Contracts/functions/log_error'
 import Env from '@ioc:Adonis/Core/Env'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import Severity from 'App/Models/Severity'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PreloadsController {
   public async index({ auth, request, response }: HttpContextContract) {
@@ -137,7 +138,7 @@ export default class PreloadsController {
 
       const version = Env.get('API_VERSION')
 
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PreloadController/index',
@@ -146,7 +147,9 @@ export default class PreloadsController {
         tableId: 0,
         action: 'Pré-carregamento',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Lista de sintomas carregada',

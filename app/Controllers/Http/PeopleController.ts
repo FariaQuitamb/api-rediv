@@ -19,6 +19,7 @@ import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
