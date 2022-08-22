@@ -904,9 +904,10 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
-        const adverses = await AdverseNotification.all()
-
-        console.log(adverses)
+        const adverses = await AdverseNotification.query().where(
+          'Id_regIndividual',
+          data.person.personId
+        )
 
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
