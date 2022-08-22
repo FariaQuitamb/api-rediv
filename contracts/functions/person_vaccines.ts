@@ -107,7 +107,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
 
   treatemts.map((vaccine) => {
     const auxVaccine: Vaccine = {
-      type: vaccine.campaignId === 0 ? 'Rotina' : 'Campanha',
+      type: vaccine.campaignId === 0 ? 'rotina' : 'campanha',
       vaccinationId: 0,
       appliedTreatmentId: vaccine.treatmentId,
       vaccine: vaccine.vaccine,
