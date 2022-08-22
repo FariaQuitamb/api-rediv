@@ -18,6 +18,9 @@ export default class AdverseNotification extends BaseModel {
   @column({ columnName: 'Id_regVacinacao' })
   public appliedTreatmentId: number
 
+  @column({ columnName: 'Status' })
+  public state: string
+
   @column({ columnName: 'Id_Sintomas' })
   public symptoms: string
 
