@@ -60,7 +60,7 @@ export default class AdverseNotificationsController {
         }
       }
 
-      const notification = AdverseNotification.create(notificationData)
+      const notification = await AdverseNotification.create(notificationData)
 
       if (!notification) {
         formatedLog({
@@ -87,7 +87,7 @@ export default class AdverseNotificationsController {
         auth: auth,
         request: request,
       })
-
+      console.log(notification)
       return response.status(HttpStatusCode.CREATED).send({
         message: 'Registo de  notificação de caso adverso feito com sucesso',
         code: HttpStatusCode.CREATED,
