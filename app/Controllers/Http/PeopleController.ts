@@ -20,6 +20,7 @@ import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
+import AdverseNotification from 'App/Models/AdverseNotification'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -903,6 +904,10 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
+        const adverses = await AdverseNotification.all()
+
+        console.log(adverses)
+
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
           data: searchData,
@@ -914,7 +919,7 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por número do documento',
           code: HttpStatusCode.ACCEPTED,
-          data,
+          data: { person: data.person, vaccines: data.vaccines, reports: adverses },
         })
       }
 

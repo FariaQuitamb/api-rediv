@@ -39,6 +39,7 @@ interface Treatment {
   namePVAR: string
   nameEA: string
   nameEM: string
+  campaignId: number
 }
 
 interface Vaccine {
@@ -102,7 +103,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
 
   treatemts.map((vaccine) => {
     const auxVaccine: Vaccine = {
-      type: 'treatment',
+      type: vaccine.campaignId === 0 ? 'Rotina' : 'Campanha',
       vaccinationId: 0,
       appliedTreatmentId: vaccine.treatmentId,
       vaccine: vaccine.vaccine,

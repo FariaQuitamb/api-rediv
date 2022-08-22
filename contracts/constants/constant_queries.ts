@@ -37,7 +37,7 @@ vaccinationSources +=
 
 const treatmentsFields = [
   '[SIGIS].[dbo].[vac_regIndividual] .[Id_regIndividual] as personId',
-  ' [SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento] as treatmentId',
+  '[SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento] as treatmentId',
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
   '[Genero] as genre',
   '[Telefone] as phone',
@@ -52,6 +52,7 @@ const treatmentsFields = [
   '[NomeEA] as nameEA',
   '[NomeEM] as nameEM',
   '[SIGIS].[dbo].[Provincia].Nome as province',
+  '[Id_CampTratVac] as campaignId',
 ]
 
 const treatmentMainTable = '  [SIGIS].[dbo].[vac_regIndividual] '
