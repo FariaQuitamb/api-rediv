@@ -10,7 +10,6 @@ import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
-import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
 import Env from '@ioc:Adonis/Core/Env'
 import GetUserRank from 'App/Validators/getUserRank'
@@ -219,7 +218,7 @@ export default class PeopleController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PeopleController/store',
@@ -228,7 +227,11 @@ export default class PeopleController {
         tableId: personInfo.Id_regIndividual,
         action: 'Registro de Utente',
         actionId: `V:${version}`,
-      })
+      }
+
+      //Job para tratar a inserção de log
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Novo utente registrado com sucesso',

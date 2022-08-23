@@ -8,10 +8,10 @@ import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
-import logRegister from 'Contracts/functions/log_register'
 import Env from '@ioc:Adonis/Core/Env'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import Severity from 'App/Models/Severity'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PreloadsController {
   public async index({ auth, request, response }: HttpContextContract) {
@@ -76,7 +76,7 @@ export default class PreloadsController {
 
       const version = Env.get('API_VERSION')
 
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PreloadController/index',
@@ -85,7 +85,9 @@ export default class PreloadsController {
         tableId: 0,
         action: 'Pré-carregamento',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Carregamento inicial  de dados para o dispositivo',
@@ -136,7 +138,7 @@ export default class PreloadsController {
 
       const version = Env.get('API_VERSION')
 
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PreloadController/index',
@@ -145,7 +147,9 @@ export default class PreloadsController {
         tableId: 0,
         action: 'Pré-carregamento',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Lista de sintomas carregada',
