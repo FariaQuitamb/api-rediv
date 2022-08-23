@@ -7,6 +7,7 @@ interface Covid {
   genre: string
   phone: string
   docId: string
+  registeredAt: string
   code: string
   codeNum: string
   cardNumber: string
@@ -30,6 +31,7 @@ interface Treatment {
   phone: string
   docId: string
   code: string
+  registeredAt: string
   codeNum: string
   cardNumber: string
   vaccine: string
@@ -39,6 +41,7 @@ interface Treatment {
   namePVAR: string
   nameEA: string
   nameEM: string
+  campaignId: number
 }
 
 interface Vaccine {
@@ -64,6 +67,7 @@ interface Person {
   code: string
   codeNum: string
   cardNumber: string
+  registeredAt: string
 }
 
 const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
@@ -78,6 +82,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
     code: hasCovidVaccines ? covidVaccines[0].code : treatemts[0].code,
     codeNum: hasCovidVaccines ? covidVaccines[0].codeNum : treatemts[0].codeNum,
     cardNumber: hasCovidVaccines ? covidVaccines[0].cardNumber : treatemts[0].cardNumber,
+    registeredAt: hasCovidVaccines ? covidVaccines[0].registeredAt : treatemts[0].registeredAt,
   }
 
   let vaccines: Vaccine[] = []
@@ -102,7 +107,7 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
 
   treatemts.map((vaccine) => {
     const auxVaccine: Vaccine = {
-      type: 'treatment',
+      type: vaccine.campaignId === 0 ? 'rotina' : 'campanha',
       vaccinationId: 0,
       appliedTreatmentId: vaccine.treatmentId,
       vaccine: vaccine.vaccine,
