@@ -21,6 +21,7 @@ import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
 import AdverseNotification from 'App/Models/AdverseNotification'
+import resolvePersonNotifications from 'Contracts/functions/resolve_person_notifications'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -904,9 +905,21 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
-        const adverses = await AdverseNotification.query().where(
-          'Id_regIndividual',
-          data.person.personId
+        const personId = data.person.personId
+
+        const treatmentNotifications = await Database.rawQuery(
+          constantQueries.treatmentNotifications,
+          [personId]
+        )
+
+        const vaccinationNotifications = await Database.rawQuery(
+          constantQueries.vaccinationNotifications,
+          [personId]
+        )
+
+        const notifications = resolvePersonNotifications(
+          vaccinationNotifications,
+          treatmentNotifications
         )
 
         formatedLog({
@@ -920,7 +933,7 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por número do documento',
           code: HttpStatusCode.ACCEPTED,
-          data: { person: data.person, vaccines: data.vaccines, reports: adverses },
+          data: { person: data.person, vaccines: data.vaccines, reports: notifications.vaccines },
         })
       }
 

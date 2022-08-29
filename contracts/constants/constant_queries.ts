@@ -74,6 +74,69 @@ treatmentSources += ' join [SIGIS].[dbo].[Provincia] '
 treatmentSources +=
   " on ( [SIGIS].[dbo].[Provincia].[Id_Provincia] =    CASE WHEN   [TipoPosto] = 'PVAR' THEN  [Id_provinciaPVAR] WHEN  [TipoPosto] = 'EA'  THEN    [Id_provinciaEA]  ELSE [Id_provinciaEM] END   )"
 
+let treatmentNotifications =
+  ' SELECT  [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+treatmentNotifications +=
+  '[SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] as userId ,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt,'
+treatmentNotifications +=
+  ' [SIGIS].[dbo].[vac_tratVacina].[Nome] as vaccine,[vac_tratDose].[Nome] as dose, [SIGIS].[dbo].[vac_userPostoVacinacao].[Nome] as createdBy '
+
+treatmentNotifications +=
+  'FROM  [SIGIS].[dbo].[vac_regVacNotificacao] JOIN  [SIGIS].[dbo].[vac_vacTratamento]  ON ([SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] = [SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento]  ) '
+treatmentNotifications +=
+  'join  [SIGIS].[dbo].[vac_Tratamento]  on ( [SIGIS].[dbo].[vac_Tratamento] .[Id_Tratamento] = [SIGIS].[dbo].[vac_vacTratamento].[Id_Tratamento] ) '
+
+treatmentNotifications +=
+  'join  [SIGIS].[dbo].[vac_tratVacina] on ([SIGIS].[dbo].[vac_tratVacina].[Id_tratVacina] =     [SIGIS].[dbo].[vac_Tratamento].[Id_tratVacina]) '
+treatmentNotifications +=
+  'JOIN [vac_tratDose] ON  ([vac_tratDose].[Id_tratDose] = [SIGIS].[dbo].[vac_vacTratamento].[Id_tratDose] ) '
+
+treatmentNotifications +=
+  'join   [SIGIS].[dbo].[vac_userPostoVacinacao]  on  ([SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] = [SIGIS].[dbo].[vac_userPostoVacinacao].[Id_userPostoVacinacao] ) '
+
+treatmentNotifications += 'Union All '
+
+treatmentNotifications +=
+  'SELECT [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+treatmentNotifications +=
+  '[SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] as userId ,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt, [SIGIS].[dbo].[vac_tratVacina].[Nome] as vaccine,'
+treatmentNotifications +=
+  '[vac_tratDose].[Nome] as dose,[SIGIS].[dbo].[vac_userPostoVacinacao].[Nome] as createdBy '
+
+treatmentNotifications +=
+  ' FROM  [SIGIS].[dbo].[vac_regVacNotificacao] JOIN  [SIGIS].[dbo].[vac_vacTratamento]  ON ([SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] = [SIGIS].[dbo].[vac_vacTratamento].[Id_vacTratamento]  ) '
+treatmentNotifications +=
+  ' join  [SIGIS].[dbo].[vac_Tratamento]  on ( [SIGIS].[dbo].[vac_Tratamento] .[Id_Tratamento] = [SIGIS].[dbo].[vac_vacTratamento].[Id_Tratamento] )'
+
+treatmentNotifications +=
+  ' join  [SIGIS].[dbo].[vac_tratPrevencao] on ([SIGIS].[dbo].[vac_tratPrevencao].[Id_tratPrevencao] =     [SIGIS].[dbo].[vac_Tratamento].[Id_tratVacina])'
+
+treatmentNotifications +=
+  ' join  [SIGIS].[dbo].[vac_tratVacina] on ([SIGIS].[dbo].[vac_tratVacina].[Id_tratVacina] =     [SIGIS].[dbo].[vac_Tratamento].[Id_tratVacina])'
+treatmentNotifications +=
+  'JOIN [vac_tratDose] ON  ([vac_tratDose].[Id_tratDose] = [SIGIS].[dbo].[vac_vacTratamento].[Id_tratDose] )'
+
+treatmentNotifications +=
+  ' join   [SIGIS].[dbo].[vac_userPostoVacinacao]  on  ([SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] = [SIGIS].[dbo].[vac_userPostoVacinacao].[Id_userPostoVacinacao] ) where [SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual]=?'
+
+//VACINNATION
+let vaccinationNotifications =
+  ' SELECT [SIGIS].[dbo].[vac_regVacinacao].[Id_regVacinacao] as vaccinationId ,[SIGIS].[dbo].[vac_regVacinacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+vaccinationNotifications +=
+  ' [SIGIS].[dbo].[vac_regVacinacao].[Id_userPostoVacinacao] as userId,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt , [SIGIS].[dbo].[vac_Vacina].[Nome] as vaccine,'
+vaccinationNotifications +=
+  ' [SIGIS].[dbo].[vac_Vacina].[Fabricante] as manufacturer, [SIGIS].[dbo].[vac_DoseVacina].[Nome] as dose,  [SIGIS].[dbo].[vac_userPostoVacinacao].[Nome] as createdBy '
+vaccinationNotifications += 'FROM [SIGIS].[dbo].[vac_regVacinacao] '
+vaccinationNotifications +=
+  ' join [SIGIS].[dbo].[vac_regVacNotificacao] on ([SIGIS].[dbo].[vac_regVacinacao].[Id_regVacinacao] =  [SIGIS].[dbo].[vac_regVacNotificacao].[Id_regVacinacao])'
+
+vaccinationNotifications +=
+  ' join  [SIGIS].[dbo].[vac_userPostoVacinacao] on ( [SIGIS].[dbo].[vac_userPostoVacinacao] . [Id_userPostoVacinacao]=[SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao])'
+vaccinationNotifications +=
+  ' join [SIGIS].[dbo].[vac_Vacina] on ( [SIGIS].[dbo].[vac_Vacina].[Id_Vacina]= [SIGIS].[dbo].[vac_regVacinacao].[Id_Vacina])'
+vaccinationNotifications +=
+  ' join [SIGIS].[dbo].[vac_DoseVacina] on ([SIGIS].[dbo].[vac_DoseVacina].[Id_DoseVacina]=[SIGIS].[dbo].[vac_regVacinacao].[Id_Dose]) where [SIGIS].[dbo].[vac_regVacinacao].[Id_regIndividual] = ? '
+
 const constantQueries = {
   vaccinationMainTable,
   vaccinationFields,
@@ -82,5 +145,8 @@ const constantQueries = {
   treatmentsFields,
   treatmentMainTable,
   treatmentSources,
+  //Vaccination
+  treatmentNotifications,
+  vaccinationNotifications,
 }
 export default constantQueries
