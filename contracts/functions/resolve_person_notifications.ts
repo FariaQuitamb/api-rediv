@@ -2,6 +2,7 @@ import moment from 'moment'
 
 interface Covid {
   vaccinationId: number
+  state: string
   personId: number
   symptoms: string
   userId: number
@@ -14,6 +15,7 @@ interface Covid {
 
 interface Treatment {
   appliedTreatmentId: number
+  state: string
   personId: number
   symptoms: string
   userId: number
@@ -25,6 +27,7 @@ interface Treatment {
 
 interface Vaccine {
   id: number
+  state: string
   type: string
   personId: number
   symptoms: string
@@ -42,6 +45,7 @@ const resolvePersonNotifications = (covidVaccines: Covid[], treatemts: Treatment
   covidVaccines.map((vaccine) => {
     const auxVaccine: Vaccine = {
       id: vaccine.vaccinationId,
+      state: vaccine.state,
       type: 'covid',
       personId: vaccine.personId,
       symptoms: vaccine.symptoms,
@@ -59,6 +63,7 @@ const resolvePersonNotifications = (covidVaccines: Covid[], treatemts: Treatment
   treatemts.map((vaccine) => {
     const auxVaccine: Vaccine = {
       id: vaccine.appliedTreatmentId,
+      state: vaccine.state,
       type: 'covid',
       personId: vaccine.personId,
       symptoms: vaccine.symptoms,

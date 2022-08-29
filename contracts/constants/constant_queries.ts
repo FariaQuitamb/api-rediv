@@ -75,7 +75,7 @@ treatmentSources +=
   " on ( [SIGIS].[dbo].[Provincia].[Id_Provincia] =    CASE WHEN   [TipoPosto] = 'PVAR' THEN  [Id_provinciaPVAR] WHEN  [TipoPosto] = 'EA'  THEN    [Id_provinciaEA]  ELSE [Id_provinciaEM] END   )"
 
 let treatmentNotifications =
-  ' SELECT  [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+  ' SELECT  [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Status] as state,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
 treatmentNotifications +=
   '[SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] as userId ,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt,'
 treatmentNotifications +=
@@ -97,7 +97,7 @@ treatmentNotifications +=
 treatmentNotifications += 'Union All '
 
 treatmentNotifications +=
-  'SELECT [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+  'SELECT [SIGIS].[dbo].[vac_regVacNotificacao].[Id_vacTratamento] as  appliedTreatmentId ,[SIGIS].[dbo].[vac_regVacNotificacao].[Status] as state,[SIGIS].[dbo].[vac_regVacNotificacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
 treatmentNotifications +=
   '[SIGIS].[dbo].[vac_regVacNotificacao].[Id_userPostoVacinacao] as userId ,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt, [SIGIS].[dbo].[vac_tratVacina].[Nome] as vaccine,'
 treatmentNotifications +=
@@ -121,7 +121,7 @@ treatmentNotifications +=
 
 //VACINNATION
 let vaccinationNotifications =
-  ' SELECT [SIGIS].[dbo].[vac_regVacinacao].[Id_regVacinacao] as vaccinationId ,[SIGIS].[dbo].[vac_regVacinacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
+  ' SELECT [SIGIS].[dbo].[vac_regVacinacao].[Id_regVacinacao] as vaccinationId ,  [SIGIS].[dbo].[vac_regVacNotificacao].[Status] as state, [SIGIS].[dbo].[vac_regVacinacao].[Id_regIndividual] as personId, [Id_Sintomas] as symptoms,'
 vaccinationNotifications +=
   ' [SIGIS].[dbo].[vac_regVacinacao].[Id_userPostoVacinacao] as userId,[SIGIS].[dbo].[vac_regVacNotificacao].[DataCad] as createdAt , [SIGIS].[dbo].[vac_Vacina].[Nome] as vaccine,'
 vaccinationNotifications +=
