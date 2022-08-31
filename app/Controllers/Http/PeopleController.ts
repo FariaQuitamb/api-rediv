@@ -19,8 +19,6 @@ import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
-import AdverseNotification from 'App/Models/AdverseNotification'
-import resolvePersonNotifications from 'Contracts/functions/resolve_person_notifications'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -862,6 +860,24 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
+        /*
+        const personId = data.person.personId
+
+        const treatmentNotifications = await Database.rawQuery(
+          constantQueries.treatmentNotifications,
+          [personId]
+        )
+
+        const vaccinationNotifications = await Database.rawQuery(
+          constantQueries.vaccinationNotifications,
+          [personId]
+        )
+
+        const notifications = resolvePersonNotifications(
+          vaccinationNotifications,
+          treatmentNotifications
+        )*/
+
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
           data: searchData,
@@ -873,7 +889,10 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por codigoNum',
           code: HttpStatusCode.ACCEPTED,
-          data,
+          data: {
+            person: data.person,
+            vaccines: data.vaccines /*, reports: notifications.vaccines*/,
+          },
         })
       }
 
@@ -908,6 +927,7 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
+        /*
         const personId = data.person.personId
 
         const treatmentNotifications = await Database.rawQuery(
@@ -925,6 +945,8 @@ export default class PeopleController {
           treatmentNotifications
         )
 
+        */
+
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
           data: searchData,
@@ -936,7 +958,10 @@ export default class PeopleController {
         return response.status(HttpStatusCode.ACCEPTED).send({
           message: 'Resultados da consulta por número do documento',
           code: HttpStatusCode.ACCEPTED,
-          data: { person: data.person, vaccines: data.vaccines, reports: notifications.vaccines },
+          data: {
+            person: data.person,
+            vaccines: data.vaccines /*, reports: notifications.vaccines*/,
+          },
         })
       }
 
