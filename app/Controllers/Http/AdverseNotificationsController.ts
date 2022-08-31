@@ -174,7 +174,7 @@ export default class AdverseNotificationsController {
       return response.status(HttpStatusCode.ACCEPTED).send({
         message: 'Lista de notificações de casos adversos do utente',
         code: HttpStatusCode.ACCEPTED,
-        data: { notifications: notifications.vaccines },
+        data: { reports: notifications.vaccines },
       })
     } catch (error) {
       //console.log(error)
