@@ -20,6 +20,8 @@ import isAfterToday from 'Contracts/functions/isafter_today'
 import BusinessCode from 'Contracts/enums/BusinessCode'
 import constantQueries from 'Contracts/constants/constant_queries'
 import personVaccines from 'Contracts/functions/person_vaccines'
+import listPersonVaccines from 'Contracts/functions/list_persons_vaccines'
+import SearchByIdValidator from 'App/Validators/SearchByIdValidator'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -857,24 +859,6 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
-        /*
-        const personId = data.person.personId
-
-        const treatmentNotifications = await Database.rawQuery(
-          constantQueries.treatmentNotifications,
-          [personId]
-        )
-
-        const vaccinationNotifications = await Database.rawQuery(
-          constantQueries.vaccinationNotifications,
-          [personId]
-        )
-
-        const notifications = resolvePersonNotifications(
-          vaccinationNotifications,
-          treatmentNotifications
-        )*/
-
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
           data: searchData,
@@ -889,6 +873,40 @@ export default class PeopleController {
           data: {
             person: data.person,
             vaccines: data.vaccines /*, reports: notifications.vaccines*/,
+          },
+        })
+      }
+
+      //Pesquisa pelo telefone
+      if (search.match(regexNumberOnly) && search.length === 9) {
+        console.log('Pesquisa por telefone')
+        const covidVaccines = await Database.from(constantQueries.vaccinationMainTable)
+          .select(constantQueries.vaccinationFields)
+          .joinRaw(constantQueries.vaccinationSources)
+          .where('Telefone', search)
+          .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+        const treatments = await Database.from(constantQueries.treatmentMainTable)
+          .select(constantQueries.treatmentsFields)
+          .joinRaw(constantQueries.treatmentSources)
+          .where('Telefone', search)
+          .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
+
+        const data = listPersonVaccines(covidVaccines, treatments)
+
+        formatedLog({
+          text: 'Pesquisa  por codigoNum  realizada com sucesso',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'Resultados da consulta por número do documento',
+          code: HttpStatusCode.ACCEPTED,
+          data: {
+            vaccines: data /*, reports: notifications.vaccines*/,
           },
         })
       }
@@ -924,26 +942,6 @@ export default class PeopleController {
 
         const data = personVaccines(covidVaccines, treatments)
 
-        /*
-        const personId = data.person.personId
-
-        const treatmentNotifications = await Database.rawQuery(
-          constantQueries.treatmentNotifications,
-          [personId]
-        )
-
-        const vaccinationNotifications = await Database.rawQuery(
-          constantQueries.vaccinationNotifications,
-          [personId]
-        )
-
-        const notifications = resolvePersonNotifications(
-          vaccinationNotifications,
-          treatmentNotifications
-        )
-
-        */
-
         formatedLog({
           text: 'Pesquisa  por codigoNum  realizada com sucesso',
           data: searchData,
@@ -973,6 +971,103 @@ export default class PeopleController {
         message: 'O utente não existe na lista de vacinados',
         code: HttpStatusCode.NOT_FOUND,
         data: [],
+      })
+    } catch (error) {
+      //console.log(error)
+      //Log de erro
+      const searchInfo = JSON.stringify(searchData)
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+      await logError({
+        type: 'MB',
+        page: 'v2:PeopleController/searchVaccines',
+        error: `User: ${userInfo} Device: ${deviceInfo} Dados: ${searchInfo} ${errorInfo}`,
+        request: request,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
+          type: LogType.warning,
+          data: searchData,
+          auth: auth,
+          request: request,
+          tag: { key: 'timeout', value: 'Erros' },
+          context: { controller: 'PeopleController', method: 'list' },
+        })
+
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
+  public async searchVaccinesById({ auth, response, request }: HttpContextContract) {
+    const searchData = await request.validate(SearchByIdValidator)
+
+    //Expressões regulares
+
+    try {
+      const search = searchData.id
+
+      //Pesquisa pelo CodigoNum
+
+      const covidVaccines = await Database.from(constantQueries.vaccinationMainTable)
+        .select(constantQueries.vaccinationFields)
+        .joinRaw(constantQueries.vaccinationSources)
+        .where('[vac_regIndividual].[Id_regIndividual]', search)
+        .orderBy('[SIGIS].[dbo].[vac_regVacinacao].[DataCad]', 'desc')
+
+      const treatments = await Database.from(constantQueries.treatmentMainTable)
+        .select(constantQueries.treatmentsFields)
+        .joinRaw(constantQueries.treatmentSources)
+        .where('[vac_regIndividual].[Id_regIndividual]', search)
+        .orderBy('[SIGIS].[dbo].[vac_vacTratamento].[DataCad]', 'desc')
+
+      if (!(covidVaccines.length > 0 || treatments.length > 0)) {
+        formatedLog({
+          text: 'O utente não existe na lista de vacinados , pesquisa por id do utente',
+          data: searchData,
+          auth: auth,
+          request: request,
+          type: LogType.success,
+        })
+        return response.status(HttpStatusCode.ACCEPTED).send({
+          message: 'O utente não existe na lista de vacinados',
+          code: HttpStatusCode.NOT_FOUND,
+          data: [],
+        })
+      }
+
+      const data = personVaccines(covidVaccines, treatments)
+
+      formatedLog({
+        text: 'Pesquisa  por codigoNum  realizada com sucesso',
+        data: searchData,
+        auth: auth,
+        request: request,
+        type: LogType.success,
+      })
+
+      return response.status(HttpStatusCode.ACCEPTED).send({
+        message: 'Resultados da consulta por codigoNum',
+        code: HttpStatusCode.ACCEPTED,
+        data: {
+          person: data.person,
+          vaccines: data.vaccines /*, reports: notifications.vaccines*/,
+        },
       })
     } catch (error) {
       //console.log(error)
