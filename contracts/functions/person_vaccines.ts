@@ -7,6 +7,10 @@ interface Covid {
   genre: string
   birthday: string
   phone: string
+  docTypeId: number
+  nationalityId: number
+  provinceId: number
+  municipalityId: number
   docId: string
   registeredAt: string
   code: string
@@ -32,6 +36,10 @@ interface Treatment {
   birthday: string
   phone: string
   docId: string
+  docTypeId: number
+  nationalityId: number
+  provinceId: number
+  municipalityId: number
   code: string
   registeredAt: string
   codeNum: string
@@ -67,6 +75,10 @@ interface Person {
   birthday: string
   phone: string
   docId: string
+  docTypeId: number
+  nationalityId: number
+  provinceId: number
+  municipalityId: number
   code: string
   codeNum: string
   cardNumber: string
@@ -87,6 +99,12 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
     codeNum: hasCovidVaccines ? covidVaccines[0].codeNum : treatemts[0].codeNum,
     cardNumber: hasCovidVaccines ? covidVaccines[0].cardNumber : treatemts[0].cardNumber,
     registeredAt: hasCovidVaccines ? covidVaccines[0].registeredAt : treatemts[0].registeredAt,
+    docTypeId: hasCovidVaccines ? covidVaccines[0].docTypeId : treatemts[0].docTypeId,
+    nationalityId: hasCovidVaccines ? covidVaccines[0].nationalityId : treatemts[0].nationalityId,
+    provinceId: hasCovidVaccines ? covidVaccines[0].provinceId : treatemts[0].provinceId,
+    municipalityId: hasCovidVaccines
+      ? covidVaccines[0].municipalityId
+      : treatemts[0].municipalityId,
   }
 
   let vaccines: Vaccine[] = []
