@@ -1,10 +1,15 @@
 //Query for login and logout from activity logs
 
 const vaccinationFields = [
-  '[SIGIS].[dbo].[vac_regIndividual] .[Id_regIndividual] as personId',
+  '[SIGIS].[dbo].[vac_regIndividual].[Id_regIndividual] as personId',
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
-  '[SIGIS].[dbo].[vac_regIndividual]. [DataCad] as registeredAt',
+  '[SIGIS].[dbo].[vac_regIndividual].[DataCad] as registeredAt',
   '[Genero] as genre',
+  '[dtNascimento] as birthday',
+  '[SIGIS].[dbo].[vac_regIndividual].[Id_tipoDocumento] as docTypeId',
+  '[SIGIS].[dbo].[vac_regIndividual].[Id_Nacionalidade] as nationalityId',
+  '[SIGIS].[dbo].[vac_regIndividual].[Id_provincia] as provinceId',
+  '[SIGIS].[dbo].[vac_regIndividual].[Id_Municipio] as municipalityId',
   '[Telefone] as phone',
   '[docNum] as docId',
   '[Codigo] as code',
@@ -42,6 +47,7 @@ const treatmentsFields = [
   '[SIGIS].[dbo].[vac_regIndividual].[Nome] as name',
   '[SIGIS].[dbo].[vac_regIndividual]. [DataCad] as registeredAt',
   '[Genero] as genre',
+  '[dtNascimento] as birthday',
   '[Telefone] as phone',
   '[docNum] as docId',
   '[Codigo] as code',

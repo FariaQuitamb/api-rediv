@@ -5,12 +5,7 @@ interface Covid {
   vaccinationId: number
   name: string
   genre: string
-  birthday: string
   phone: string
-  docTypeId: number
-  nationalityId: number
-  provinceId: number
-  municipalityId: number
   docId: string
   registeredAt: string
   code: string
@@ -33,13 +28,8 @@ interface Treatment {
   treatmentId: number
   name: string
   genre: string
-  birthday: string
   phone: string
   docId: string
-  docTypeId: number
-  nationalityId: number
-  provinceId: number
-  municipalityId: number
   code: string
   registeredAt: string
   codeNum: string
@@ -72,13 +62,8 @@ interface Person {
   personId: number
   name: string
   genre: string
-  birthday: string
   phone: string
   docId: string
-  docTypeId: number
-  nationalityId: number
-  provinceId: number
-  municipalityId: number
   code: string
   codeNum: string
   cardNumber: string
@@ -92,19 +77,12 @@ const personVaccines = (covidVaccines: Covid[], treatemts: Treatment[]) => {
     personId: hasCovidVaccines ? covidVaccines[0].personId : treatemts[0].personId,
     name: hasCovidVaccines ? covidVaccines[0].name : treatemts[0].name,
     genre: hasCovidVaccines ? covidVaccines[0].genre : treatemts[0].genre,
-    birthday: hasCovidVaccines ? covidVaccines[0].birthday : treatemts[0].birthday,
     phone: hasCovidVaccines ? covidVaccines[0].phone : treatemts[0].phone,
     docId: hasCovidVaccines ? covidVaccines[0].docId : treatemts[0].docId,
     code: hasCovidVaccines ? covidVaccines[0].code : treatemts[0].code,
     codeNum: hasCovidVaccines ? covidVaccines[0].codeNum : treatemts[0].codeNum,
     cardNumber: hasCovidVaccines ? covidVaccines[0].cardNumber : treatemts[0].cardNumber,
     registeredAt: hasCovidVaccines ? covidVaccines[0].registeredAt : treatemts[0].registeredAt,
-    docTypeId: hasCovidVaccines ? covidVaccines[0].docTypeId : treatemts[0].docTypeId,
-    nationalityId: hasCovidVaccines ? covidVaccines[0].nationalityId : treatemts[0].nationalityId,
-    provinceId: hasCovidVaccines ? covidVaccines[0].provinceId : treatemts[0].provinceId,
-    municipalityId: hasCovidVaccines
-      ? covidVaccines[0].municipalityId
-      : treatemts[0].municipalityId,
   }
 
   let vaccines: Vaccine[] = []
