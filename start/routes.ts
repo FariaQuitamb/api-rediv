@@ -20,8 +20,10 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
-
 import Env from '@ioc:Adonis/Core/Env'
+import execWorkers from 'App/bullmq/worker/worker'
+import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
+import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 
 Route.get('/', async () => {
   return { hello: 'world', title: 'It Works' }

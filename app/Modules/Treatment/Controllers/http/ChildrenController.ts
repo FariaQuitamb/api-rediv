@@ -8,10 +8,10 @@ import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import isAfterToday from 'Contracts/functions/isafter_today'
 import logError from 'Contracts/functions/log_error'
-import logRegister from 'Contracts/functions/log_register'
 import moment from 'moment'
 import ChildValidator from '../../Validators/ChildValidator'
 import Env from '@ioc:Adonis/Core/Env'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class ChildrenController {
   public async index({}: HttpContextContract) {}
@@ -191,7 +191,7 @@ export default class ChildrenController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'ChildrenController/store',
@@ -200,7 +200,9 @@ export default class ChildrenController {
         tableId: personInfo.Id_regIndividual,
         action: 'Registo de Utente Menor',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Registo infantil simplificado realizado com sucesso',
