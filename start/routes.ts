@@ -23,17 +23,8 @@ import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 
 import Env from '@ioc:Adonis/Core/Env'
 
-import AppliedTreatment from 'App/Modules/Treatment/Models/AppliedTreatment'
-import Vaccination from 'App/Models/Vaccination'
-
 Route.get('/', async () => {
-  const vaccinations = await Vaccination.query().preload('vaccine').preload('dose')
-
-  const treatments = await AppliedTreatment.query()
-    .preload('treatment', (query) => query.preload('vaccine').preload('prevention'))
-    .preload('vaccinationPost', (query) => query.preload('province'))
-
-  return { hello: 'world', title: 'It Works', vaccinations, treatments }
+  return { hello: 'world', title: 'It Works' }
 })
 
 //MAIN WRAPPER
@@ -107,7 +98,9 @@ Route.group(() => {
     //MOBILE APP VERSION AND INSTALLATION
     Route.post('mobile_version', 'ConfigsController.changeAppVersion')
     Route.post('installations', 'AppInstallationsController.index')
-  }).middleware('auth:api')
+  })
+    .middleware('auth:api')
+    .middleware('checkUser')
 
   Route.post('install', 'AppInstallationsController.store')
 
@@ -126,6 +119,7 @@ Route.group(() => {
   })
     .prefix('trust')
     .middleware('auth:api')
+    .middleware('checkUser')
 
   //////////////
 }).prefix(Env.get('API_VERSION'))
