@@ -22,6 +22,7 @@ import personVaccines from 'Contracts/functions/person_vaccines'
 import listPersonVaccines from 'Contracts/functions/list_persons_vaccines'
 import SearchByIdValidator from 'App/Validators/SearchByIdValidator'
 import PersonUpdateValidator from 'App/Validators/PersonUpdateValidator'
+import addActivityLogJob from 'App/bullmq/queue/queue'
 
 export default class PeopleController {
   public async store({ auth, response, request }: HttpContextContract) {
@@ -374,7 +375,7 @@ export default class PeopleController {
 
       const version = Env.get('API_VERSION')
       //Log de actividade
-      await logRegister({
+      const log = {
         id: auth.user?.id ?? 0,
         system: 'MB',
         screen: 'PeopleController/updates',
@@ -383,7 +384,9 @@ export default class PeopleController {
         tableId: person.id,
         action: 'Actualização de Utente',
         actionId: `V:${version}`,
-      })
+      }
+
+      await addActivityLogJob(log)
 
       formatedLog({
         text: 'Actualização do utente feita com sucesso',
