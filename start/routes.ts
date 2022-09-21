@@ -68,6 +68,7 @@ Route.group(() => {
     Route.post('people/vaccines', 'PeopleController.searchVaccines')
     Route.post('people/vaccines_by_id', 'PeopleController.searchVaccinesById')
     Route.post('people/check', 'PeopleController.checkPerson')
+    Route.put('people/:id', 'PeopleController.update')
 
     //RANKING - for covid old aproach
     Route.post('ranking', 'VaccinationRanksController.rankUser')
