@@ -386,6 +386,7 @@ export default class PeopleController {
         actionId: `V:${version}`,
       }
 
+      //Queue aproach
       await addActivityLogJob(log)
 
       formatedLog({

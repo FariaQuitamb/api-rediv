@@ -22,6 +22,7 @@ export default class PersonUpdateValidator {
    *       rules.unique({ table: 'users', column: 'email' }),
    *     ])
    *    ```
+   * New validator
    */
 
   public schema = schema.create({
