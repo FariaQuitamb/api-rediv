@@ -153,6 +153,7 @@ Route.group(() => {
   Route.group(() => {
     Route.get('today', 'TrustNetworksController.today')
     Route.get('weekly', 'TrustNetworksController.weekly')
+    Route.get('month', 'TrustNetworksController.month')
     Route.get('general', 'TrustNetworksController.inGeneral')
     Route.get('overtime', 'TrustNetworksController.withOneOrMoreRecord')
     Route.post('ispartner', 'TrustNetworksController.isTrustPartner')
