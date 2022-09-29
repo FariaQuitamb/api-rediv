@@ -69,7 +69,7 @@ export default class TrustNetworksController {
       return response.status(HttpStatusCode.OK).send({
         message: 'Top semanal das instituições com mais registos',
         code: HttpStatusCode.OK,
-        data: { total: totalWeekly},
+        data: { totalWeekly},
       })
     } catch (error) {
       //Log de erro
@@ -117,12 +117,12 @@ export default class TrustNetworksController {
 
   public async month({ auth, response, request }: HttpContextContract) {
     try {
-      const totalMonth = await Database.rawQuery(trustNetworkQueries.weekQuery)
+      const totalMonth = await Database.rawQuery(trustNetworkQueries.month)
 
       return response.status(HttpStatusCode.OK).send({
-        message: 'Top semanal das instituições com mais registos',
+        message: 'Top mensal das instituições com mais registos',
         code: HttpStatusCode.OK,
-        data: { total: totalMonth},
+        data: { totalMonth},
       })
     } catch (error) {
       //Log de erro
