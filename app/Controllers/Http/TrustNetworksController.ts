@@ -64,14 +64,12 @@ export default class TrustNetworksController {
 
   public async weekly({ auth, response, request }: HttpContextContract) {
     try {
-      const topTenPartners = await Database.rawQuery(trustNetworkQueries.weekQuery)
-
       const totalWeekly = await Database.rawQuery(trustNetworkQueries.weekQuery)
 
       return response.status(HttpStatusCode.OK).send({
         message: 'Top semanal das instituições com mais registos',
         code: HttpStatusCode.OK,
-        data: { total: totalWeekly, top_partners: topTenPartners },
+        data: { total: totalWeekly},
       })
     } catch (error) {
       //Log de erro
