@@ -62,6 +62,59 @@ export default class TrustNetworksController {
     }
   }
 
+  public async weekly({ auth, response, request }: HttpContextContract) {
+    try {
+      const topTenPartners = await Database.rawQuery(trustNetworkQueries.weekQuery)
+
+      const totalWeekly = await Database.rawQuery(trustNetworkQueries.weekQuery)
+
+      return response.status(HttpStatusCode.OK).send({
+        message: 'Top semanal das instituições com mais registos',
+        code: HttpStatusCode.OK,
+        data: { total: totalWeekly, top_partners: topTenPartners },
+      })
+    } catch (error) {
+      //Log de erro
+      console.log(error)
+
+      const deviceInfo = JSON.stringify(formatHeaderInfo(request))
+      const userInfo = formatUserInfo(auth.user)
+      const errorInfo = formatError(error)
+
+      await logError({
+        type: 'MB',
+        page: 'TrustNetworksController/weekly',
+        error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
+        request: request,
+      })
+
+      const substring = 'Timeout: Request failed to complete in'
+
+      if (errorInfo.includes(substring)) {
+        formatedLog({
+          text: 'Não foi possível completar a operação dentro do tempo esperado',
+          data: {},
+          auth: auth,
+          request: request,
+          type: LogType.warning,
+          tag: { key: 'timeout', value: 'Timeout' },
+          context: { controller: 'TrustNetworksController ', method: 'weekly' },
+        })
+        return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+          message: 'Não foi possível completar a operação dentro do tempo esperado',
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          data: [],
+        })
+      }
+
+      return response.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send({
+        message: 'Ocorreu um erro no servidor',
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        data: [],
+      })
+    }
+  }
+
   public async inGeneral({ auth, response, request }: HttpContextContract) {
     try {
       const topTenPartners = await Database.rawQuery(trustNetworkQueries.queryTop10General)
@@ -280,6 +333,7 @@ export default class TrustNetworksController {
     }
   }
 
+  // Coordenadas dos locais com registos de vacinação
   public async vaccinationPlaces({ auth, response, request }: HttpContextContract) {
     try {
       const vaccinationPlaces = await Database.rawQuery(trustNetworkQueries.vaccinationPlaces)
