@@ -156,12 +156,14 @@ export default class ChildrenController {
         .timeout(60000)
         .first()
 
-      if (childExists) {
-        return response.status(HttpStatusCode.OK).send({
-          message: 'Já existe um utente registrado com esse número de cartão',
-          code: BusinessCode.FOUND_INDIVIDUAL,
-          data: childExists,
-        })
+      if (childExists ) {
+        if(moment(childExists.dataCad).diff(childData.dataCad)>=0){
+          return response.status(HttpStatusCode.OK).send({
+            message: `Já existe um utente registrado com esse número de cartão`,
+            code: BusinessCode.FOUND_INDIVIDUAL,
+            data: childExists,
+          })
+        }
       }
 
       //const child = await Person.create(childData)
