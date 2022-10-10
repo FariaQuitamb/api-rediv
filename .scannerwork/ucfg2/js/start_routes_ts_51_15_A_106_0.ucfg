@@ -1,1381 +1,0 @@
-
-start_routes_ts_51_15_A_106_0=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts3 3("s7_1*Ës
-s7_1
-<synthetic> (M
-K
-
-__unknown_file (
-%sc-P_159_0"__id**
-
-%env"
-%scope-P_159I
-G
-
-__unknown_file (	
-%expr_0"__id**
-
-%sc-P_159_0"
-RouteC
-A
-
-__unknown_file (	
-%expr_1"__id**
-	
-%expr_0"
-get§"¤
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts5
- 5(
-
-%methRes_0*
-	
-%expr_0"
-get2
-	
-%expr_02
-
-%env2
-auth/logout2
-AuthController.logoutM
-K
-
-__unknown_file (
-%sc-P_159_1"__id**
-
-%env"
-%scope-P_159I
-G
-
-__unknown_file (	
-%expr_2"__id**
-
-%sc-P_159_1"
-RouteD
-B
-
-__unknown_file (	
-%expr_3"__id**
-	
-%expr_2"
-post­"ª
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts6
- 6(
-
-%methRes_1*
-	
-%expr_2"
-post2
-	
-%expr_22
-
-%env2
-auth/logged2
-AuthController.loggedUsersM
-K
-
-__unknown_file (
-%sc-P_159_2"__id**
-
-%env"
-%scope-P_159I
-G
-
-__unknown_file (	
-%expr_4"__id**
-
-%sc-P_159_2"
-RouteD
-B
-
-__unknown_file (	
-%expr_5"__id**
-	
-%expr_4"
-post·"´
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts7
- 7(
-
-%methRes_2*
-	
-%expr_4"
-post2
-	
-%expr_42
-
-%env2
-auth/logged_users2" 
-AuthController.loggedUsersViewM
-K
-
-__unknown_file (
-%sc-P_159_3"__id**
-
-%env"
-%scope-P_159I
-G
-
-__unknown_file (	
-%expr_6"__id**
-
-%sc-P_159_3"
-RouteD
-B
-
-__unknown_file (	
-%expr_7"__id**
-	
-%expr_6"
-post²"¯
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts8
- 8(
-
-%methRes_3*
-	
-%expr_6"
-post2
-	
-%expr_62
-
-%env2
-auth/about_usage2
-AuthController.aboutIUsageM
-K
-
-__unknown_file (
-%sc-P_159_4"__id**
-
-%env"
-%scope-P_159I
-G
-
-__unknown_file (	
-%expr_8"__id**
-
-%sc-P_159_4"
-RouteD
-B
-
-__unknown_file (	
-%expr_9"__id**
-	
-%expr_8"
-post©"¦
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts:
- :(
-
-%methRes_4*
-	
-%expr_8"
-post2
-	
-%expr_82
-
-%env2
-	user_work2
-UsersController.userWorkM
-K
-
-__unknown_file (
-%sc-P_159_5"__id**
-
-%env"
-%scope-P_159J
-H
-
-__unknown_file (
-
-%expr_10"__id**
-
-%sc-P_159_5"
-RouteF
-D
-
-__unknown_file (
-
-%expr_11"__id**
-
-
-%expr_10"
-postº"·
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts;
- ;(
-
-%methRes_5*
-
-
-%expr_10"
-post2
-
-
-%expr_102
-
-%env2
-user_treatments2%#
-!UsersController.userWorkTreatmentM
-K
-
-__unknown_file (
-%sc-P_159_6"__id**
-
-%env"
-%scope-P_159J
-H
-
-__unknown_file (
-
-%expr_12"__id**
-
-%sc-P_159_6"
-RouteE
-C
-
-__unknown_file (
-
-%expr_13"__id**
-
-
-%expr_12"
-get¨"¥
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts>
- >(
-
-%methRes_6*
-
-
-%expr_12"
-get2
-
-
-%expr_122
-
-%env2	
-preload2
-PreloadsController.indexM
-K
-
-__unknown_file (
-%sc-P_159_7"__id**
-
-%env"
-%scope-P_159J
-H
-
-__unknown_file (
-
-%expr_14"__id**
-
-%sc-P_159_7"
-RouteE
-C
-
-__unknown_file (
-
-%expr_15"__id**
-
-
-%expr_14"
-get°"­
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts?
- ?(
-
-%methRes_7*
-
-
-%expr_14"
-get2
-
-
-%expr_142
-
-%env2
-
-symptoms2#!
-PreloadsController.symptomsListM
-K
-
-__unknown_file (
-%sc-P_159_8"__id**
-
-%env"
-%scope-P_159J
-H
-
-__unknown_file (
-
-%expr_16"__id**
-
-%sc-P_159_8"
-RouteF
-D
-
-__unknown_file (
-
-%expr_17"__id**
-
-
-%expr_16"
-post¦"£
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsB
- B(
-
-%methRes_8*
-
-
-%expr_16"
-post2
-
-
-%expr_162
-
-%env2
-
-people2
-PeopleController.storeM
-K
-
-__unknown_file (
-%sc-P_159_9"__id**
-
-%env"
-%scope-P_159J
-H
-
-__unknown_file (
-
-%expr_18"__id**
-
-%sc-P_159_9"
-RouteF
-D
-
-__unknown_file (
-
-%expr_19"__id**
-
-
-%expr_18"
-post®"«
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsC
- C(
-
-%methRes_9*
-
-
-%expr_18"
-post2
-
-
-%expr_182
-
-%env2
-people/search2
-PeopleController.searchN
-L
-
-__unknown_file (
-%sc-P_159_10"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_20"__id**
-
-%sc-P_159_10"
-RouteF
-D
-
-__unknown_file (
-
-%expr_21"__id**
-
-
-%expr_20"
-post¹"¶
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsD
- D(
-%methRes_10*
-
-
-%expr_20"
-post2
-
-
-%expr_202
-
-%env2
-people/vaccines2#!
-PeopleController.searchVaccinesN
-L
-
-__unknown_file (
-%sc-P_159_11"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_22"__id**
-
-%sc-P_159_11"
-RouteF
-D
-
-__unknown_file (
-
-%expr_23"__id**
-
-
-%expr_22"
-postÃ"À
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsE
- E(
-%methRes_11*
-
-
-%expr_22"
-post2
-
-
-%expr_222
-
-%env2
-people/vaccines_by_id2'%
-#PeopleController.searchVaccinesByIdN
-L
-
-__unknown_file (
-%sc-P_159_12"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_24"__id**
-
-%sc-P_159_12"
-RouteF
-D
-
-__unknown_file (
-
-%expr_25"__id**
-
-
-%expr_24"
-post³"°
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsF
- F(
-%methRes_12*
-
-
-%expr_24"
-post2
-
-
-%expr_242
-
-%env2
-people/check2 
-PeopleController.checkPersonN
-L
-
-__unknown_file (
-%sc-P_159_13"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_26"__id**
-
-%sc-P_159_13"
-RouteE
-C
-
-__unknown_file (
-
-%expr_27"__id**
-
-
-%expr_26"
-put«"¨
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsG
- G(
-%methRes_13*
-
-
-%expr_26"
-put2
-
-
-%expr_262
-
-%env2
-
-people/:id2
-PeopleController.updateN
-L
-
-__unknown_file (
-%sc-P_159_14"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_28"__id**
-
-%sc-P_159_14"
-RouteF
-D
-
-__unknown_file (
-
-%expr_29"__id**
-
-
-%expr_28"
-postµ"²
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsJ
- J(
-%methRes_14*
-
-
-%expr_28"
-post2
-
-
-%expr_282
-
-%env2	
-ranking2'%
-#VaccinationRanksController.rankUserN
-L
-
-__unknown_file (
-%sc-P_159_15"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_30"__id**
-
-%sc-P_159_15"
-RouteF
-D
-
-__unknown_file (
-
-%expr_31"__id**
-
-
-%expr_30"
-postÈ"Å
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsM
- M(
-%methRes_15*
-
-
-%expr_30"
-post2
-
-
-%expr_302
-
-%env2
-ranking_treatment20.
-,VaccinationRanksController.rankUserTreatmentN
-L
-
-__unknown_file (
-%sc-P_159_16"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_32"__id**
-
-%sc-P_159_16"
-RouteE
-C
-
-__unknown_file (
-
-%expr_33"__id**
-
-
-%expr_32"
-getÀ"½
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsO
- O(
-%methRes_16*
-
-
-%expr_32"
-get2
-
-
-%expr_322
-
-%env2
-locations_rank2,*
-(VaccinationRanksController.locationsRankN
-L
-
-__unknown_file (
-%sc-P_159_17"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_34"__id**
-
-%sc-P_159_17"
-RouteF
-D
-
-__unknown_file (
-
-%expr_35"__id**
-
-
-%expr_34"
-post³"°
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsR
- R(
-%methRes_17*
-
-
-%expr_34"
-post2
-
-
-%expr_342
-
-%env2
-vaccination/2 
-VaccinationsController.storeN
-L
-
-__unknown_file (
-%sc-P_159_18"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_36"__id**
-
-%sc-P_159_18"
-RouteF
-D
-
-__unknown_file (
-
-%expr_37"__id**
-
-
-%expr_36"
-post¼"¹
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsS
- S(
-%methRes_18*
-
-
-%expr_36"
-post2
-
-
-%expr_362
-
-%env2
-vaccination/booster2" 
-VaccinationsController.boosterN
-L
-
-__unknown_file (
-%sc-P_159_19"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_38"__id**
-
-%sc-P_159_19"
-RouteF
-D
-
-__unknown_file (
-
-%expr_39"__id**
-
-
-%expr_38"
-post¼"¹
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsV
- V(
-%methRes_19*
-
-
-%expr_38"
-post2
-
-
-%expr_382
-
-%env2
-adverse_event2(&
-$AdverseNotificationsController.storeN
-L
-
-__unknown_file (
-%sc-P_159_20"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_40"__id**
-
-%sc-P_159_20"
-RouteF
-D
-
-__unknown_file (
-
-%expr_41"__id**
-
-
-%expr_40"
-postÉ"Æ
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsW
- W(
-%methRes_20*
-
-
-%expr_40"
-post2
-
-
-%expr_402
-
-%env2
-person_events253
-1AdverseNotificationsController.personAdverseCasesN
-L
-
-__unknown_file (
-%sc-P_159_21"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_42"__id**
-
-%sc-P_159_21"
-RouteF
-D
-
-__unknown_file (
-
-%expr_43"__id**
-
-
-%expr_42"
-post¿"¼
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsZ
- Z(
-%methRes_21*
-
-
-%expr_42"
-post2
-
-
-%expr_422
-
-%env2
-goals/postgoal2*(
-&GoalsController.getVaccinationPostGoalN
-L
-
-__unknown_file (
-%sc-P_159_22"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_44"__id**
-
-%sc-P_159_22"
-RouteF
-D
-
-__unknown_file (
-
-%expr_45"__id**
-
-
-%expr_44"
-post°"­
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts]
- ](
-%methRes_22*
-
-
-%expr_44"
-post2
-
-
-%expr_442
-
-%env2
-
-logs/error2
-LogsController.getErrorLogsN
-L
-
-__unknown_file (
-%sc-P_159_23"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_46"__id**
-
-%sc-P_159_23"
-RouteF
-D
-
-__unknown_file (
-
-%expr_47"__id**
-
-
-%expr_46"
-post®"«
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts^
- ^(
-%methRes_23*
-
-
-%expr_46"
-post2
-
-
-%expr_462
-
-%env2
-logs/activity2
-LogsController.getLogsN
-L
-
-__unknown_file (
-%sc-P_159_24"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_48"__id**
-
-%sc-P_159_24"
-RouteF
-D
-
-__unknown_file (
-
-%expr_49"__id**
-
-
-%expr_48"
-post´"±
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts_
- _(
-%methRes_24*
-
-
-%expr_48"
-post2
-
-
-%expr_482
-
-%env2
-logs/vaccine2!
-LogsController.getVaccineLogsN
-L
-
-__unknown_file (
-%sc-P_159_25"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_50"__id**
-
-%sc-P_159_25"
-RouteF
-D
-
-__unknown_file (
-
-%expr_51"__id**
-
-
-%expr_50"
-post»"¸
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.ts`
- `(
-%methRes_25*
-
-
-%expr_50"
-post2
-
-
-%expr_502
-
-%env2
-logs/vaccine/geo2$"
- LogsController.getVaccineGeoLogsN
-L
-
-__unknown_file (
-%sc-P_159_26"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_52"__id**
-
-%sc-P_159_26"
-RouteF
-D
-
-__unknown_file (
-
-%expr_53"__id**
-
-
-%expr_52"
-post²"¯
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsc
- c(
-%methRes_26*
-
-
-%expr_52"
-post2
-
-
-%expr_522
-
-%env2
-accesses/list2
-ApiAcessesController.indexN
-L
-
-__unknown_file (
-%sc-P_159_27"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_54"__id**
-
-%sc-P_159_27"
-RouteF
-D
-
-__unknown_file (
-
-%expr_55"__id**
-
-
-%expr_54"
-post­"ª
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsd
- d(
-%methRes_27*
-
-
-%expr_54"
-post2
-
-
-%expr_542
-
-%env2
-
-accesses2
-ApiAcessesController.storeN
-L
-
-__unknown_file (
-%sc-P_159_28"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_56"__id**
-
-%sc-P_159_28"
-RouteF
-D
-
-__unknown_file (
-
-%expr_57"__id**
-
-
-%expr_56"
-post¹"¶
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tse
- e(
-%methRes_28*
-
-
-%expr_56"
-post2
-
-
-%expr_562
-
-%env2
-accesses/state2$"
- ApiAcessesController.changeStateN
-L
-
-__unknown_file (
-%sc-P_159_29"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_58"__id**
-
-%sc-P_159_29"
-RouteF
-D
-
-__unknown_file (
-
-%expr_59"__id**
-
-
-%expr_58"
-postµ"²
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsf
- f(
-%methRes_29*
-
-
-%expr_58"
-post2
-
-
-%expr_582
-
-%env2
-accesses/search2
-ApiAcessesController.searchN
-L
-
-__unknown_file (
-%sc-P_159_30"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_60"__id**
-
-%sc-P_159_30"
-RouteF
-D
-
-__unknown_file (
-
-%expr_61"__id**
-
-
-%expr_60"
-post¿"¼
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsj
- j(
-%methRes_30*
-
-
-%expr_60"
-post2
-
-
-%expr_602
-
-%env2
-usermessages2,*
-(VaccinationMessagesController.getMessageN
-L
-
-__unknown_file (
-%sc-P_159_31"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_62"__id**
-
-%sc-P_159_31"
-RouteF
-D
-
-__unknown_file (
-
-%expr_63"__id**
-
-
-%expr_62"
-post¿"¼
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsk
- k(
-%methRes_31*
-
-
-%expr_62"
-post2
-
-
-%expr_622
-
-%env2
-viewmessage2-+
-)VaccinationMessagesController.viewMessageN
-L
-
-__unknown_file (
-%sc-P_159_32"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_64"__id**
-
-%sc-P_159_32"
-RouteF
-D
-
-__unknown_file (
-
-%expr_65"__id**
-
-
-%expr_64"
-post»"¸
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsn
- n(
-%methRes_32*
-
-
-%expr_64"
-post2
-
-
-%expr_642
-
-%env2
-mobile_version2&$
-"ConfigsController.changeAppVersionN
-L
-
-__unknown_file (
-%sc-P_159_33"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_66"__id**
-
-%sc-P_159_33"
-RouteF
-D
-
-__unknown_file (
-
-%expr_67"__id**
-
-
-%expr_66"
-post¸"µ
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tso
- o(
-%methRes_33*
-
-
-%expr_66"
-post2
-
-
-%expr_662
-
-%env2
-installations2$"
- AppInstallationsController.indexN
-L
-
-__unknown_file (
-%sc-P_159_34"__id**
-
-%env"
-%scope-P_159K
-I
-
-__unknown_file (
-
-%expr_68"__id**
-
-%sc-P_159_34"
-Route`
-^
-
-__unknown_file (	
-%func_0"__declareFunction*$"
- start_routes_ts_114_33_A_107_Ptrfd
-
-__unknown_file (/
-%functionPrototype_0%SonarFunctionPrototype"%SonarFunctionPrototypes
-q
-
-__unknown_file (	
-%void_0"
-__setProto*
-	
-%func_0*1
-/
-%functionPrototype_0%SonarFunctionPrototypeE
-C
-
-__unknown_file (
-
-%expr_69"__id**
-
-
-%expr_68"
-getŸ"œ
-=
-3/Users/fariaquitamba/code/api-rediv/start/routes.tsr
- r(
-%methRes_34*
-
-
-%expr_68"
-get2
-
-
-%expr_682
-
-%env2
-/force_workers2
-	
-%func_0"
-
-__unknown_file ( :
-%envB 
