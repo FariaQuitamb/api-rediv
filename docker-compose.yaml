@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+    volumes:
+      - redis_volume:/data
+    ports:
+      - 6379:6379
+
+  api-rediv:
+    container_name:  api-rediv
+    restart: always
+    depends_on:
+      - redis
+    build:
+      context: .
+      target: dependencies
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/user/src/app
+    entrypoint: dockerize -wait tcp://redis:6379 -timeout 20s docker-entrypoint.sh node ace serve
+
+volumes:
+  redis_volume:
+
