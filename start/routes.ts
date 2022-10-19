@@ -28,6 +28,7 @@ import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import AppliedTreatment from 'App/Modules/Treatment/Models/AppliedTreatment'
 import Vaccination from 'App/Models/Vaccination'
 
+
 Route.get('/', async () => {
   const vaccinations = await Vaccination.query().preload('vaccine').preload('dose')
 
