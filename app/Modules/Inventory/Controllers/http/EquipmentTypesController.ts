@@ -1,22 +1,22 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import EquipmentType from 'App/Models/EquipmentType'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
-import Manufacturer from '../../Models/Manufacturer'
 
-export default class ManufacturerController {
+
+export default class EquipmentTypesController {
   public async index({ auth, response, request }: HttpContextContract) {
     try {
-      const manufacturers = await Manufacturer.query()
-        .whereNot('Status', 'X').preload('equipmentModels')
-
-      return response.status(HttpStatusCode.OK).send({
-        message: 'Lista de marcas e seus modelos',
+      const equipmentTypes = await EquipmentType.query()
+        .whereNot('Status', 'X')
+        return response.status(HttpStatusCode.OK).send({
+        message: 'Lista de tipos de equipamentos',
         code: HttpStatusCode.OK,
-        data: manufacturers,
+        data: equipmentTypes,
       })
     } catch (error) {
       //Log de erro
@@ -27,7 +27,7 @@ export default class ManufacturerController {
 
       await logError({
         type: 'MB',
-        page: 'ManufacturController/index',
+        page: 'EquipmentTypesController/index',
         error: `User:${userInfo} Device: ${deviceInfo} - ${errorInfo}`,
         request: request,
       })

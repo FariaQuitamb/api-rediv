@@ -33,13 +33,13 @@ Route.group(() => {
     Route.get('equipment_models', 'CampaignsController.index')
 
     //Types Stuffs
-    Route.post('types', 'ChildrenController.store')
+    Route.get('equipment_types', 'EquipmentTypesController.index')
 
     //Regis Stuffs
     Route.post('register_equipaments', 'ApplyTreatmentsController.store')
 
     //
-  }).namespace('App/Modules/Inventory/Controllers/http')
+  }).namespace('App/Modules/Inventory/Controllers/http').prefix('inventory')
 
   //////////////
 })

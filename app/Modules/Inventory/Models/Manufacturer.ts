@@ -16,5 +16,5 @@ export default class Manufacturer extends BaseModel {
   public DataCad: string
 
   @hasMany(() => EquipmentModel)
-  public equipamentModels: HasMany < typeof EquipmentModel>
+  public equipmentModels: HasMany < typeof EquipmentModel>
 }
