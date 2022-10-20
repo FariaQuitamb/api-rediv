@@ -38,6 +38,10 @@ Route.group(() => {
     //Regis Stuffs
     Route.post('register_equipaments', 'ApplyTreatmentsController.store')
 
+    // Equipment whys
+
+    Route.get('whies', 'EquipmentWhiesController.index')
+
     //
   }).namespace('App/Modules/Inventory/Controllers/http').prefix('inventory')
 
