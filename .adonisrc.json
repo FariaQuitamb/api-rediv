@@ -19,7 +19,8 @@
     "./start/kernel",
     "./start/worker_starter",
     "./start/bouncer",
-    "./app/Modules/Treatment/routes/routes"
+    "./app/Modules/Treatment/routes/routes",
+    "./app/Modules/Inventory/routes/routes"
   ],
   "providers": [
     "./providers/AppProvider",

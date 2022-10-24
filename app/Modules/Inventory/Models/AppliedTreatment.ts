@@ -3,7 +3,7 @@ import VaccinationPost from 'App/Models/VaccinationPost'
 import Treatment from './Treatment'
 
 export default class AppliedTreatment extends BaseModel {
-  public static table = 'vac_vacTratamento'
+  public static table = 'vac_vacTratamento]'
   @column({ isPrimary: true, columnName: 'Id_vacTratamento' })
   public id: number
 
