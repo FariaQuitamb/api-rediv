@@ -39,7 +39,7 @@ Route.group(() => {
     Route.post('equipment', 'EquipmentController.store')
 
     //Regis Equipment Energy
-    Route.get('equipment_energy', 'EquipmentEnergiesController.index')
+    Route.get('equipment_energy', 'EquipmentEnergiesController.index').prefix('inventory')
 
     // Equipment whys
     Route.get('whies', 'EquipmentWhiesController.index')
