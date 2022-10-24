@@ -29,9 +29,6 @@ Route.group(() => {
     //Manufaturer Stuffs
     Route.get('manufacturers', 'ManufacturerController.index')
 
-    //Manufaturer_models Stuffs
-    Route.get('equipment_models', 'CampaignsController.index')
-
     //Types Stuffs
     Route.get('equipment_types', 'EquipmentTypesController.index')
 

@@ -13,7 +13,7 @@ export default class EquipmentEnergiesController {
       const equipmentTypes = await EquipmentEnergy.query()
         .whereNot('Status', 'X')
         return response.status(HttpStatusCode.OK).send({
-        message: 'Lista de tipos de equipamentos',
+        message: 'Lista fontes de energias para os equipamentos',
         code: HttpStatusCode.OK,
         data: equipmentTypes,
       })

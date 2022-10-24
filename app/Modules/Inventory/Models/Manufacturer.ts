@@ -1,5 +1,5 @@
 import { BaseModel, column, HasMany, hasMany} from '@ioc:Adonis/Lucid/Orm'
-import EquipmentModel from 'App/Models/EquipmentModel'
+import EquipmentModel from './EquipmentModel'
 
 export default class Manufacturer extends BaseModel {
   public static table = 'marca_Equipamento'
