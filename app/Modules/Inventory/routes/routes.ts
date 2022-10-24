@@ -39,13 +39,13 @@ Route.group(() => {
     Route.post('equipment', 'EquipmentController.store')
 
     //Regis Equipment Energy
-    Route.get('equipment_energy', 'EquipmentEnergiesController.index').prefix('inventory')
+    Route.get('equipment_energy', 'EquipmentEnergiesController.index')
 
     // Equipment whys
     Route.get('whies', 'EquipmentWhiesController.index')
 
     //
-  }).namespace('App/Modules/Inventory/Controllers/http')
+  }).namespace('App/Modules/Inventory/Controllers/http').prefix('inventory')
 
   //////////////
 })
