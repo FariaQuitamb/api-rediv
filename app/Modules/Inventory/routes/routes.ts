@@ -38,8 +38,10 @@ Route.group(() => {
     //Regis Stuffs
     Route.post('register_equipaments', 'ApplyTreatmentsController.store')
 
-    // Equipment whys
+    //Regis Equipment Energy
+    Route.get('equipment_energy', 'EquipmentEnergiesController.index')
 
+    // Equipment whys
     Route.get('whies', 'EquipmentWhiesController.index')
 
     //
