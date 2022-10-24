@@ -1,11 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import EquipmentEnergy from 'App/Models/EquipmentEnergy'
 import HttpStatusCode from 'Contracts/enums/HttpStatusCode'
 import formatedLog, { LogType } from 'Contracts/functions/formated_log'
 import formatError from 'Contracts/functions/format_error'
 import formatHeaderInfo from 'Contracts/functions/format_header_info'
 import formatUserInfo from 'Contracts/functions/format_user_info'
 import logError from 'Contracts/functions/log_error'
+import EquipmentEnergy from '../../Models/EquipmentEnergy'
 
 export default class EquipmentEnergiesController {
   public async index({ auth, response, request }: HttpContextContract) {

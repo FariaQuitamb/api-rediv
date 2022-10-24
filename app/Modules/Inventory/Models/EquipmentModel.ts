@@ -1,5 +1,5 @@
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
-import Manufacturer from 'App/Modules/Inventory/Models/Manufacturer'
+import Manufacturer from './Manufacturer'
 
 export default class EquipmentModel extends BaseModel {
   public static table = 'modelo_Equipamento'

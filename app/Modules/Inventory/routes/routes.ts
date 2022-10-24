@@ -35,8 +35,8 @@ Route.group(() => {
     //Types Stuffs
     Route.get('equipment_types', 'EquipmentTypesController.index')
 
-    //Regis Stuffs
-    Route.post('register_equipaments', 'ApplyTreatmentsController.store')
+    //Regis Equipment
+    Route.post('equipment', 'EquipmentController.store')
 
     //Regis Equipment Energy
     Route.get('equipment_energy', 'EquipmentEnergiesController.index')
@@ -45,7 +45,7 @@ Route.group(() => {
     Route.get('whies', 'EquipmentWhiesController.index')
 
     //
-  }).namespace('App/Modules/Inventory/Controllers/http').prefix('inventory')
+  }).namespace('App/Modules/Inventory/Controllers/http')
 
   //////////////
 })
